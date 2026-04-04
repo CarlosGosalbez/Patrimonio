@@ -3,7 +3,7 @@
 **Versión:** 1.0.0  
 **Fecha:** 2025  
 **Clasificación:** Documento Técnico de Arquitectura y Producto  
-**Autor:** Arquitectura de Sistema — Para análisis por agente Claude
+**Autor:** Arquitectura de Sistema
 
 ---
 
@@ -18,14 +18,13 @@
 7. [Módulos Funcionales](#7-módulos-funcionales)
 8. [Integraciones Externas](#8-integraciones-externas)
 9. [PWA e Experiencia Mobile (iOS/Safari)](#9-pwa-e-experiencia-mobile-iossafari)
-10. [Agentes de IA y Skills](#10-agentes-de-ia-y-skills)
-11. [Testing y Calidad](#11-testing-y-calidad)
-12. [CI/CD y DevOps](#12-cicd-y-devops)
-13. [Observabilidad y Monitoreo](#13-observabilidad-y-monitoreo)
-14. [RGPD y Compliance](#14-rgpd-y-compliance)
-15. [Roadmap de Fases](#15-roadmap-de-fases)
-16. [Estimación de Costes](#16-estimación-de-costes)
-17. [Referencias Técnicas](#17-referencias-técnicas)
+10. [Testing y Calidad](#11-testing-y-calidad)
+11. [CI/CD y DevOps](#12-cicd-y-devops)
+12. [Observabilidad y Monitoreo](#13-observabilidad-y-monitoreo)
+13. [RGPD y Compliance](#14-rgpd-y-compliance)
+14. [Roadmap de Fases](#15-roadmap-de-fases)
+15. [Estimación de Costes](#16-estimación-de-costes)
+16. [Referencias Técnicas](#17-referencias-técnicas)
 
 ---
 
@@ -41,7 +40,7 @@
 - **Privacy by Design**: los datos de un usuario son físicamente inaccesibles para otro a nivel de motor de base de datos (RLS)
 - **Offline-First**: la PWA funciona sin conexión para consultas básicas
 - **Mobile-First**: diseñado primariamente para Safari en iPhone, compatible desktop
-- **AI-Augmented**: agentes de IA integrados para categorización, alertas y análisis
+- **Rule-Based Intelligence**: categorización automática por reglas deterministas y alertas estadísticas de gasto
 
 ### 1.3 Usuarios Objetivo
 
@@ -81,13 +80,13 @@
                   │ (Deno / TS)     │
                   └────────┬────────┘
                            │
-         ┌─────────────────┼─────────────────┐
-         │                 │                 │
-┌────────▼──────┐ ┌────────▼──────┐ ┌───────▼──────────┐
-│  FINANCIAL    │ │  ANTHROPIC    │ │   RESEND / EMAIL  │
-│  MARKET API   │ │  CLAUDE API   │ │   NOTIFICATIONS   │
-│  (cotizac.)   │ │  (AI Agents)  │ │                   │
-└───────────────┘ └───────────────┘ └──────────────────┘
+         ┌─────────────────┴─────────────────┐
+         │                                   │
+┌────────▼──────────────────┐ ┌──────────────▼──────┐
+│  FINANCIAL MARKET APIS    │ │  RESEND / EMAIL      │
+│  Yahoo, AlphaV, FMP…      │ │  NOTIFICATIONS       │
+│  (cotizaciones)           │ │                      │
+└───────────────────────────┘ └──────────────────────┘
 ```
 
 ### 2.1 Patrones Arquitectónicos Utilizados
@@ -138,15 +137,7 @@
 | **Vercel**                  | —       | Deploy Next.js, Edge Middleware, CDN              |
 | **Resend**                  | —       | Emails transaccionales (notificaciones, alertas)  |
 
-### 3.3 IA y Agentes
-
-| Tecnología                                 | Rol                                          |
-| ------------------------------------------ | -------------------------------------------- |
-| **Anthropic Claude API** (claude-sonnet-4) | Motor de agentes de IA                       |
-| **Vercel AI SDK**                          | Streaming de respuestas, tool calling        |
-| **LangChain JS** (opcional)                | Orquestación de cadenas de agentes complejos |
-
-### 3.4 DevOps y Calidad
+### 3.3 DevOps y Calidad
 
 | Herramienta             | Rol                                       |
 | ----------------------- | ----------------------------------------- |
@@ -536,7 +527,7 @@ Content-Security-Policy:
   script-src 'self' 'nonce-{NONCE}';
   style-src 'self' 'unsafe-inline';
   img-src 'self' data: https:;
-  connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.anthropic.com;
+  connect-src 'self' https://*.supabase.co wss://*.supabase.co;
   frame-ancestors 'none';
 
 // Otros headers críticos
@@ -646,6 +637,29 @@ CREATE POLICY "users_delete_transactions" ON transactions
 
 ---
 
+### 6.4 Biometría Web — Face ID / Touch ID (WebAuthn)
+
+Patrimio es una **aplicación web** desplegada en Vercel y accesible desde el navegador. Al añadirla al escritorio desde Safari en iPhone («Añadir a pantalla de inicio»), se instala en modo standalone y se comporta como una app nativa, incluyendo soporte completo de biometría.
+
+La **WebAuthn API** (estándar W3C, soportada en Safari iOS 14.5+) permite usar Face ID y Touch ID directamente desde la web sin necesidad de app nativa ni App Store:
+
+| Modo                 | Descripción                                                                     | Requisito iOS/Safari |
+| -------------------- | ------------------------------------------------------------------------------- | -------------------- |
+| **2FA biométrico**   | Face ID / Touch ID como segundo factor tras email+contraseña                    | iOS 14.5+            |
+| **Passkey**          | Login sin contraseña, solo biometría                                            | iOS 16+ / Safari 17+ |
+| **Re-autenticación** | Confirmar identidad antes de acciones críticas (eliminar cuenta, exportar RGPD) | iOS 14.5+            |
+
+**Implementación:**
+
+- Frontend: `@simplewebauthn/browser`
+- Backend (API route Next.js): `@simplewebauthn/server`
+- Tabla en BD: `webauthn_credentials` — almacena credential ID, public key y metadata por dispositivo
+- El usuario puede registrar múltiples dispositivos (iPhone + iPad + MacBook)
+
+**Importante:** WebAuthn solo funciona en HTTPS (cubierto por Vercel) y en la misma origin. Funciona correctamente tanto en Safari (navegador) como instalado en la pantalla de inicio en modo PWA.
+
+---
+
 ## 7. MÓDULOS FUNCIONALES
 
 ### 7.1 Módulo de Autenticación (M0)
@@ -709,7 +723,7 @@ CREATE POLICY "users_delete_transactions" ON transactions
 4. **Preview interactivo**: tabla con todas las transacciones detectadas, editable
 5. **Mapeo de columnas**: si la detección falla, el usuario arrastra para asignar columnas
 6. **Deduplicación**: comparación contra transacciones existentes (fecha + importe + descripción similar) con flag "posible duplicado"
-7. **Auto-categorización**: aplica las reglas del usuario y sugerencias de IA
+7. **Auto-categorización**: aplica las reglas del usuario (motor determinista, sin IA)
 8. **Confirmación y ajuste bulk**: el usuario puede modificar categorías de múltiples transacciones similares en un paso
 9. Import → transacciones creadas con `import_source` y `import_batch_id` para rollback si es necesario
 
@@ -906,215 +920,6 @@ Network-Only: operaciones de escritura (crear/editar transacciones)
 
 ---
 
-## 10. AGENTES DE IA Y SKILLS
-
-Esta sección define los agentes de IA integrados en Patrimio y las skills (capacidades especializadas) que cada uno utiliza. Todos los agentes usan **Claude claude-sonnet-4** vía Anthropic API con **Vercel AI SDK** para streaming.
-
-### 10.1 Agente 1: Auto-Categorizer Agent
-
-**Propósito:** Categorizar automáticamente transacciones importadas o manuales.  
-**Trigger:** Importación de extracto o transacción manual sin categoría.  
-**Tipo:** Clasificación + aprendizaje de patrones del usuario.
-
-**Inputs:**
-
-- Descripción de la transacción (ej: "AMAZON EU SARL")
-- Importe y tipo (gasto/ingreso)
-- Historial de categorizaciones previas del usuario (últimas 100 relevantes)
-- Reglas de auto-categorización configuradas por el usuario
-
-**Tool Calls disponibles:**
-
-```typescript
-get_user_categories(); // obtiene categorías del usuario
-get_categorization_history(); // últimas N categorizaciones similares
-apply_category(tx_id, cat_id); // aplica la categoría seleccionada
-create_rule(pattern, cat_id); // sugiere crear regla permanente
-```
-
-**Outputs:**
-
-- Categoría sugerida con % de confianza
-- Si confianza > 85%: aplica automáticamente
-- Si confianza 60-85%: muestra sugerencia, el usuario confirma con 1 tap
-- Si confianza < 60%: solicita categoría al usuario (con sugerencia)
-- Si N transacciones similares → sugiere crear regla permanente
-
-**Prompt base (system):**
-
-```text
-Eres un experto en finanzas personales españolas. Tu tarea es categorizar
-transacciones bancarias basándote en su descripción y el historial del usuario.
-Devuelve SOLO JSON con: {"category_id": "...", "confidence": 0.0-1.0, "reasoning": "..."}
-No inventes categorías. Solo usa las proporcionadas.
-```
-
----
-
-### 10.2 Agente 2: Financial Insights Agent
-
-**Propósito:** Generar análisis financiero narrativo y alertas inteligentes.  
-**Trigger:** Apertura del dashboard, cierre de mes, solicitud explícita del usuario.  
-**Tipo:** Análisis + generación de texto + recomendaciones.
-
-**Tool Calls disponibles:**
-
-```typescript
-get_monthly_summary(month, year)         // resumen financiero del mes
-get_spending_trends(months: 6)           // tendencias de los últimos N meses
-get_budget_status()                      // estado de presupuestos activos
-get_upcoming_commitments(days: 30)       // compromisos próximos
-get_investment_performance()             // rendimiento cartera
-calculate_savings_rate()                 // tasa de ahorro histórica
-get_category_anomalies()                 // categorías con gasto inusual
-```
-
-**Outputs (streaming):**
-
-- Resumen narrativo del mes: "Este mes has gastado X€, un 12% menos que el mes anterior..."
-- Alerta de anomalía: "Tu gasto en Restaurantes este mes dobla tu media histórica"
-- Consejo de ahorro: "Si mantienes el ritmo actual, tendrás X€ en 3 meses"
-- Alerta de compromiso: "Tu hipoteca vence en 15 años. Con tu tasa de ahorro actual podrías amortizar X€/año"
-
-**UI:** Panel lateral deslizable "Insights IA" con respuesta en streaming, icono de IA distintivo.
-
----
-
-### 10.3 Agente 3: Import Assistant Agent
-
-**Propósito:** Guiar al usuario durante la importación de extractos complejos.  
-**Trigger:** Cuando la detección automática de columnas falla o hay ambigüedad.  
-**Tipo:** Asistente conversacional + resolución de problemas.
-
-**Tool Calls disponibles:**
-
-```typescript
-analyze_file_structure(file_data); // analiza estructura del archivo subido
-suggest_column_mapping(headers); // sugiere mapeo de columnas
-detect_bank_format(sample_rows); // intenta identificar el banco
-validate_imported_data(transactions); // valida la coherencia de los datos
-```
-
-**Flujo:**
-
-1. Usuario sube archivo difícil de parsear
-2. Agente analiza la estructura y hace preguntas específicas
-3. Propone mapeo visual de columnas
-4. Valida coherencia (importes negativos = gastos?, fechas en formato correcto?)
-5. Confirma con el usuario antes de importar
-
----
-
-### 10.4 Agente 4: Investment Research Agent
-
-**Propósito:** Proveer contexto y análisis sobre los activos en la cartera.  
-**Trigger:** Tap en "Ver análisis" en una posición de inversión.  
-**Tipo:** Investigación + web search + síntesis.
-
-**Tool Calls disponibles:**
-
-```typescript
-get_position_details(ticker); // datos de la posición del usuario
-web_search(query); // búsqueda de noticias recientes
-get_market_data(ticker); // cotización y datos de mercado
-get_dividend_history(ticker); // historial de dividendos (si disponible)
-get_fundamentals(ticker); // P/E, PEG, yield, etc.
-```
-
-**Outputs (streaming):**
-
-- Resumen de la empresa/ETF en 3 párrafos
-- Noticias relevantes recientes
-- Contexto del dividendo: "Este ETF tiene un yield histórico de X%. Tu posición actual debería generar ~Y€/año"
-- Advertencia: "Este agente no proporciona asesoramiento de inversión. Consulta con un profesional."
-
-**Disclaimer permanente:** Este agente es informativo, no constituye asesoramiento financiero regulado.
-
----
-
-### 10.5 Agente 5: Budget Optimization Agent
-
-**Propósito:** Analizar patrones de gasto y sugerir presupuestos realistas.  
-**Trigger:** Primer uso, o solicitud manual "Optimizar mis presupuestos".  
-**Tipo:** Análisis de datos + recomendaciones personalizadas.
-
-**Tool Calls disponibles:**
-
-```typescript
-get_spending_by_category(months: 6)  // gasto medio por categoría
-get_income_history(months: 6)        // historial de ingresos
-get_existing_budgets()               // presupuestos actuales
-get_financial_goals()                // objetivos configurados por usuario
-```
-
-**Outputs:**
-
-- Análisis de dónde va el dinero (top 10 categorías)
-- Presupuestos sugeridos basados en la regla 50/30/20 (necesidades/deseos/ahorro) ajustada al perfil real
-- Identificación de "quick wins": categorías donde hay margen fácil de reducción
-- Comparativa con el presupuesto actual vs gasto real
-
----
-
-### 10.6 Skills Reutilizables (Shared Skills)
-
-Las siguientes skills son módulos de capacidad compartidos entre agentes:
-
-#### Skill: `financial-data-reader`
-
-Lee y formatea datos financieros del usuario desde Supabase para consumo por agentes.
-
-- `getMonthlyTransactions(userId, month, year)`
-- `getCategorySpending(userId, categoryId, dateRange)`
-- `getNetWorth(userId)`
-- `getRecurringCommitmentsProjection(userId, months)`
-
-#### Skill: `market-data-fetcher`
-
-Obtiene y normaliza datos de mercado de múltiples fuentes con fallback automático.
-
-- Prioridad: Yahoo Finance → Alpha Vantage → FMP
-- Normaliza monedas (USD → EUR)
-- Maneja errores y datos faltantes gracefully
-
-#### Skill: `transaction-formatter`
-
-Formatea transacciones y datos financieros para presentación al usuario.
-
-- Formateo de moneda respetando locale es-ES
-- Formateo de fechas (dd/MM/yyyy)
-- Representación de variaciones (+12.5%, −3.2%)
-- Generación de resúmenes numéricos narrativos en español
-
-#### Skill: `spanish-finance-categorizer`
-
-Base de conocimiento de categorización de comercios y servicios españoles.
-
-- Mapping de cadenas de supermercados (Mercadona, Carrefour, Lidl...)
-- Mapping de servicios recurrentes (Netflix, Spotify, Orange...)
-- Mapping de entidades financieras españolas
-- Heurísticas específicas para extractos bancarios españoles
-
-#### Skill: `anomaly-detector`
-
-Detecta patrones inusuales en datos financieros.
-
-- Gasto en categoría > 2 desviaciones estándar de la media
-- Ingreso inesperado (importe muy diferente al habitual)
-- Transacción duplicada potencial
-- Patrón de gasto mensual con outlier claro
-
-#### Skill: `report-generator`
-
-Genera informes financieros en formato estructurado.
-
-- Informe mensual (texto + datos)
-- Informe de inversiones
-- Resumen de patrimonio neto
-- Proyección a futuro
-
----
-
 ## 11. TESTING Y CALIDAD
 
 ### 11.1 Pirámide de Testing
@@ -1134,8 +939,7 @@ Genera informes financieros en formato estructurado.
 - Todos los componentes React (React Testing Library)
 - Todas las utilities financieras (cálculo precio medio, proyecciones, P&L)
 - Todos los Zod schemas de validación
-- Lógica de agentes de IA (con mocks de API calls)
-- Skills individuales
+- Detección de anomalías estadísticas y lógica de reglas de auto-categorización
 
 ### 11.3 Integration Tests
 
@@ -1221,10 +1025,9 @@ projects: [
 
 ### 12.3 Feature Flags
 
-- Variables de entorno para toggles de features en beta
-- Permite activar/desactivar agentes de IA sin deploy
-- `NEXT_PUBLIC_FF_AI_INSIGHTS=true/false`
-- `NEXT_PUBLIC_FF_INVESTMENT_MODULE=true/false`
+- Feature flags almacenados en tabla `app_settings` de Supabase, gestionables desde la UI de configuración sin redeploy
+- Permiten activar/desactivar módulos de forma controlada
+- Ejemplos: `investment_module_enabled`, `import_module_enabled`, `push_notifications_enabled`
 
 ---
 
@@ -1305,7 +1108,6 @@ Listados en política de privacidad con DPA firmado:
 - Supabase Inc. (base de datos, auth, storage) — DPA disponible
 - Vercel Inc. (hosting, edge network) — DPA disponible
 - Resend Inc. (email transaccional) — DPA disponible
-- Anthropic PBC (IA — datos se procesan para la respuesta, no se usan para training) — DPA/Terms disponible
 - Sentry Inc. (error tracking — configurado sin datos personales ni financieros)
 
 ---
@@ -1339,9 +1141,8 @@ Listados en política de privacidad con DPA firmado:
 - [ ] Entrada rápida mobile-optimizada
 - [ ] Filtros y búsqueda
 - [ ] Categorías (sistema + custom)
-- [ ] Reglas de auto-categorización
+- [ ] Reglas de auto-categorización (motor determinista)
 - [ ] Dashboard básico (saldo del mes, últimas transacciones)
-- [ ] Auto-Categorizer Agent (Agente 1)
 
 ### Fase 3: Compromisos Futuros (Semana 8-9)
 
@@ -1357,15 +1158,13 @@ Listados en política de privacidad con DPA firmado:
 - [ ] Detección automática de columnas
 - [ ] Preview interactivo y deduplicación
 - [ ] Formatos bancarios españoles específicos
-- [ ] Import Assistant Agent (Agente 3)
-- [ ] Bulk categorización post-import
+- [ ] Bulk categorización post-import (motor de reglas)
 
 ### Fase 5: Dashboard y Análisis (Semana 12-13)
 
 - [ ] Dashboard completo con todos los widgets
 - [ ] Vistas de análisis por período
-- [ ] Presupuestos con alertas
-- [ ] Financial Insights Agent (Agente 2)
+- [ ] Presupuestos con alertas y detección estadística de anomalías
 - [ ] Informes exportables (PDF/Excel)
 
 ### Fase 6: Inversiones (Semana 14-16)
@@ -1375,7 +1174,6 @@ Listados en política de privacidad con DPA firmado:
 - [ ] Cálculo P&L en tiempo real
 - [ ] Gestión de dividendos (editable)
 - [ ] Historial de operaciones con precio medio automático
-- [ ] Investment Research Agent (Agente 4)
 - [ ] Gráfico evolución cartera histórico
 
 ### Fase 7: Polish y PWA (Semana 17-18)
@@ -1425,12 +1223,11 @@ Listados en política de privacidad con DPA firmado:
 
 ### 16.2 Costes a Escala (si crece)
 
-| Servicio          | Plan Pro    | Cuándo activar                                        |
-| ----------------- | ----------- | ----------------------------------------------------- |
-| **Vercel Pro**    | $20/mes     | Si hay > 100 usuarios activos                         |
-| **Supabase Pro**  | $25/mes     | Si se superan límites del free tier                   |
-| **Anthropic API** | Pay-per-use | ~$0.003/1k tokens (Sonnet) — muy bajo en uso personal |
-| **Financial API** | $50/mes     | Si se necesitan cotizaciones en tiempo real sin caché |
+| Servicio          | Plan Pro | Cuándo activar                                        |
+| ----------------- | -------- | ----------------------------------------------------- |
+| **Vercel Pro**    | $20/mes  | Si hay > 100 usuarios activos                         |
+| **Supabase Pro**  | $25/mes  | Si se superan límites del free tier                   |
+| **Financial API** | $50/mes  | Si se necesitan cotizaciones en tiempo real sin caché |
 
 ### 16.3 Coste de Desarrollo (horas estimadas)
 
@@ -1454,8 +1251,6 @@ Listados en política de privacidad con DPA firmado:
 - [Supabase Auth](https://supabase.com/docs/guides/auth) — JWT, TOTP, RLS
 - [Supabase Row Level Security](https://supabase.com/docs/guides/auth/row-level-security)
 - [Vercel Edge Middleware](https://vercel.com/docs/functions/edge-middleware)
-- [Vercel AI SDK](https://sdk.vercel.ai/docs) — Streaming de agentes, tool calling
-- [Anthropic API](https://docs.anthropic.com) — Claude, tool use, prompting
 
 ### Seguridad
 
@@ -1513,12 +1308,6 @@ patrimio/
 │   │   ├── reports/
 │   │   └── settings/
 │   ├── api/
-│   │   ├── ai/
-│   │   │   ├── categorize/       # Agente 1: Auto-Categorizer
-│   │   │   ├── insights/         # Agente 2: Financial Insights
-│   │   │   ├── import-assist/    # Agente 3: Import Assistant
-│   │   │   ├── investment-research/ # Agente 4: Investment Research
-│   │   │   └── budget-optimizer/ # Agente 5: Budget Optimizer
 │   │   ├── market/
 │   │   │   └── quotes/           # Proxy a APIs externas con caché
 │   │   └── webhooks/
@@ -1531,16 +1320,12 @@ patrimio/
 │   ├── forms/                    # Formularios con React Hook Form
 │   ├── dashboard/
 │   ├── transactions/
-│   ├── investments/
-│   └── ai/                       # Componentes de UI para agentes
+│   └── investments/
 ├── lib/
 │   ├── supabase/
 │   │   ├── client.ts             # Cliente browser
 │   │   ├── server.ts             # Cliente server (SSR)
 │   │   └── middleware.ts         # Auth en Edge Middleware
-│   ├── ai/
-│   │   ├── agents/               # Definición de cada agente
-│   │   └── skills/               # Skills reutilizables
 │   ├── market/
 │   │   └── fetcher.ts            # Market data con fallback
 │   ├── financial/
@@ -1594,5 +1379,4 @@ CREATE TYPE notification_type AS ENUM ('budget_alert', 'commitment_due', 'price_
 
 ---
 
-_Documento generado para análisis por agente Claude. Versión para revisión técnica y planificación de fases._  
-_Siguiente paso recomendado: pasar este documento a un agente de análisis para generar el plan de implementación detallado por fases, con estimaciones de story points, dependencias entre módulos, y orden de prioridad._
+_Especificación técnica de Patrimio — web app de gestión de patrimonio personal. Ver `docs/PHASES.md` para el plan de implementación por fases._
