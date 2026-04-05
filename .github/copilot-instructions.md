@@ -133,3 +133,19 @@ CREATE TRIGGER set_updated_at BEFORE UPDATE ON nombre FOR EACH ROW EXECUTE FUNCT
 - ❌ Migraciones que modifiquen migraciones ya aplicadas
 - ❌ `useEffect` para fetching — usar TanStack Query
 - ❌ Direct Supabase calls en componentes React — usar hooks en `hooks/`
+
+
+## Modelo de IA y pensamiento
+
+**Modelo por defecto:** Claude Sonnet 4.6 (seleccionarlo en el selector de modelo del chat)  
+**Modo de pensamiento:** Medio para tareas habituales  
+**Claude Opus:** Solo para errores muy complejos o decisiones de arquitectura críticas con múltiples dependencias
+
+## Distinción clave entre agentes de planificación
+
+| Agente | Cuándo usarlo |
+|---|---|
+| `@project-orchestrator` | Coordina la **EJECUCIÓN** — delega a db-architect, feature-builder, security-reviewer para CONSTRUIR |
+| `@product-strategist` | Gestiona la **IDEACIÓN → DOCUMENTACIÓN** — convierte ideas en spec técnica, planifica sprints, documenta código |
+
+Flujo habitual: `@product-strategist` (spec + sprint) → `@project-orchestrator` (ejecución)
