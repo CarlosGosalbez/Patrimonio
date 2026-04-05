@@ -19,7 +19,15 @@ import {
   useUpdateCommitmentMutation,
 } from '@/hooks/usePhaseThree'
 import { formatCurrency } from '@/lib/financial/formatters'
+import { cn } from '@/lib/utils'
 import { CommitmentDialog } from '@/components/commitments/CommitmentDialog'
+
+const MONTH_ABBR = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
+
+function formatMonthShort(month: string): { abbr: string; year: string | null } {
+  const m = parseInt(month.slice(5, 7), 10)
+  return { abbr: MONTH_ABBR[m - 1], year: m === 1 ? `'${month.slice(2, 4)}` : null }
+}
 
 function formatTooltipValue(value: unknown) {
   if (typeof value === 'number') {
@@ -49,6 +57,18 @@ export function CommitmentsPageClient() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const commitmentDetailQuery = useCommitmentQuery(editingId)
   const activeTab = searchParams.get('tab') === 'subscriptions' ? 'subscriptions' : 'commitments'
+
+  const currentMonth = new Date().toISOString().slice(0, 7)
+
+  const timelineData = commitmentsQuery.data?.timeline ?? []
+
+  const uniqueCommitments = useMemo(() => {
+    const first = timelineData[0]
+    if (!first) return []
+    return first.commitments.filter((c) =>
+      timelineData.some((m) => m.commitments.find((mc) => mc.commitment_id === c.commitment_id)?.occurs),
+    )
+  }, [timelineData])
 
   const projectionChart = useMemo(
     () => commitmentsQuery.data?.projected_flow.map((point) => ({
@@ -192,6 +212,91 @@ export function CommitmentsPageClient() {
               ))}
             </CardContent>
           </Card>
+          {/* 24-month horizontal timeline */}
+          {timelineData.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>{t('timeline')}</CardTitle>
+              </CardHeader>
+              <CardContent className="overflow-x-auto p-0">
+                <div className="min-w-[1040px] p-4">
+                  {/* month headers */}
+                  <div className="flex">
+                    <div className="w-36 shrink-0" />
+                    {timelineData.map((month) => {
+                      const { abbr, year } = formatMonthShort(month.month)
+                      const isCurrent = month.month === currentMonth
+                      return (
+                        <div
+                          key={month.month}
+                          className={cn(
+                            'w-10 shrink-0 text-center pb-1',
+                            isCurrent && 'rounded-t bg-primary/10',
+                          )}
+                        >
+                          <span className={cn('block text-[10px] font-semibold leading-tight', isCurrent ? 'text-primary' : 'text-muted-foreground')}>
+                            {abbr}
+                          </span>
+                          {year && (
+                            <span className="block text-[9px] text-muted-foreground">{year}</span>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+
+                  {/* commitment rows */}
+                  {uniqueCommitments.map((c) => (
+                    <div key={c.commitment_id} className="flex items-center border-t border-border/30 py-[5px]">
+                      <div className="w-36 shrink-0 truncate pr-2 text-xs text-foreground">{c.name}</div>
+                      {timelineData.map((month) => {
+                        const cell = month.commitments.find((mc) => mc.commitment_id === c.commitment_id)
+                        const isCurrent = month.month === currentMonth
+                        return (
+                          <div
+                            key={month.month}
+                            className={cn('flex w-10 shrink-0 items-center justify-center', isCurrent && 'bg-primary/10')}
+                          >
+                            {cell?.occurs && (
+                              <div
+                                className={cn('h-2 w-2 rounded-full', cell.is_income ? 'bg-emerald-500' : 'bg-rose-500')}
+                                title={cell.is_income ? `+${formatCurrency(cell.amount_cents)}` : `-${formatCurrency(cell.amount_cents)}`}
+                              />
+                            )}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  ))}
+
+                  {/* net total row */}
+                  <div className="flex items-center border-t-2 border-border pt-1">
+                    <div className="w-36 shrink-0 pr-2 text-xs font-semibold text-muted-foreground">
+                      {t('netTotal')}
+                    </div>
+                    {timelineData.map((month) => {
+                      const positive = month.total_cents >= 0
+                      const isCurrent = month.month === currentMonth
+                      return (
+                        <div
+                          key={month.month}
+                          className={cn(
+                            'w-10 shrink-0 text-center text-[9px] font-semibold',
+                            isCurrent && 'bg-primary/10',
+                            positive ? 'text-emerald-600' : 'text-rose-600',
+                          )}
+                        >
+                          {month.total_cents !== 0
+                            ? `${positive ? '+' : ''}${Math.round(month.total_cents / 100)}`
+                            : ''}
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
 
         <TabsContent value="subscriptions" className="space-y-6">

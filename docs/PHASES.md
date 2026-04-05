@@ -145,7 +145,7 @@
 
 ---
 
-## PHASE 3 — Dashboard + Commitments + Subscriptions + Custom Alerts 🚧 IN PROGRESS (2026-04-05)
+## PHASE 3 — Dashboard + Commitments + Subscriptions + Custom Alerts ✅ COMPLETED (2026-04-05)
 
 **Goal:** User has a complete view of their financial situation, upcoming obligations, active subscriptions, and personalized fiscal alerts at a glance.
 
@@ -162,16 +162,16 @@
 - [x] **Active alerts**: unified badge for: over-budget · subscription unexpected charges · unpaid expected income · upcoming custom alerts (IBI, IRPF, insurance)
 - [x] **Recent transactions**: 5 most recent
 - [x] **Customization**: drag & drop to reorder widgets, toggle to hide (Zustand store)
-- [ ] ISR with 5-minute revalidation for dashboard data
+- [x] **Cache policy**: TanStack Query `staleTime: 300_000` (5 min) adopted as production strategy — no ISR applicable to client-rendered dashboard
 
 #### Future Commitments (M4)
 
 - [x] CRUD for recurring commitments with **`commitment_type`** field (mortgage, rent_income, rent_expense, subscription, tax, insurance, utility, other)
 - [x] Active commitments list view with status (active/paused/expired)
-- [ ] **Horizontal timeline** 24 months: visual bar with commitments per month
+- [x] **Horizontal timeline** 24 months: horizontally scrollable grid (commitment rows × month columns), income/expense dots per cell, net total row, current month highlighted
 - [x] **Cash flow projection**: Recharts area chart over 12 months
 - [x] **Insufficient balance alert**: detects negative months and notifies
-- [ ] **Edge Function cron** `generate-recurring`: auto-generates transactions daily
+- [x] **Edge Function cron** `generate-recurring`: triggered daily at 06:00 UTC via Vercel Cron (`/api/cron/generate-recurring`)
 - [x] **Expiry alerts** X days before: notification trigger
 - [x] **Mortgage fields**: maturity year, fixed/variable rate, early repayment
 - [x] **Annual matrix view**: month × commitment with annual totals
@@ -194,23 +194,19 @@
 - [x] **Snooze**: dismiss alert until a specific date (`dismissed_until`)
 - [x] **Category linking**: associate alert to a spending category — dashboard auto-disables it when the payment is registered
 - [x] **“Upcoming deadlines” dashboard widget**: alerts in next 60 days sorted by urgency
-- [ ] **Edge Function `check-alerts`** (daily cron): queries `custom_alerts` with `due_date - advance_notice_days <= TODAY` → generates `custom_alert_due` notification + optional email via Resend
+- [x] **Edge Function `check-alerts`** (daily cron): triggered daily at 07:00 UTC via Vercel Cron (`/api/cron/check-alerts`) — queries `custom_alerts` with `due_date - advance_notice_days <= TODAY` → generates `custom_alert_due` notification + optional email via Resend
 - [x] Weekly email digest of active alerts (user toggle)
 
-### Status Update — 2026-04-05
+### Status Update — 2026-04-05 (COMPLETED)
 
 - [x] App routes added: `/dashboard`, `/commitments`, `/alerts` with authenticated App Shell navigation
 - [x] API surface added: `/api/dashboard/summary`, `/api/commitments`, `/api/commitments/[id]`, `/api/commitments/subscriptions`, `/api/custom-alerts`, `/api/custom-alerts/[id]`, `/api/custom-alerts/preferences`, plus reference endpoints for accounts/categories
 - [x] Domain services added for dashboard aggregation, commitments, subscriptions, custom alerts and expected-income gap detection
-- [x] Edge Functions implemented in repo: `supabase/functions/generate-recurring` and `supabase/functions/check-alerts`
+- [x] Edge Functions implemented: `supabase/functions/generate-recurring` and `supabase/functions/check-alerts`
+- [x] Vercel Cron Jobs wired: `generate-recurring` at 06:00 UTC · `check-alerts` at 07:00 UTC — `CRON_SECRET` env var configured in Vercel
+- [x] 24-month horizontal timeline UI added to commitments page (scrollable grid, income/expense dots, net row)
 - [x] i18n completed for App Shell, Dashboard, Commitments and Alerts (ES/EN)
 - [x] Validation executed: `npm run type-check`, `npm run lint`, `npm run test`, `npm run build`
-
-### Remaining for PHASE 3 completion
-
-- [ ] Replace current 5-minute React Query freshness with an explicit server revalidation strategy for authenticated dashboard data, or formally accept the current cache policy as the production design
-- [ ] Add the dedicated 24-month horizontal timeline visualization in the commitments UI (the backend timeline data is already available)
-- [ ] Wire and verify production cron scheduling for `generate-recurring` and `check-alerts`
 
 **Skills:** `financial-data-reader`, `transaction-formatter`  
 **Instructions:** `frontend.instructions.md`, `financial-logic.instructions.md`

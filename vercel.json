@@ -4,6 +4,10 @@
   "devCommand": "npm run dev",
   "installCommand": "npm install",
   "regions": ["fra1"],
+  "crons": [
+    { "path": "/api/cron/generate-recurring", "schedule": "0 6 * * *" },
+    { "path": "/api/cron/check-alerts", "schedule": "0 7 * * *" }
+  ],
   "headers": [
     {
       "source": "/(.*)",
@@ -17,9 +21,7 @@
     },
     {
       "source": "/monitoring",
-      "headers": [
-        { "key": "Access-Control-Allow-Origin", "value": "https://patrimonio.app" }
-      ]
+      "headers": [{ "key": "Access-Control-Allow-Origin", "value": "https://patrimonio.app" }]
     }
   ],
   "redirects": [
