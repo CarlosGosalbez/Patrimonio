@@ -28,6 +28,10 @@ export default withSentryConfig(withNextIntl(nextConfig), {
   silent: !process.env.CI,
   widenClientFileUpload: true,
   tunnelRoute: "/monitoring",
-  disableLogger: true,
-  automaticVercelMonitors: true,
+  webpack: {
+    treeshake: {
+      removeDebugLogging: true,
+    },
+    automaticVercelMonitors: true,
+  },
 });
