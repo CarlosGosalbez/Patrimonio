@@ -7,6 +7,11 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "14.5"
+  }
   graphql_public: {
     Tables: {
       [_ in never]: never
@@ -375,6 +380,7 @@ export type Database = {
         Row: {
           created_at: string
           currency: string
+          deleted_at: string | null
           id: string
           snapshot_date: string
           total_invested_cents: number
@@ -385,6 +391,7 @@ export type Database = {
         Insert: {
           created_at?: string
           currency?: string
+          deleted_at?: string | null
           id?: string
           snapshot_date: string
           total_invested_cents?: number
@@ -395,6 +402,7 @@ export type Database = {
         Update: {
           created_at?: string
           currency?: string
+          deleted_at?: string | null
           id?: string
           snapshot_date?: string
           total_invested_cents?: number
@@ -472,6 +480,7 @@ export type Database = {
           asset_type: Database["public"]["Enums"]["investment_type"]
           change_cents: number | null
           change_percent: number | null
+          created_at: string
           currency: string
           data_source: string | null
           id: string
@@ -486,6 +495,7 @@ export type Database = {
           asset_type: Database["public"]["Enums"]["investment_type"]
           change_cents?: number | null
           change_percent?: number | null
+          created_at?: string
           currency?: string
           data_source?: string | null
           id?: string
@@ -500,6 +510,7 @@ export type Database = {
           asset_type?: Database["public"]["Enums"]["investment_type"]
           change_cents?: number | null
           change_percent?: number | null
+          created_at?: string
           currency?: string
           data_source?: string | null
           id?: string
@@ -515,6 +526,8 @@ export type Database = {
       notifications: {
         Row: {
           created_at: string
+          dedupe_key: string | null
+          event_key: string | null
           id: string
           is_read: boolean
           message: string
@@ -528,6 +541,8 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          dedupe_key?: string | null
+          event_key?: string | null
           id?: string
           is_read?: boolean
           message: string
@@ -541,6 +556,8 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          dedupe_key?: string | null
+          event_key?: string | null
           id?: string
           is_read?: boolean
           message?: string
@@ -562,11 +579,13 @@ export type Database = {
           deleted_at: string | null
           full_name: string | null
           id: string
+          last_alert_digest_sent_at: string | null
           locale: string
           onboarding_completed: boolean
           timezone: string
           updated_at: string
           user_id: string
+          weekly_alert_digest_enabled: boolean
         }
         Insert: {
           avatar_url?: string | null
@@ -575,11 +594,13 @@ export type Database = {
           deleted_at?: string | null
           full_name?: string | null
           id?: string
+          last_alert_digest_sent_at?: string | null
           locale?: string
           onboarding_completed?: boolean
           timezone?: string
           updated_at?: string
           user_id: string
+          weekly_alert_digest_enabled?: boolean
         }
         Update: {
           avatar_url?: string | null
@@ -588,11 +609,13 @@ export type Database = {
           deleted_at?: string | null
           full_name?: string | null
           id?: string
+          last_alert_digest_sent_at?: string | null
           locale?: string
           onboarding_completed?: boolean
           timezone?: string
           updated_at?: string
           user_id?: string
+          weekly_alert_digest_enabled?: boolean
         }
         Relationships: []
       }
@@ -624,6 +647,7 @@ export type Database = {
         Row: {
           account_id: string
           advance_notice_days: number | null
+          allows_early_repayment: boolean
           amount_cents: number
           cancelled_at: string | null
           category_id: string | null
@@ -632,6 +656,7 @@ export type Database = {
           currency: string
           deleted_at: string | null
           description: string | null
+          early_repayment_allowed: boolean
           end_date: string | null
           frequency: Database["public"]["Enums"]["frequency_type"]
           id: string
@@ -652,6 +677,7 @@ export type Database = {
         Insert: {
           account_id: string
           advance_notice_days?: number | null
+          allows_early_repayment?: boolean
           amount_cents: number
           cancelled_at?: string | null
           category_id?: string | null
@@ -660,6 +686,7 @@ export type Database = {
           currency?: string
           deleted_at?: string | null
           description?: string | null
+          early_repayment_allowed?: boolean
           end_date?: string | null
           frequency: Database["public"]["Enums"]["frequency_type"]
           id?: string
@@ -680,6 +707,7 @@ export type Database = {
         Update: {
           account_id?: string
           advance_notice_days?: number | null
+          allows_early_repayment?: boolean
           amount_cents?: number
           cancelled_at?: string | null
           category_id?: string | null
@@ -688,6 +716,7 @@ export type Database = {
           currency?: string
           deleted_at?: string | null
           description?: string | null
+          early_repayment_allowed?: boolean
           end_date?: string | null
           frequency?: Database["public"]["Enums"]["frequency_type"]
           id?: string
@@ -735,8 +764,11 @@ export type Database = {
           import_batch_id: string | null
           import_source: string | null
           is_income: boolean
+          is_recurring_instance: boolean
           notes: string | null
           receipt_url: string | null
+          recurring_id: string | null
+          search_vector: unknown
           tags: string[] | null
           transaction_date: string
           transfer_id: string | null
@@ -756,8 +788,11 @@ export type Database = {
           import_batch_id?: string | null
           import_source?: string | null
           is_income?: boolean
+          is_recurring_instance?: boolean
           notes?: string | null
           receipt_url?: string | null
+          recurring_id?: string | null
+          search_vector?: unknown
           tags?: string[] | null
           transaction_date?: string
           transfer_id?: string | null
@@ -777,8 +812,11 @@ export type Database = {
           import_batch_id?: string | null
           import_source?: string | null
           is_income?: boolean
+          is_recurring_instance?: boolean
           notes?: string | null
           receipt_url?: string | null
+          recurring_id?: string | null
+          search_vector?: unknown
           tags?: string[] | null
           transaction_date?: string
           transfer_id?: string | null
@@ -799,6 +837,13 @@ export type Database = {
             columns: ["category_id"]
             isOneToOne: false
             referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_recurring_id_fkey"
+            columns: ["recurring_id"]
+            isOneToOne: false
+            referencedRelation: "recurring_commitments"
             referencedColumns: ["id"]
           },
           {
@@ -877,6 +922,11 @@ export type Database = {
         Args: { p_investment_id: string }
         Returns: undefined
       }
+      refresh_dashboard_materialized_views: {
+        Args: { p_user_id?: string }
+        Returns: undefined
+      }
+      refresh_dashboard_views: { Args: never; Returns: undefined }
     }
     Enums: {
       alert_recurrence_type:
@@ -1124,4 +1174,3 @@ export const Constants = {
     },
   },
 } as const
-

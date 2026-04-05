@@ -1,5 +1,6 @@
 {
   "common": {
+    "brandName": "Patrimio",
     "brand": "Gestión de patrimonio personal",
     "loading": "Cargando…",
     "cancel": "Cancelar",
@@ -9,6 +10,16 @@
     "error": "Error",
     "success": "Éxito",
     "copySuccess": "Copiado al portapapeles"
+  },
+  "metadata": {
+    "brandName": "Patrimio",
+    "appTitle": "Patrimio — Gestión de patrimonio personal",
+    "appDescription": "Controla tu patrimonio, gastos e inversiones en un solo lugar.",
+    "logoAlt": "Logotipo de Patrimio"
+  },
+  "home": {
+    "title": "Patrimio",
+    "subtitle": "Fase 0 — Fundamentos"
   },
   "auth": {
     "toggleShowPassword": "Mostrar contraseña",
@@ -119,8 +130,10 @@
     "scannedIt": "Ya lo he escaneado →",
     "verifyInstruction": "Introduce el código de 6 dígitos que muestra tu aplicación para confirmar la configuración.",
     "activateConfirm": "Activar 2FA",
+    "deactivateConfirm": "Desactivar 2FA",
     "verifying": "Verificando…",
     "enrollError": "No se pudo iniciar la configuración 2FA",
+    "verifyError": "No se pudo verificar el código. Inténtalo de nuevo.",
     "codeIncorrect": "Código incorrecto. Comprueba tu aplicación.",
     "noRecoveryWarning": "2FA activado, pero no se pudieron generar códigos de recuperación.",
     "unenrollTitle": "¿Desactivar autenticación en dos pasos?",
@@ -143,6 +156,7 @@
     "regenSuccess": "Nuevos códigos generados. Los anteriores han sido invalidados.",
     "regenError": "No se pudieron regenerar los códigos",
     "copySuccess": "Códigos copiados al portapapeles",
+    "downloadFilename": "patrimio-codigos-recuperacion-2fa.txt",
     "fileTitle": "Patrimio — Códigos de recuperación 2FA",
     "fileSeparator": "======================================",
     "fileWarning": "Guarda estos códigos en un lugar seguro.",
@@ -158,8 +172,191 @@
   },
   "dashboard": {
     "title": "Dashboard",
-    "subtitle": "Tu patrimonio personal en un solo lugar.",
-    "comingSoon": "Próximamente: widgets de patrimonio neto, cuentas y últimas transacciones."
+    "subtitle": "Visión unificada de patrimonio, flujo de caja y alertas activas.",
+    "monthBalance": "Balance mensual",
+    "monthIncome": "Ingresos del mes",
+    "monthExpense": "Gastos del mes",
+    "projectedFlow": "Flujo proyectado",
+    "topCategories": "Top categorías",
+    "movements": "movimientos",
+    "upcomingCommitments": "Próximos compromisos",
+    "upcomingDeadlines": "Próximos vencimientos",
+    "openCommitments": "Abrir compromisos",
+    "openAlerts": "Abrir alertas",
+    "portfolio": "Cartera",
+    "portfolioValue": "Valor total",
+    "dayPnL": "P&L diario",
+    "activeAlerts": "Alertas activas",
+    "recentTransactions": "Últimos movimientos",
+    "liveBadge": "En directo",
+    "uncategorized": "Sin categoría",
+    "customize": "Personalizar",
+    "resetLayout": "Restablecer diseño",
+    "netWorth": "Patrimonio neto",
+    "cashPosition": "Posición de caja",
+    "monthlyDelta": "Variación mensual",
+    "activeAlertDetails": {
+      "overBudget": "{percent}% del límite",
+      "expectedIncome": "Esperado {date}",
+      "customAlertDue": "Vence el {date}",
+      "insufficientBalance": "Saldo previsto negativo en {date}"
+    },
+    "activeAlertTitles": {
+      "insufficientBalance": "Saldo insuficiente previsto"
+    },
+    "widgets": {
+      "activeAlerts": "Alertas activas",
+      "monthBalance": "Balance mensual",
+      "portfolio": "Resumen de cartera",
+      "projectedFlow": "Flujo proyectado",
+      "recentTransactions": "Últimos movimientos",
+      "topCategories": "Top categorías",
+      "upcomingCommitments": "Próximos compromisos",
+      "upcomingDeadlines": "Próximos vencimientos"
+    }
+  },
+  "appShell": {
+    "subtitle": "Centro de control financiero",
+    "dashboard": "Dashboard",
+    "commitments": "Compromisos",
+    "alerts": "Alertas",
+    "settings": "Ajustes"
+  },
+  "commitments": {
+    "title": "Compromisos y suscripciones",
+    "subtitle": "Gestiona pagos recurrentes, ingresos esperados y renovaciones.",
+    "newTitle": "Nuevo compromiso",
+    "editTitle": "Editar compromiso",
+    "confirmDelete": "¿Eliminar este compromiso?",
+    "projectedFlow": "Proyección de flujo",
+    "annualMatrix": "Matriz anual",
+    "activeList": "Compromisos activos",
+    "subscriptionComparison": "Comparativa mensual de suscripciones",
+    "subscriptionSummary": "Resumen de suscripciones",
+    "monthlyCost": "Coste mensual",
+    "unexpectedCharges": "Cargos inesperados",
+    "tabs": {
+      "commitments": "Compromisos",
+      "subscriptions": "Suscripciones"
+    },
+    "actions": {
+      "new": "Nuevo compromiso",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "cancel": "Cancelar",
+      "save": "Guardar cambios",
+      "create": "Crear compromiso"
+    },
+    "fields": {
+      "name": "Nombre",
+      "type": "Tipo",
+      "account": "Cuenta",
+      "selectAccount": "Selecciona una cuenta",
+      "category": "Categoría",
+      "noCategory": "Sin categoría",
+      "amount": "Importe",
+      "frequency": "Frecuencia",
+      "nextDueDate": "Próximo vencimiento",
+      "startDate": "Fecha de inicio",
+      "cancelledAt": "Fecha de cancelación",
+      "serviceName": "Texto del cargo bancario",
+      "maturityYear": "Año de vencimiento",
+      "interestRate": "Tipo de interés (%)",
+      "isIncome": "Es un ingreso",
+      "isAutomated": "Generación automática",
+      "allowsEarlyRepayment": "Permite amortización anticipada",
+      "description": "Descripción"
+    },
+    "types": {
+      "mortgage": "Hipoteca",
+      "rent_income": "Alquiler cobrado",
+      "rent_expense": "Alquiler pagado",
+      "subscription": "Suscripción",
+      "tax": "Impuesto",
+      "insurance": "Seguro",
+      "utility": "Suministro",
+      "other": "Otro"
+    },
+    "status": {
+      "active": "Activo",
+      "paused": "Pausado",
+      "expired": "Expirado"
+    },
+    "subscriptionStatus": {
+      "active": "Activa",
+      "paused": "Pausada",
+      "cancelled": "Cancelada",
+      "unexpected_charge": "Cargo inesperado"
+    },
+    "frequencies": {
+      "daily": "Diaria",
+      "weekly": "Semanal",
+      "biweekly": "Quincenal",
+      "monthly": "Mensual",
+      "bimonthly": "Bimestral",
+      "quarterly": "Trimestral",
+      "semiannual": "Semestral",
+      "annual": "Anual"
+    },
+    "toasts": {
+      "updated": "Compromiso actualizado",
+      "created": "Compromiso creado",
+      "deleted": "Compromiso eliminado",
+      "error": "No se pudo completar la acción"
+    }
+  },
+  "alerts": {
+    "title": "Alertas personalizadas",
+    "subtitle": "Supervisa impuestos, seguros y recordatorios financieros críticos.",
+    "newTitle": "Nueva alerta",
+    "editTitle": "Editar alerta",
+    "confirmDelete": "¿Eliminar esta alerta?",
+    "upcomingDeadlines": "Próximos vencimientos",
+    "preferences": "Preferencias",
+    "weeklyDigest": "Resumen semanal por email",
+    "snoozeHint": "Selecciona una alerta y pospón sus avisos hasta la fecha indicada.",
+    "allAlerts": "Todas las alertas",
+    "actions": {
+      "new": "Nueva alerta",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "snooze": "Posponer",
+      "cancel": "Cancelar",
+      "save": "Guardar cambios",
+      "create": "Crear alerta"
+    },
+    "fields": {
+      "name": "Nombre",
+      "dueDate": "Fecha objetivo",
+      "recurrence": "Recurrencia",
+      "expectedAmount": "Importe esperado",
+      "category": "Categoría",
+      "noCategory": "Sin categoría",
+      "advanceNoticeDays": "Avisar con (días)",
+      "dismissedUntil": "Pospuesta hasta",
+      "autoDeactivate": "Desactivar al detectar el pago",
+      "description": "Descripción"
+    },
+    "recurrence": {
+      "monthly": "Mensual",
+      "quarterly": "Trimestral",
+      "semiannual": "Semestral",
+      "annual": "Anual",
+      "biennial": "Bianual",
+      "once": "Una sola vez"
+    },
+    "severity": {
+      "critical": "Crítica",
+      "warning": "Importante",
+      "info": "Informativa"
+    },
+    "toasts": {
+      "updated": "Alerta actualizada",
+      "created": "Alerta creada",
+      "deleted": "Alerta eliminada",
+      "snoozed": "Alerta pospuesta",
+      "error": "No se pudo completar la acción"
+    }
   },
   "onboarding": {
     "title": "Configura tu primera cuenta",

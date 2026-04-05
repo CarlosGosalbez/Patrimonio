@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { AppShell } from '@/components/app/AppShell'
 import { redirect } from 'next/navigation'
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
@@ -12,8 +13,6 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     }
 
     return (
-        <div className="min-h-screen bg-background">
-            {children}
-        </div>
+        <AppShell>{children}</AppShell>
     )
 }

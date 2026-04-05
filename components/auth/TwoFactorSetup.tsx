@@ -31,6 +31,7 @@ interface TwoFactorSetupProps {
 export function TwoFactorSetup({ enabled, factorId, onChange }: TwoFactorSetupProps) {
     const t = useTranslations('twoFactorSetup')
     const tCommon = useTranslations('common')
+    const tMeta = useTranslations('metadata')
     const [step, setStep] = useState<Step>('idle')
     const [qrCode, setQrCode] = useState('')
     const [secret, setSecret] = useState('')
@@ -48,7 +49,7 @@ export function TwoFactorSetup({ enabled, factorId, onChange }: TwoFactorSetupPr
         const supabase = createClient()
         const { data, error } = await supabase.auth.mfa.enroll({
             factorType: 'totp',
-            issuer: 'Patrimio',
+            issuer: tMeta('brandName'),
         })
         setLoading(false)
         if (error) { toast.error(t('enrollError')); return }

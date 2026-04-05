@@ -1,8 +1,13 @@
 import { createClient } from '@/lib/supabase/server'
+import { getTranslations } from 'next-intl/server'
 import { redirect } from 'next/navigation'
 
-export const metadata = {
-    title: 'Configuración y Seguridad — Patrimio',
+export async function generateMetadata() {
+    const t = await getTranslations('settings.security')
+
+    return {
+        title: `${t('title')} — Patrimio`,
+    }
 }
 
 // This page is a server component shell — the actual interactive UI

@@ -34,7 +34,7 @@ export function ForgotPasswordForm() {
     const onSubmit = async (values: Values) => {
         const supabase = createClient()
         const { error } = await supabase.auth.resetPasswordForEmail(values.email, {
-            redirectTo: `${window.location.origin}/reset-password`,
+            redirectTo: `${window.location.origin}/api/auth/callback`,
         })
         // Always show success to prevent email enumeration
         if (error) console.error('Reset password error:', error.message)

@@ -145,7 +145,7 @@
 
 ---
 
-## PHASE 3 — Dashboard + Commitments + Subscriptions + Custom Alerts (~3 weeks)
+## PHASE 3 — Dashboard + Commitments + Subscriptions + Custom Alerts 🚧 IN PROGRESS (2026-04-05)
 
 **Goal:** User has a complete view of their financial situation, upcoming obligations, active subscriptions, and personalized fiscal alerts at a glance.
 
@@ -153,49 +153,64 @@
 
 #### Dashboard (M1)
 
-- [ ] **Hero Card**: net worth via RPC `get_net_worth()`, monthly delta
-- [ ] **Monthly balance**: income − expenses using `monthly_account_balance` view
-- [ ] **Projected flow**: 30/60/90-day bar via RPC `project_cash_flow()`
-- [ ] **Top categories**: Recharts donut chart top 5 monthly expenses
-- [ ] **Upcoming commitments**: list of next 7 due dates
-- [ ] **Portfolio summary**: initial placeholder (total value + day P&L = 0 until Phase 6)
-- [ ] **Active alerts**: unified badge for: over-budget · subscription unexpected charges · unpaid expected income · upcoming custom alerts (IBI, IRPF, insurance)
-- [ ] **Recent transactions**: 5 most recent
-- [ ] **Customization**: drag & drop to reorder widgets, toggle to hide (Zustand store)
+- [x] **Hero Card**: net worth via RPC `get_net_worth()`, monthly delta
+- [x] **Monthly balance**: income − expenses using `monthly_account_balance` view
+- [x] **Projected flow**: 30/60/90-day bar via RPC `project_cash_flow()`
+- [x] **Top categories**: Recharts donut chart top 5 monthly expenses
+- [x] **Upcoming commitments**: list of next 7 due dates
+- [x] **Portfolio summary**: initial placeholder (total value + day P&L = 0 until Phase 6)
+- [x] **Active alerts**: unified badge for: over-budget · subscription unexpected charges · unpaid expected income · upcoming custom alerts (IBI, IRPF, insurance)
+- [x] **Recent transactions**: 5 most recent
+- [x] **Customization**: drag & drop to reorder widgets, toggle to hide (Zustand store)
 - [ ] ISR with 5-minute revalidation for dashboard data
 
 #### Future Commitments (M4)
 
-- [ ] CRUD for recurring commitments with **`commitment_type`** field (mortgage, rent_income, rent_expense, subscription, tax, insurance, utility, other)
-- [ ] Active commitments list view with status (active/paused/expired)
+- [x] CRUD for recurring commitments with **`commitment_type`** field (mortgage, rent_income, rent_expense, subscription, tax, insurance, utility, other)
+- [x] Active commitments list view with status (active/paused/expired)
 - [ ] **Horizontal timeline** 24 months: visual bar with commitments per month
-- [ ] **Cash flow projection**: Recharts area chart over 12 months
-- [ ] **Insufficient balance alert**: detects negative months and notifies
+- [x] **Cash flow projection**: Recharts area chart over 12 months
+- [x] **Insufficient balance alert**: detects negative months and notifies
 - [ ] **Edge Function cron** `generate-recurring`: auto-generates transactions daily
-- [ ] **Expiry alerts** X days before: notification trigger
-- [ ] **Mortgage fields**: maturity year, fixed/variable rate, early repayment
-- [ ] **Annual matrix view**: month × commitment with annual totals
-- [ ] **Unpaid income detection**: Edge Function `check-alerts` verifies `type=income` commitments whose expected date has passed >`tolerance_days` without a matching transaction → generates `expected_income_unpaid` notification (e.g. unpaid rent)
+- [x] **Expiry alerts** X days before: notification trigger
+- [x] **Mortgage fields**: maturity year, fixed/variable rate, early repayment
+- [x] **Annual matrix view**: month × commitment with annual totals
+- [x] **Unpaid income detection**: Edge Function `check-alerts` verifies `type=income` commitments whose expected date has passed >`tolerance_days` without a matching transaction → generates `expected_income_unpaid` notification (e.g. unpaid rent)
 
 #### Subscriptions (M9)
 
-- [ ] Subscriptions panel filtered from `recurring_commitments` where `commitment_type = 'subscription'`
-- [ ] **`service_name` field**: exact text that appears in bank statement (used for import matching)
-- [ ] **`cancelled_at` field**: date the user cancelled the subscription
-- [ ] Subscription status badge: active / cancelled / ⚠️ unexpected charge detected
-- [ ] Total monthly subscription cost widget
-- [ ] Next renewal date per subscription
-- [ ] Month-over-month comparison of subscription spending (Recharts bar chart)
+- [x] Subscriptions panel filtered from `recurring_commitments` where `commitment_type = 'subscription'`
+- [x] **`service_name` field**: exact text that appears in bank statement (used for import matching)
+- [x] **`cancelled_at` field**: date the user cancelled the subscription
+- [x] Subscription status badge: active / cancelled / ⚠️ unexpected charge detected
+- [x] Total monthly subscription cost widget
+- [x] Next renewal date per subscription
+- [x] Month-over-month comparison of subscription spending (Recharts bar chart)
 
 #### Custom Alerts (M10)
 
-- [ ] CRUD for `custom_alerts` table: name, category, due_date, expected_amount_cents, recurrence, advance_notice_days
-- [ ] **Predefined system alerts** (from seed, fully editable): IBI, IRPF, Impuesto Circulación, Seguro Coche, Seguro Hogar, Tasa de Basura
-- [ ] **Snooze**: dismiss alert until a specific date (`dismissed_until`)
-- [ ] **Category linking**: associate alert to a spending category — dashboard auto-disables it when the payment is registered
-- [ ] **“Upcoming deadlines” dashboard widget**: alerts in next 60 days sorted by urgency
+- [x] CRUD for `custom_alerts` table: name, category, due_date, expected_amount_cents, recurrence, advance_notice_days
+- [x] **Predefined system alerts** (from seed, fully editable): IBI, IRPF, Impuesto Circulación, Seguro Coche, Seguro Hogar, Tasa de Basura
+- [x] **Snooze**: dismiss alert until a specific date (`dismissed_until`)
+- [x] **Category linking**: associate alert to a spending category — dashboard auto-disables it when the payment is registered
+- [x] **“Upcoming deadlines” dashboard widget**: alerts in next 60 days sorted by urgency
 - [ ] **Edge Function `check-alerts`** (daily cron): queries `custom_alerts` with `due_date - advance_notice_days <= TODAY` → generates `custom_alert_due` notification + optional email via Resend
-- [ ] Weekly email digest of active alerts (user toggle)
+- [x] Weekly email digest of active alerts (user toggle)
+
+### Status Update — 2026-04-05
+
+- [x] App routes added: `/dashboard`, `/commitments`, `/alerts` with authenticated App Shell navigation
+- [x] API surface added: `/api/dashboard/summary`, `/api/commitments`, `/api/commitments/[id]`, `/api/commitments/subscriptions`, `/api/custom-alerts`, `/api/custom-alerts/[id]`, `/api/custom-alerts/preferences`, plus reference endpoints for accounts/categories
+- [x] Domain services added for dashboard aggregation, commitments, subscriptions, custom alerts and expected-income gap detection
+- [x] Edge Functions implemented in repo: `supabase/functions/generate-recurring` and `supabase/functions/check-alerts`
+- [x] i18n completed for App Shell, Dashboard, Commitments and Alerts (ES/EN)
+- [x] Validation executed: `npm run type-check`, `npm run lint`, `npm run test`, `npm run build`
+
+### Remaining for PHASE 3 completion
+
+- [ ] Replace current 5-minute React Query freshness with an explicit server revalidation strategy for authenticated dashboard data, or formally accept the current cache policy as the production design
+- [ ] Add the dedicated 24-month horizontal timeline visualization in the commitments UI (the backend timeline data is already available)
+- [ ] Wire and verify production cron scheduling for `generate-recurring` and `check-alerts`
 
 **Skills:** `financial-data-reader`, `transaction-formatter`  
 **Instructions:** `frontend.instructions.md`, `financial-logic.instructions.md`

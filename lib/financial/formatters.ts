@@ -101,3 +101,19 @@ export function parseInputToCents(input: string): number {
   }
   return decToCents(euros);
 }
+
+export function parseCurrencyInput(input: string): number {
+  return parseInputToCents(input);
+}
+
+export function formatMonth(
+  value: string | Date,
+  locale: string = ES_LOCALE,
+): string {
+  const date = typeof value === 'string' ? new Date(`${value.slice(0, 10)}T00:00:00`) : value;
+
+  return new Intl.DateTimeFormat(locale, {
+    month: 'short',
+    year: 'numeric',
+  }).format(date);
+}

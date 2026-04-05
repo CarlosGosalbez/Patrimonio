@@ -37,10 +37,10 @@ export function RecoveryCodes({ codes, onDone, onRegenerate }: RecoveryCodesProp
 
     const download = () => {
         const content = [
-            'Patrimio — Códigos de recuperación 2FA',
-            '======================================',
-            'Guarda estos códigos en un lugar seguro.',
-            'Cada código solo se puede usar una vez.',
+            t('fileTitle'),
+            t('fileSeparator'),
+            t('fileWarning'),
+            t('fileSingleUse'),
             '',
             ...codes,
         ].join('\n')
@@ -49,7 +49,7 @@ export function RecoveryCodes({ codes, onDone, onRegenerate }: RecoveryCodesProp
         const url = URL.createObjectURL(blob)
         const a = document.createElement('a')
         a.href = url
-        a.download = 'patrimio-recovery-codes.txt'
+        a.download = t('downloadFilename')
         a.click()
         URL.revokeObjectURL(url)
     }

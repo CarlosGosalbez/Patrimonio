@@ -1,7 +1,12 @@
+import { getTranslations } from 'next-intl/server'
 import { TwoFactorForm } from '@/components/auth/TwoFactorForm'
 
-export const metadata = {
-    title: 'Verificación — Patrimio',
+export async function generateMetadata() {
+    const t = await getTranslations('twoFactor')
+
+    return {
+        title: `${t('title')} — Patrimio`,
+    }
 }
 
 export default function TwoFactorPage() {

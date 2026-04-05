@@ -1,9 +1,14 @@
 import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
+import { DashboardPageClient } from '@/components/dashboard/DashboardPageClient'
 import { getTranslations } from 'next-intl/server'
+import { redirect } from 'next/navigation'
 
-export const metadata = {
-    title: 'Dashboard — Patrimio',
+export async function generateMetadata() {
+    const t = await getTranslations('dashboard')
+
+    return {
+        title: `${t('title')} — Patrimio`,
+    }
 }
 
 export default async function DashboardPage() {
@@ -11,15 +16,5 @@ export default async function DashboardPage() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) redirect('/login')
 
-    const t = await getTranslations('dashboard')
-
-    return (
-        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
-            <h1 className="text-2xl font-semibold text-foreground mb-2">{t('title')}</h1>
-            <p className="text-muted-foreground text-sm max-w-sm">
-                {t('subtitle')}
-                <br />{t('comingSoon')}
-            </p>
-        </div>
-    )
+    return <DashboardPageClient />
 }

@@ -1,5 +1,6 @@
 {
   "common": {
+    "brandName": "Patrimio",
     "brand": "Personal wealth management",
     "loading": "Loading…",
     "cancel": "Cancel",
@@ -9,6 +10,16 @@
     "error": "Error",
     "success": "Success",
     "copySuccess": "Copied to clipboard"
+  },
+  "metadata": {
+    "brandName": "Patrimio",
+    "appTitle": "Patrimio — Personal wealth management",
+    "appDescription": "Track your wealth, expenses and investments in one place.",
+    "logoAlt": "Patrimio logo"
+  },
+  "home": {
+    "title": "Patrimio",
+    "subtitle": "Phase 0 — Foundations"
   },
   "auth": {
     "toggleShowPassword": "Show password",
@@ -121,8 +132,10 @@
     "scannedIt": "I've scanned it →",
     "verifyInstruction": "Enter the 6-digit code from your app to confirm the setup.",
     "activateConfirm": "Enable 2FA",
+    "deactivateConfirm": "Disable 2FA",
     "verifying": "Verifying…",
     "enrollError": "Could not start 2FA setup",
+    "verifyError": "Could not verify the code. Please try again.",
     "codeIncorrect": "Incorrect code. Check your app.",
     "noRecoveryWarning": "2FA enabled, but recovery codes could not be generated.",
     "unenrollTitle": "Disable two-factor authentication?",
@@ -145,6 +158,7 @@
     "regenSuccess": "New codes generated. Previous codes have been invalidated.",
     "regenError": "Could not regenerate codes",
     "copySuccess": "Codes copied to clipboard",
+    "downloadFilename": "patrimio-2fa-recovery-codes.txt",
     "fileTitle": "Patrimio — 2FA Recovery Codes",
     "fileSeparator": "======================================",
     "fileWarning": "Store these codes in a safe place.",
@@ -160,8 +174,191 @@
   },
   "dashboard": {
     "title": "Dashboard",
-    "subtitle": "Your personal wealth in one place.",
-    "comingSoon": "Coming soon: net worth widgets, accounts and latest transactions."
+    "subtitle": "Unified view of wealth, cash flow and active alerts.",
+    "monthBalance": "Monthly balance",
+    "monthIncome": "Month income",
+    "monthExpense": "Month expenses",
+    "projectedFlow": "Projected flow",
+    "topCategories": "Top categories",
+    "movements": "movements",
+    "upcomingCommitments": "Upcoming commitments",
+    "upcomingDeadlines": "Upcoming deadlines",
+    "openCommitments": "Open commitments",
+    "openAlerts": "Open alerts",
+    "portfolio": "Portfolio",
+    "portfolioValue": "Total value",
+    "dayPnL": "Day P&L",
+    "activeAlerts": "Active alerts",
+    "recentTransactions": "Recent transactions",
+    "liveBadge": "Live",
+    "uncategorized": "Uncategorized",
+    "customize": "Customize",
+    "resetLayout": "Reset layout",
+    "netWorth": "Net worth",
+    "cashPosition": "Cash position",
+    "monthlyDelta": "Monthly delta",
+    "activeAlertDetails": {
+      "overBudget": "{percent}% of the limit",
+      "expectedIncome": "Expected on {date}",
+      "customAlertDue": "Due on {date}",
+      "insufficientBalance": "Projected negative balance in {date}"
+    },
+    "activeAlertTitles": {
+      "insufficientBalance": "Projected insufficient balance"
+    },
+    "widgets": {
+      "activeAlerts": "Active alerts",
+      "monthBalance": "Monthly balance",
+      "portfolio": "Portfolio summary",
+      "projectedFlow": "Projected flow",
+      "recentTransactions": "Recent transactions",
+      "topCategories": "Top categories",
+      "upcomingCommitments": "Upcoming commitments",
+      "upcomingDeadlines": "Upcoming deadlines"
+    }
+  },
+  "appShell": {
+    "subtitle": "Financial control center",
+    "dashboard": "Dashboard",
+    "commitments": "Commitments",
+    "alerts": "Alerts",
+    "settings": "Settings"
+  },
+  "commitments": {
+    "title": "Commitments and subscriptions",
+    "subtitle": "Manage recurring payments, expected income and renewals.",
+    "newTitle": "New commitment",
+    "editTitle": "Edit commitment",
+    "confirmDelete": "Delete this commitment?",
+    "projectedFlow": "Projected cash flow",
+    "annualMatrix": "Annual matrix",
+    "activeList": "Active commitments",
+    "subscriptionComparison": "Monthly subscription comparison",
+    "subscriptionSummary": "Subscription summary",
+    "monthlyCost": "Monthly cost",
+    "unexpectedCharges": "Unexpected charges",
+    "tabs": {
+      "commitments": "Commitments",
+      "subscriptions": "Subscriptions"
+    },
+    "actions": {
+      "new": "New commitment",
+      "edit": "Edit",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "save": "Save changes",
+      "create": "Create commitment"
+    },
+    "fields": {
+      "name": "Name",
+      "type": "Type",
+      "account": "Account",
+      "selectAccount": "Select an account",
+      "category": "Category",
+      "noCategory": "No category",
+      "amount": "Amount",
+      "frequency": "Frequency",
+      "nextDueDate": "Next due date",
+      "startDate": "Start date",
+      "cancelledAt": "Cancellation date",
+      "serviceName": "Bank statement label",
+      "maturityYear": "Maturity year",
+      "interestRate": "Interest rate (%)",
+      "isIncome": "This is income",
+      "isAutomated": "Automatic generation",
+      "allowsEarlyRepayment": "Allows early repayment",
+      "description": "Description"
+    },
+    "types": {
+      "mortgage": "Mortgage",
+      "rent_income": "Rent income",
+      "rent_expense": "Rent expense",
+      "subscription": "Subscription",
+      "tax": "Tax",
+      "insurance": "Insurance",
+      "utility": "Utility",
+      "other": "Other"
+    },
+    "status": {
+      "active": "Active",
+      "paused": "Paused",
+      "expired": "Expired"
+    },
+    "subscriptionStatus": {
+      "active": "Active",
+      "paused": "Paused",
+      "cancelled": "Cancelled",
+      "unexpected_charge": "Unexpected charge"
+    },
+    "frequencies": {
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "biweekly": "Biweekly",
+      "monthly": "Monthly",
+      "bimonthly": "Every two months",
+      "quarterly": "Quarterly",
+      "semiannual": "Semiannual",
+      "annual": "Annual"
+    },
+    "toasts": {
+      "updated": "Commitment updated",
+      "created": "Commitment created",
+      "deleted": "Commitment deleted",
+      "error": "The action could not be completed"
+    }
+  },
+  "alerts": {
+    "title": "Custom alerts",
+    "subtitle": "Track taxes, insurance and critical financial reminders.",
+    "newTitle": "New alert",
+    "editTitle": "Edit alert",
+    "confirmDelete": "Delete this alert?",
+    "upcomingDeadlines": "Upcoming deadlines",
+    "preferences": "Preferences",
+    "weeklyDigest": "Weekly email digest",
+    "snoozeHint": "Select an alert and postpone notifications until the chosen date.",
+    "allAlerts": "All alerts",
+    "actions": {
+      "new": "New alert",
+      "edit": "Edit",
+      "delete": "Delete",
+      "snooze": "Snooze",
+      "cancel": "Cancel",
+      "save": "Save changes",
+      "create": "Create alert"
+    },
+    "fields": {
+      "name": "Name",
+      "dueDate": "Target date",
+      "recurrence": "Recurrence",
+      "expectedAmount": "Expected amount",
+      "category": "Category",
+      "noCategory": "No category",
+      "advanceNoticeDays": "Notify in advance (days)",
+      "dismissedUntil": "Dismissed until",
+      "autoDeactivate": "Deactivate when payment is detected",
+      "description": "Description"
+    },
+    "recurrence": {
+      "monthly": "Monthly",
+      "quarterly": "Quarterly",
+      "semiannual": "Semiannual",
+      "annual": "Annual",
+      "biennial": "Biennial",
+      "once": "One time"
+    },
+    "severity": {
+      "critical": "Critical",
+      "warning": "Warning",
+      "info": "Informational"
+    },
+    "toasts": {
+      "updated": "Alert updated",
+      "created": "Alert created",
+      "deleted": "Alert deleted",
+      "snoozed": "Alert snoozed",
+      "error": "The action could not be completed"
+    }
   },
   "onboarding": {
     "title": "Set up your first account",
