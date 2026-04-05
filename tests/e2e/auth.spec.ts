@@ -135,6 +135,11 @@ test.describe("Route protection", () => {
     await expect(page).toHaveURL(/login/, { timeout: 5000 });
   });
 
+  test("redirects unauthenticated user to login when accessing imports", async ({ page }) => {
+    await page.goto(`${BASE}/imports`);
+    await expect(page).toHaveURL(/login/, { timeout: 5000 });
+  });
+
   test("root path redirects to login when unauthenticated", async ({ page }) => {
     await page.goto(BASE);
     await expect(page).toHaveURL(/login|dashboard/, { timeout: 5000 });

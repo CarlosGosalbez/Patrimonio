@@ -6,6 +6,7 @@ import {
   BellRing,
   ChartColumnIncreasing,
   FolderCog,
+  Import,
   LayoutDashboard,
   WalletCards,
 } from 'lucide-react'
@@ -15,6 +16,7 @@ import { cn } from '@/lib/utils'
 
 const navigation = [
   { href: '/dashboard', icon: LayoutDashboard, key: 'dashboard' },
+  { href: '/imports', icon: Import, key: 'imports' },
   { href: '/commitments', icon: WalletCards, key: 'commitments' },
   { href: '/alerts', icon: BellRing, key: 'alerts' },
   { href: '/settings/security', icon: FolderCog, key: 'settings' },
@@ -50,7 +52,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </main>
 
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border/70 bg-background/95 px-2 pb-[calc(env(safe-area-inset-bottom)+8px)] pt-2 backdrop-blur">
-        <div className="mx-auto grid max-w-3xl grid-cols-4 gap-1 rounded-2xl bg-muted/60 p-1">
+        <div className="mx-auto grid max-w-4xl grid-cols-5 gap-1 rounded-2xl bg-muted/60 p-1">
           {navigation.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`)
             const Icon = item.icon

@@ -1,4 +1,4 @@
-import type { SupabaseClient } from '@supabase/supabase-js'
+import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   buildMonthSeries,
   countMonthsUntil,
@@ -6,7 +6,7 @@ import {
   getSubscriptionStatus,
   normalizeDueDate,
   occursInMonth,
-} from '@/lib/commitments/schedule'
+} from "@/lib/commitments/schedule";
 import type {
   BudgetPressure,
   CommitmentListItem,
@@ -15,25 +15,32 @@ import type {
   SubscriptionsOverviewResponse,
   TransactionAccountSummary,
   TransactionCategorySummary,
-} from '@/lib/commitments/types'
-import type { Database } from '@/types/database'
+} from "@/lib/commitments/types";
+import type { Database } from "@/types/database";
 
-type ServerClient = SupabaseClient<Database>
+type ServerClient = SupabaseClient<Database>;
 
-type CommitmentSelectRow = Database['public']['Tables']['recurring_commitments']['Row'] & {
-  account: TransactionAccountSummary | null
-  category: TransactionCategorySummary | null
-}
+type CommitmentSelectRow = Database["public"]["Tables"]["recurring_commitments"]["Row"] & {
+  account: TransactionAccountSummary | null;
+  category: TransactionCategorySummary | null;
+};
 
 type TransactionPreview = Pick<
-  Database['public']['Tables']['transactions']['Row'],
-  'account_id' | 'amount_cents' | 'description' | 'is_income' | 'recurring_id' | 'transaction_date'
->
+  Database["public"]["Tables"]["transactions"]["Row"],
+  "account_id" | "amount_cents" | "description" | "is_income" | "recurring_id" | "transaction_date"
+>;
 
 type RecurringAmountItem = Pick<
   CommitmentListItem,
-  'amount_cents' | 'commitment_type' | 'end_date' | 'frequency' | 'id' | 'is_income' | 'name' | 'next_due_date'
->
+  | "amount_cents"
+  | "commitment_type"
+  | "end_date"
+  | "frequency"
+  | "id"
+  | "is_income"
+  | "name"
+  | "next_due_date"
+>;
 
 const commitmentSelect = `
   id,
@@ -65,37 +72,40 @@ const commitmentSelect = `
   deleted_at,
   account:accounts(id,name,currency,color,icon),
   category:categories(id,name,color,icon,is_income,user_id)
-`
+`;
 
-function getMonthlyEquivalent(amountCents: number, frequency: Database['public']['Enums']['frequency_type']) {
+function getMonthlyEquivalent(
+  amountCents: number,
+  frequency: Database["public"]["Enums"]["frequency_type"],
+) {
   switch (frequency) {
-    case 'daily':
-      return Math.round(amountCents * 30)
-    case 'weekly':
-      return Math.round((amountCents * 52) / 12)
-    case 'biweekly':
-      return Math.round((amountCents * 26) / 12)
-    case 'monthly':
-      return amountCents
-    case 'bimonthly':
-      return Math.round(amountCents / 2)
-    case 'quarterly':
-      return Math.round(amountCents / 3)
-    case 'semiannual':
-      return Math.round(amountCents / 6)
-    case 'annual':
-      return Math.round(amountCents / 12)
+    case "daily":
+      return Math.round(amountCents * 30);
+    case "weekly":
+      return Math.round((amountCents * 52) / 12);
+    case "biweekly":
+      return Math.round((amountCents * 26) / 12);
+    case "monthly":
+      return amountCents;
+    case "bimonthly":
+      return Math.round(amountCents / 2);
+    case "quarterly":
+      return Math.round(amountCents / 3);
+    case "semiannual":
+      return Math.round(amountCents / 6);
+    case "annual":
+      return Math.round(amountCents / 12);
   }
 }
 
 function getDaysUntil(dateValue: string, today: Date = new Date()) {
-  const current = new Date(today.toISOString().slice(0, 10))
-  const target = new Date(`${dateValue}T00:00:00`)
-  return Math.ceil((target.getTime() - current.getTime()) / (24 * 60 * 60 * 1000))
+  const current = new Date(today.toISOString().slice(0, 10));
+  const target = new Date(`${dateValue}T00:00:00`);
+  return Math.ceil((target.getTime() - current.getTime()) / (24 * 60 * 60 * 1000));
 }
 
 function toCommitmentItem(commitment: CommitmentSelectRow): CommitmentListItem {
-  const normalizedDueDate = normalizeDueDate(commitment.next_due_date, commitment.frequency)
+  const normalizedDueDate = normalizeDueDate(commitment.next_due_date, commitment.frequency);
 
   return {
     ...commitment,
@@ -105,11 +115,11 @@ function toCommitmentItem(commitment: CommitmentSelectRow): CommitmentListItem {
     next_due_date: normalizedDueDate,
     next_due_in_days: getDaysUntil(normalizedDueDate),
     status: getCommitmentStatus(commitment),
-  }
+  };
 }
 
 function buildAnnualMatrix(commitments: CommitmentListItem[]) {
-  const months = buildMonthSeries(12)
+  const months = buildMonthSeries(12);
 
   return commitments.map((commitment) => ({
     cells: months.map((month) => ({
@@ -121,9 +131,9 @@ function buildAnnualMatrix(commitments: CommitmentListItem[]) {
     name: commitment.name,
     status: commitment.status,
     total_cents: months.reduce((sum, month) => {
-      return sum + (occursInMonth(commitment, month) ? commitment.amount_cents : 0)
+      return sum + (occursInMonth(commitment, month) ? commitment.amount_cents : 0);
     }, 0),
-  }))
+  }));
 }
 
 function buildTimeline(commitments: CommitmentListItem[]) {
@@ -135,17 +145,19 @@ function buildTimeline(commitments: CommitmentListItem[]) {
       is_income: commitment.is_income,
       name: commitment.name,
       occurs: occursInMonth(commitment, month),
-    }))
+    }));
 
     return {
       commitments: entries,
       label: month,
       month,
       total_cents: entries.reduce((sum, entry) => {
-        return sum + (entry.occurs ? (entry.is_income ? entry.amount_cents : -entry.amount_cents) : 0)
+        return (
+          sum + (entry.occurs ? (entry.is_income ? entry.amount_cents : -entry.amount_cents) : 0)
+        );
       }, 0),
-    }
-  })
+    };
+  });
 }
 
 function buildSubscriptionSpendingSeries(commitments: RecurringAmountItem[]) {
@@ -153,9 +165,9 @@ function buildSubscriptionSpendingSeries(commitments: RecurringAmountItem[]) {
     label: month,
     month,
     total_cents: commitments.reduce((sum, commitment) => {
-      return sum + (occursInMonth(commitment, month) ? commitment.amount_cents : 0)
+      return sum + (occursInMonth(commitment, month) ? commitment.amount_cents : 0);
     }, 0),
-  }))
+  }));
 }
 
 export async function getCommitmentById({
@@ -163,60 +175,63 @@ export async function getCommitmentById({
   supabase,
   userId,
 }: {
-  id: string
-  supabase: ServerClient
-  userId: string
+  id: string;
+  supabase: ServerClient;
+  userId: string;
 }) {
   const { data, error } = await supabase
-    .from('recurring_commitments')
+    .from("recurring_commitments")
     .select(commitmentSelect)
-    .eq('id', id)
-    .eq('user_id', userId)
-    .single()
+    .eq("id", id)
+    .eq("user_id", userId)
+    .single();
 
   if (error || !data) {
-    throw new Error(error?.message ?? 'Commitment not found')
+    throw new Error(error?.message ?? "Commitment not found");
   }
 
-  return toCommitmentItem(data as CommitmentSelectRow)
+  return toCommitmentItem(data as CommitmentSelectRow);
 }
 
 export async function getCommitmentsOverview({
   supabase,
   userId,
 }: {
-  supabase: ServerClient
-  userId: string
+  supabase: ServerClient;
+  userId: string;
 }): Promise<CommitmentsOverviewResponse> {
-  const [{ data: commitmentsData, error: commitmentsError }, { data: projectionData, error: projectionError }, { data: netWorthData, error: netWorthError }] =
-    await Promise.all([
-      supabase
-        .from('recurring_commitments')
-        .select(commitmentSelect)
-        .eq('user_id', userId)
-        .is('deleted_at', null)
-        .order('next_due_date', { ascending: true }),
-      supabase.rpc('project_cash_flow', { p_months: 12, p_user_id: userId }),
-      supabase.rpc('get_net_worth', { p_user_id: userId }),
-    ])
+  const [
+    { data: commitmentsData, error: commitmentsError },
+    { data: projectionData, error: projectionError },
+    { data: netWorthData, error: netWorthError },
+  ] = await Promise.all([
+    supabase
+      .from("recurring_commitments")
+      .select(commitmentSelect)
+      .eq("user_id", userId)
+      .is("deleted_at", null)
+      .order("next_due_date", { ascending: true }),
+    supabase.rpc("project_cash_flow", { p_months: 12, p_user_id: userId }),
+    supabase.rpc("get_net_worth", { p_user_id: userId }),
+  ]);
 
   if (commitmentsError) {
-    throw new Error(commitmentsError.message)
+    throw new Error(commitmentsError.message);
   }
 
   if (projectionError) {
-    throw new Error(projectionError.message)
+    throw new Error(projectionError.message);
   }
 
   if (netWorthError) {
-    throw new Error(netWorthError.message)
+    throw new Error(netWorthError.message);
   }
 
-  const commitments = ((commitmentsData ?? []) as CommitmentSelectRow[]).map(toCommitmentItem)
-  const cashBase = netWorthData?.[0]?.cash_cents ?? 0
-  let runningCash = cashBase
+  const commitments = ((commitmentsData ?? []) as CommitmentSelectRow[]).map(toCommitmentItem);
+  const cashBase = netWorthData?.[0]?.cash_cents ?? 0;
+  let runningCash = cashBase;
   const projected_flow = (projectionData ?? []).map((point) => {
-    runningCash += point.net_cents
+    runningCash += point.net_cents;
 
     return {
       cumulative_cash_cents: runningCash,
@@ -224,10 +239,10 @@ export async function getCommitmentsOverview({
       net_cents: point.net_cents,
       projected_expense_cents: point.projected_expense_cents,
       projected_income_cents: point.projected_income_cents,
-    }
-  })
+    };
+  });
 
-  const deficit = projected_flow.find((point) => point.cumulative_cash_cents < 0) ?? null
+  const deficit = projected_flow.find((point) => point.cumulative_cash_cents < 0) ?? null;
 
   return {
     annual_matrix: buildAnnualMatrix(commitments),
@@ -243,61 +258,63 @@ export async function getCommitmentsOverview({
     upcoming_due: commitments
       .filter((commitment) => commitment.next_due_in_days >= 0 && commitment.next_due_in_days <= 7)
       .slice(0, 7),
-  }
+  };
 }
 
 export async function getSubscriptionsOverview({
   supabase,
   userId,
 }: {
-  supabase: ServerClient
-  userId: string
+  supabase: ServerClient;
+  userId: string;
 }): Promise<SubscriptionsOverviewResponse> {
-  const [{ data: commitmentsData, error: commitmentsError }, { data: transactionsData, error: transactionsError }] =
-    await Promise.all([
-      supabase
-        .from('recurring_commitments')
-        .select(commitmentSelect)
-        .eq('user_id', userId)
-        .eq('commitment_type', 'subscription')
-        .is('deleted_at', null)
-        .order('next_due_date', { ascending: true }),
-      supabase
-        .from('transactions')
-        .select('account_id,amount_cents,description,is_income,recurring_id,transaction_date')
-        .eq('user_id', userId)
-        .eq('is_income', false)
-        .is('deleted_at', null)
-        .order('transaction_date', { ascending: false })
-        .limit(250),
-    ])
+  const [
+    { data: commitmentsData, error: commitmentsError },
+    { data: transactionsData, error: transactionsError },
+  ] = await Promise.all([
+    supabase
+      .from("recurring_commitments")
+      .select(commitmentSelect)
+      .eq("user_id", userId)
+      .eq("commitment_type", "subscription")
+      .is("deleted_at", null)
+      .order("next_due_date", { ascending: true }),
+    supabase
+      .from("transactions")
+      .select("account_id,amount_cents,description,is_income,recurring_id,transaction_date")
+      .eq("user_id", userId)
+      .eq("is_income", false)
+      .is("deleted_at", null)
+      .order("transaction_date", { ascending: false })
+      .limit(250),
+  ]);
 
   if (commitmentsError) {
-    throw new Error(commitmentsError.message)
+    throw new Error(commitmentsError.message);
   }
 
   if (transactionsError) {
-    throw new Error(transactionsError.message)
+    throw new Error(transactionsError.message);
   }
 
-  const subscriptions = ((commitmentsData ?? []) as CommitmentSelectRow[]).map(toCommitmentItem)
-  const transactions = (transactionsData ?? []) as TransactionPreview[]
+  const subscriptions = ((commitmentsData ?? []) as CommitmentSelectRow[]).map(toCommitmentItem);
+  const transactions = (transactionsData ?? []) as TransactionPreview[];
 
   const mappedSubscriptions: SubscriptionListItem[] = subscriptions.map((subscription) => {
     const latestCharge = transactions.find((transaction) => {
       if (transaction.recurring_id === subscription.id) {
-        return true
+        return true;
       }
 
-      const serviceName = subscription.service_name?.toLowerCase()
+      const serviceName = subscription.service_name?.toLowerCase();
 
-      return Boolean(serviceName) && transaction.description.toLowerCase().includes(serviceName!)
-    })
+      return Boolean(serviceName) && transaction.description.toLowerCase().includes(serviceName!);
+    });
 
     const unexpectedCharge =
       Boolean(subscription.cancelled_at) &&
       Boolean(latestCharge?.transaction_date) &&
-      latestCharge!.transaction_date >= subscription.cancelled_at!.slice(0, 10)
+      latestCharge!.transaction_date >= subscription.cancelled_at!.slice(0, 10);
 
     return {
       ...subscription,
@@ -307,68 +324,66 @@ export async function getSubscriptionsOverview({
       latest_matching_charge_description: latestCharge?.description ?? null,
       next_renewal_date: subscription.next_due_date,
       status: getSubscriptionStatus(subscription, unexpectedCharge),
-    }
-  })
+    };
+  });
 
   return {
     spending_by_month: buildSubscriptionSpendingSeries(mappedSubscriptions),
     subscriptions: mappedSubscriptions,
     total_monthly_cost_cents: mappedSubscriptions
-      .filter((subscription) => subscription.status === 'active')
+      .filter((subscription) => subscription.status === "active")
       .reduce((sum, subscription) => sum + subscription.monthly_equivalent_cents, 0),
     unexpected_charge_count: mappedSubscriptions.filter(
-      (subscription) => subscription.status === 'unexpected_charge',
+      (subscription) => subscription.status === "unexpected_charge",
     ).length,
-  }
+  };
 }
 
 export async function getBudgetPressure({
   supabase,
   userId,
 }: {
-  supabase: ServerClient
-  userId: string
+  supabase: ServerClient;
+  userId: string;
 }): Promise<BudgetPressure[]> {
-  const currentMonth = buildMonthSeries(1)[0]!
+  const currentMonth = buildMonthSeries(1)[0]!;
   const [{ data: budgetsData, error: budgetsError }, { data: spendingData, error: spendingError }] =
     await Promise.all([
       supabase
-        .from('budgets')
-        .select('id,category_id,limit_cents,alert_threshold,category:categories(name)')
-        .eq('user_id', userId)
-        .eq('is_active', true)
-        .is('deleted_at', null),
-      supabase
-        .from('monthly_category_spending')
-        .select('category_id,total_cents')
-        .eq('user_id', userId)
-        .eq('month', currentMonth),
-    ])
+        .from("budgets")
+        .select("id,category_id,limit_cents,alert_threshold,category:categories(name)")
+        .eq("user_id", userId)
+        .eq("is_active", true)
+        .is("deleted_at", null),
+      supabase.rpc("get_category_spending", { p_month: currentMonth }),
+    ]);
 
   if (budgetsError) {
-    throw new Error(budgetsError.message)
+    throw new Error(budgetsError.message);
   }
 
   if (spendingError) {
-    throw new Error(spendingError.message)
+    throw new Error(spendingError.message);
   }
 
-  const spendingByCategory = new Map((spendingData ?? []).map((row) => [row.category_id, row.total_cents ?? 0]))
+  const spendingByCategory = new Map(
+    (spendingData ?? []).map((row) => [row.category_id, row.total_cents ?? 0]),
+  );
 
   return (budgetsData ?? [])
     .map((budget) => {
-      const spent_cents = spendingByCategory.get(budget.category_id) ?? 0
-      const progress_ratio = budget.limit_cents > 0 ? spent_cents / budget.limit_cents : 0
+      const spent_cents = spendingByCategory.get(budget.category_id) ?? 0;
+      const progress_ratio = budget.limit_cents > 0 ? spent_cents / budget.limit_cents : 0;
 
       return {
         budget_id: budget.id,
-        category_name: (budget.category as { name?: string } | null)?.name ?? '',
+        category_name: (budget.category as { name?: string } | null)?.name ?? "",
         progress_ratio,
         spent_cents,
         threshold_percent: budget.alert_threshold,
-      }
+      };
     })
-    .filter((budget) => budget.progress_ratio >= budget.threshold_percent / 100)
+    .filter((budget) => budget.progress_ratio >= budget.threshold_percent / 100);
 }
 
 export async function getExpectedIncomeGaps({
@@ -376,47 +391,50 @@ export async function getExpectedIncomeGaps({
   supabase,
   userId,
 }: {
-  commitments: CommitmentListItem[]
-  supabase: ServerClient
-  userId: string
+  commitments: CommitmentListItem[];
+  supabase: ServerClient;
+  userId: string;
 }) {
   const overdueIncome = commitments.filter(
     (commitment) =>
       commitment.is_income &&
-      commitment.status === 'active' &&
+      commitment.status === "active" &&
       commitment.next_due_in_days < -(commitment.tolerance_days ?? 0),
-  )
+  );
 
   if (!overdueIncome.length) {
-    return []
+    return [];
   }
 
   const earliestMonth = overdueIncome.reduce((minimum, commitment) => {
-    return commitment.next_due_date < minimum ? commitment.next_due_date : minimum
-  }, overdueIncome[0]!.next_due_date)
+    return commitment.next_due_date < minimum ? commitment.next_due_date : minimum;
+  }, overdueIncome[0]!.next_due_date);
 
   const { data, error } = await supabase
-    .from('transactions')
-    .select('account_id,amount_cents,description,is_income,recurring_id,transaction_date')
-    .eq('user_id', userId)
-    .eq('is_income', true)
-    .is('deleted_at', null)
-    .gte('transaction_date', earliestMonth)
+    .from("transactions")
+    .select("account_id,amount_cents,description,is_income,recurring_id,transaction_date")
+    .eq("user_id", userId)
+    .eq("is_income", true)
+    .is("deleted_at", null)
+    .gte("transaction_date", earliestMonth);
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error(error.message);
   }
 
-  const transactions = (data ?? []) as TransactionPreview[]
+  const transactions = (data ?? []) as TransactionPreview[];
 
   return overdueIncome.filter((commitment) => {
     return !transactions.some((transaction) => {
       const transactionMatchesCommitment =
         transaction.recurring_id === commitment.id ||
         (transaction.account_id === commitment.account_id &&
-          Math.abs(transaction.amount_cents - commitment.amount_cents) <= 100)
+          Math.abs(transaction.amount_cents - commitment.amount_cents) <= 100);
 
-      return transactionMatchesCommitment && countMonthsUntil(transaction.transaction_date, commitment.next_due_date) === 0
-    })
-  })
+      return (
+        transactionMatchesCommitment &&
+        countMonthsUntil(transaction.transaction_date, commitment.next_due_date) === 0
+      );
+    });
+  });
 }

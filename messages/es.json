@@ -218,9 +218,143 @@
   "appShell": {
     "subtitle": "Centro de control financiero",
     "dashboard": "Dashboard",
+    "imports": "Importar",
     "commitments": "Compromisos",
     "alerts": "Alertas",
     "settings": "Ajustes"
+  },
+  "imports": {
+    "title": "Importación bancaria",
+    "subtitle": "Importa extractos, revisa duplicados y confirma en bloque antes de guardar.",
+    "banks": {
+      "santander": "Santander",
+      "bbva": "BBVA",
+      "caixabank": "CaixaBank",
+      "ing": "ING",
+      "sabadell": "Sabadell",
+      "generic": "Formato genérico"
+    },
+    "fields": {
+      "account": "Cuenta destino",
+      "selectAccount": "Selecciona una cuenta"
+    },
+    "upload": {
+      "title": "Archivo del extracto",
+      "dropzone": "Arrastra el fichero aquí o selecciónalo desde el dispositivo",
+      "formats": "Formatos soportados: XLSX, XLS, CSV, OFX y QIF",
+      "detectedBank": "Banco detectado: {bank}",
+      "rows": "filas detectadas"
+    },
+    "summary": {
+      "title": "Controles previos",
+      "supportedBanks": "Bancos soportados",
+      "bankList": "Santander, BBVA, CaixaBank, ING, Sabadell y formato genérico",
+      "duplicateRule": "Regla de duplicados",
+      "duplicateRuleValue": "Misma cuenta + mismo importe + fecha ±2 días + descripción similar ≥ 75%",
+      "rows": "Filas",
+      "duplicates": "Duplicados",
+      "unexpectedCharges": "Cobros inesperados",
+      "expectedIncomeGaps": "Ingresos pendientes"
+    },
+    "actions": {
+      "preview": "Generar preview",
+      "previewing": "Analizando…",
+      "confirm": "Confirmar importación",
+      "confirming": "Importando…",
+      "rollback": "Revertir lote"
+    },
+    "mapping": {
+      "title": "Mapeo de columnas",
+      "availableColumns": "Columnas disponibles",
+      "dragHint": "Arrastra o usa el selector",
+      "dropHere": "Soltar aquí",
+      "noColumn": "Sin asignar",
+      "names": {
+        "transaction_date": "Fecha",
+        "description": "Descripción",
+        "amount": "Importe",
+        "credit": "Abonos",
+        "debit": "Cargos",
+        "value_date": "Fecha valor",
+        "type": "Tipo",
+        "notes": "Notas",
+        "external_id": "ID externo"
+      },
+      "fields": {
+        "transaction_date": "Fecha de la operación",
+        "description": "Descripción o concepto",
+        "amount": "Importe firmado",
+        "credit": "Columna de abonos",
+        "debit": "Columna de cargos",
+        "value_date": "Fecha valor",
+        "type": "Tipo de movimiento",
+        "notes": "Notas",
+        "external_id": "Identificador externo"
+      }
+    },
+    "bulk": {
+      "title": "Confirmación en bloque",
+      "selectMerchant": "Selecciona un grupo similar",
+      "selectCategory": "Selecciona una categoría",
+      "apply": "Aplicar categoría"
+    },
+    "preview": {
+      "title": "Preview interactivo",
+      "empty": "No hay filas para revisar todavía.",
+      "columns": {
+        "import": "Importar",
+        "date": "Fecha",
+        "description": "Descripción",
+        "amount": "Importe",
+        "type": "Tipo",
+        "category": "Categoría",
+        "flags": "Flags"
+      },
+      "type": {
+        "income": "Ingreso",
+        "expense": "Gasto"
+      },
+      "flags": {
+        "duplicate": "Posible duplicado",
+        "unexpected": "Cobro inesperado",
+        "ok": "Sin incidencias"
+      }
+    },
+    "history": {
+      "title": "Historial de importaciones",
+      "refresh": "Actualizar",
+      "empty": "Todavía no hay lotes importados.",
+      "imported": "{count} transacciones",
+      "duplicates": "{count} duplicados",
+      "unexpectedCharges": "{count} cobros inesperados",
+      "expectedIncomeGaps": "{count} ingresos pendientes",
+      "range": "Rango: {start} → {end}",
+      "status": {
+        "processing": "Procesando",
+        "confirmed": "Confirmado",
+        "rolled_back": "Revertido",
+        "failed": "Fallido"
+      }
+    },
+    "notifications": {
+      "subscriptionUnexpectedChargeTitle": "Cobro inesperado de suscripción",
+      "subscriptionUnexpectedChargeMessage": "Se ha detectado un cargo de {service} el {date} en “{description}”.",
+      "expectedIncomeUnpaidTitle": "Ingreso esperado no recibido",
+      "expectedIncomeUnpaidMessage": "No se ha encontrado el ingreso esperado de “{name}” con fecha {dueDate}."
+    },
+    "toasts": {
+      "parseError": "No se pudo leer el fichero.",
+      "missingFile": "Selecciona una cuenta y un fichero antes de continuar.",
+      "mappingError": "Revisa el mapeo: faltan columnas obligatorias o no se han detectado filas válidas.",
+      "previewReady": "Preview generado correctamente.",
+      "previewError": "No se pudo generar el preview.",
+      "previewRequired": "Genera el preview antes de confirmar.",
+      "confirmed": "Importación confirmada: {count} transacciones creadas.",
+      "confirmError": "No se pudo completar la importación.",
+      "bulkApplied": "Categoría aplicada al grupo seleccionado.",
+      "rolledBack": "Lote revertido correctamente.",
+      "rollbackError": "No se pudo revertir el lote."
+    }
   },
   "commitments": {
     "title": "Compromisos y suscripciones",

@@ -220,9 +220,143 @@
   "appShell": {
     "subtitle": "Financial control center",
     "dashboard": "Dashboard",
+    "imports": "Imports",
     "commitments": "Commitments",
     "alerts": "Alerts",
     "settings": "Settings"
+  },
+  "imports": {
+    "title": "Bank statement import",
+    "subtitle": "Import statements, review duplicates and confirm in bulk before saving.",
+    "banks": {
+      "santander": "Santander",
+      "bbva": "BBVA",
+      "caixabank": "CaixaBank",
+      "ing": "ING",
+      "sabadell": "Sabadell",
+      "generic": "Generic format"
+    },
+    "fields": {
+      "account": "Destination account",
+      "selectAccount": "Select an account"
+    },
+    "upload": {
+      "title": "Statement file",
+      "dropzone": "Drop the file here or pick it from your device",
+      "formats": "Supported formats: XLSX, XLS, CSV, OFX and QIF",
+      "detectedBank": "Detected bank: {bank}",
+      "rows": "detected rows"
+    },
+    "summary": {
+      "title": "Pre-import checks",
+      "supportedBanks": "Supported banks",
+      "bankList": "Santander, BBVA, CaixaBank, ING, Sabadell and generic format",
+      "duplicateRule": "Duplicate rule",
+      "duplicateRuleValue": "Same account + same amount + date within ±2 days + description similarity ≥ 75%",
+      "rows": "Rows",
+      "duplicates": "Duplicates",
+      "unexpectedCharges": "Unexpected charges",
+      "expectedIncomeGaps": "Missing income"
+    },
+    "actions": {
+      "preview": "Generate preview",
+      "previewing": "Analyzing…",
+      "confirm": "Confirm import",
+      "confirming": "Importing…",
+      "rollback": "Rollback batch"
+    },
+    "mapping": {
+      "title": "Column mapping",
+      "availableColumns": "Available columns",
+      "dragHint": "Drag or use the selector",
+      "dropHere": "Drop here",
+      "noColumn": "Unassigned",
+      "names": {
+        "transaction_date": "Date",
+        "description": "Description",
+        "amount": "Amount",
+        "credit": "Credits",
+        "debit": "Debits",
+        "value_date": "Value date",
+        "type": "Type",
+        "notes": "Notes",
+        "external_id": "External ID"
+      },
+      "fields": {
+        "transaction_date": "Transaction date",
+        "description": "Description or memo",
+        "amount": "Signed amount",
+        "credit": "Credit column",
+        "debit": "Debit column",
+        "value_date": "Value date",
+        "type": "Movement type",
+        "notes": "Notes",
+        "external_id": "External identifier"
+      }
+    },
+    "bulk": {
+      "title": "Bulk confirmation",
+      "selectMerchant": "Select a similar group",
+      "selectCategory": "Select a category",
+      "apply": "Apply category"
+    },
+    "preview": {
+      "title": "Interactive preview",
+      "empty": "There are no rows to review yet.",
+      "columns": {
+        "import": "Import",
+        "date": "Date",
+        "description": "Description",
+        "amount": "Amount",
+        "type": "Type",
+        "category": "Category",
+        "flags": "Flags"
+      },
+      "type": {
+        "income": "Income",
+        "expense": "Expense"
+      },
+      "flags": {
+        "duplicate": "Possible duplicate",
+        "unexpected": "Unexpected charge",
+        "ok": "No issues"
+      }
+    },
+    "history": {
+      "title": "Import history",
+      "refresh": "Refresh",
+      "empty": "There are no imported batches yet.",
+      "imported": "{count} transactions",
+      "duplicates": "{count} duplicates",
+      "unexpectedCharges": "{count} unexpected charges",
+      "expectedIncomeGaps": "{count} missing income",
+      "range": "Range: {start} → {end}",
+      "status": {
+        "processing": "Processing",
+        "confirmed": "Confirmed",
+        "rolled_back": "Rolled back",
+        "failed": "Failed"
+      }
+    },
+    "notifications": {
+      "subscriptionUnexpectedChargeTitle": "Unexpected subscription charge",
+      "subscriptionUnexpectedChargeMessage": "A {service} charge was detected on {date} in “{description}”.",
+      "expectedIncomeUnpaidTitle": "Expected income missing",
+      "expectedIncomeUnpaidMessage": "The expected income for “{name}” dated {dueDate} was not found."
+    },
+    "toasts": {
+      "parseError": "The file could not be read.",
+      "missingFile": "Select an account and a file before continuing.",
+      "mappingError": "Review the mapping: required columns are missing or no valid rows were detected.",
+      "previewReady": "Preview generated successfully.",
+      "previewError": "The preview could not be generated.",
+      "previewRequired": "Generate the preview before confirming.",
+      "confirmed": "Import confirmed: {count} transactions created.",
+      "confirmError": "The import could not be completed.",
+      "bulkApplied": "Category applied to the selected group.",
+      "rolledBack": "Batch rolled back successfully.",
+      "rollbackError": "The batch could not be rolled back."
+    }
   },
   "commitments": {
     "title": "Commitments and subscriptions",

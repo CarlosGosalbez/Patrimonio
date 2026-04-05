@@ -751,6 +751,89 @@ export type Database = {
           },
         ]
       }
+      transaction_import_batches: {
+        Row: {
+          account_id: string
+          completed_at: string | null
+          confirmed_at: string | null
+          created_at: string
+          deleted_at: string | null
+          duplicate_count: number
+          expected_income_gap_count: number
+          file_checksum: string
+          file_name: string
+          id: string
+          imported_count: number
+          metadata: Json
+          rolled_back_at: string | null
+          row_count: number
+          source_bank: string | null
+          source_format: Database["public"]["Enums"]["import_file_format"]
+          source_range_end: string | null
+          source_range_start: string | null
+          status: Database["public"]["Enums"]["import_batch_status"]
+          unexpected_charge_count: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_id: string
+          completed_at?: string | null
+          confirmed_at?: string | null
+          created_at?: string
+          deleted_at?: string | null
+          duplicate_count?: number
+          expected_income_gap_count?: number
+          file_checksum: string
+          file_name: string
+          id?: string
+          imported_count?: number
+          metadata?: Json
+          rolled_back_at?: string | null
+          row_count?: number
+          source_bank?: string | null
+          source_format: Database["public"]["Enums"]["import_file_format"]
+          source_range_end?: string | null
+          source_range_start?: string | null
+          status?: Database["public"]["Enums"]["import_batch_status"]
+          unexpected_charge_count?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_id?: string
+          completed_at?: string | null
+          confirmed_at?: string | null
+          created_at?: string
+          deleted_at?: string | null
+          duplicate_count?: number
+          expected_income_gap_count?: number
+          file_checksum?: string
+          file_name?: string
+          id?: string
+          imported_count?: number
+          metadata?: Json
+          rolled_back_at?: string | null
+          row_count?: number
+          source_bank?: string | null
+          source_format?: Database["public"]["Enums"]["import_file_format"]
+          source_range_end?: string | null
+          source_range_start?: string | null
+          status?: Database["public"]["Enums"]["import_batch_status"]
+          unexpected_charge_count?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transaction_import_batches_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       transactions: {
         Row: {
           account_id: string
@@ -762,6 +845,7 @@ export type Database = {
           description: string
           id: string
           import_batch_id: string | null
+          import_dedupe_key: string | null
           import_source: string | null
           is_income: boolean
           is_recurring_instance: boolean
@@ -786,6 +870,7 @@ export type Database = {
           description: string
           id?: string
           import_batch_id?: string | null
+          import_dedupe_key?: string | null
           import_source?: string | null
           is_income?: boolean
           is_recurring_instance?: boolean
@@ -810,6 +895,7 @@ export type Database = {
           description?: string
           id?: string
           import_batch_id?: string | null
+          import_dedupe_key?: string | null
           import_source?: string | null
           is_income?: boolean
           is_recurring_instance?: boolean
@@ -837,6 +923,13 @@ export type Database = {
             columns: ["category_id"]
             isOneToOne: false
             referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_import_batch_id_fkey"
+            columns: ["import_batch_id"]
+            isOneToOne: false
+            referencedRelation: "transaction_import_batches"
             referencedColumns: ["id"]
           },
           {
@@ -900,6 +993,31 @@ export type Database = {
         Args: { p_user_id: string }
         Returns: undefined
       }
+      create_user_notification: {
+        Args: {
+          p_event_key?: string
+          p_message: string
+          p_severity: Database["public"]["Enums"]["alert_severity"]
+          p_target_id?: string
+          p_target_type?: string
+          p_title: string
+          p_type: Database["public"]["Enums"]["notification_type"]
+        }
+        Returns: string
+      }
+      get_category_spending: {
+        Args: { p_month: string }
+        Returns: {
+          category_id: string
+          total_cents: number
+        }[]
+      }
+      get_monthly_balance: {
+        Args: { p_month: string }
+        Returns: {
+          net_amount_cents: number
+        }[]
+      }
       get_net_worth: {
         Args: { p_user_id: string }
         Returns: {
@@ -907,6 +1025,16 @@ export type Database = {
           currency: string
           investments_cents: number
           total_cents: number
+        }[]
+      }
+      get_top_category_spending: {
+        Args: { p_limit?: number; p_month: string }
+        Returns: {
+          category_color: string
+          category_id: string
+          category_name: string
+          total_cents: number
+          transaction_count: number
         }[]
       }
       project_cash_flow: {
@@ -927,6 +1055,13 @@ export type Database = {
         Returns: undefined
       }
       refresh_dashboard_views: { Args: never; Returns: undefined }
+      rollback_import_batch: {
+        Args: { p_batch_id: string }
+        Returns: {
+          rolled_back_count: number
+        }[]
+      }
+      sync_investment_prices: { Args: never; Returns: undefined }
     }
     Enums: {
       alert_recurrence_type:
@@ -956,6 +1091,8 @@ export type Database = {
         | "quarterly"
         | "semiannual"
         | "annual"
+      import_batch_status: "processing" | "confirmed" | "rolled_back" | "failed"
+      import_file_format: "xlsx" | "xls" | "csv" | "ofx" | "qif"
       investment_type:
         | "stock"
         | "etf"
@@ -1142,6 +1279,8 @@ export const Constants = {
         "semiannual",
         "annual",
       ],
+      import_batch_status: ["processing", "confirmed", "rolled_back", "failed"],
+      import_file_format: ["xlsx", "xls", "csv", "ofx", "qif"],
       investment_type: [
         "stock",
         "etf",

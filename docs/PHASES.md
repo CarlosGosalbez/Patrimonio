@@ -223,18 +223,29 @@
 
 #### Deliverables
 
-- [ ] **SheetJS client-side parser**: `.xlsx`, `.xls`, `.csv`, `.ofx`, `.qif`
-- [ ] **Automatic column detection**: heuristics to identify date, description, amount, type
-- [ ] **Interactive preview**: editable table with all detected transactions before confirming
-- [ ] **Manual column mapping**: drag & drop if detection fails
-- [ ] **Deduplication**: compare date + amount + similar description against existing transactions → "possible duplicate" flag
-- [ ] **Cancelled subscription charge detection**: for each imported transaction, match description against `service_name` of `recurring_commitments` where `cancelled_at < transaction_date` (case-insensitive contains) → flag ⚠️ `Unexpected charge: cancelled subscription` in preview + generate `subscription_unexpected_charge` notification after confirming
-- [ ] **Expected income verification**: after import, check `type=income` commitments whose expected date has elapsed > `tolerance_days` with no matching transaction → generate `expected_income_unpaid` notification
-- [ ] **Bulk auto-categorization**: apply user's auto-categorization rules on the imported batch
-- [ ] **Bulk confirmation**: modify categories for multiple similar transactions in one step
-- [ ] **Import identifiers**: `import_source`, `import_batch_id` on each transaction
-- [ ] **Import rollback**: soft-delete all transactions from an `import_batch_id`
-- [ ] **Spanish bank formats**: specific parsers for Santander, BBVA, CaixaBank, ING, Sabadell
+- [x] **SheetJS client-side parser**: `.xlsx`, `.xls`, `.csv`, `.ofx`, `.qif`
+- [x] **Automatic column detection**: heuristics to identify date, description, amount, type
+- [x] **Interactive preview**: editable table with all detected transactions before confirming
+- [x] **Manual column mapping**: drag & drop if detection fails
+- [x] **Deduplication**: compare date + amount + similar description against existing transactions → "possible duplicate" flag
+- [x] **Cancelled subscription charge detection**: for each imported transaction, match description against `service_name` of `recurring_commitments` where `cancelled_at < transaction_date` (case-insensitive contains) → flag ⚠️ `Unexpected charge: cancelled subscription` in preview + generate `subscription_unexpected_charge` notification after confirming
+- [x] **Expected income verification**: after import, check `type=income` commitments whose expected date has elapsed > `tolerance_days` with no matching transaction → generate `expected_income_unpaid` notification
+- [x] **Bulk auto-categorization**: apply user's auto-categorization rules on the imported batch
+- [x] **Bulk confirmation**: modify categories for multiple similar transactions in one step
+- [x] **Import identifiers**: `import_source`, `import_batch_id` on each transaction
+- [x] **Import rollback**: soft-delete all transactions from an `import_batch_id`
+- [x] **Spanish bank formats**: specific parsers for Santander, BBVA, CaixaBank, ING, Sabadell
+
+### Status Update — 2026-04-06 (COMPLETED)
+
+- [x] Nueva pantalla autenticada `/imports` con i18n completa (ES/EN), navegación en `AppShell`, drag & drop de fichero, autodetección de columnas, mapeo manual con drag-drop (`ImportMappingBoard`) y preview editable (`ImportPreviewTable`).
+- [x] Nuevas APIs `/api/imports/preview`, `/api/imports/confirm`, `/api/imports/batches` y `/api/imports/batches/[id]/rollback` con validación Zod `.strict()`, auth por JWT, rollback seguro y RLS en `transaction_import_batches`.
+- [x] Motor de importación en `lib/imports/` (parser, matching, schemas, types, server): parsing SheetJS para Excel, text para CSV, STMTTRN parser para OFX, `!Type:Bank` parser para QIF; heurísticas por banco español (FIELD_ALIASES + scoring); deduplicación SHA-256 + fuzzy matching ±2 días; matching de suscripciones canceladas; verificación de ingresos esperados; sugerencia de categoría por reglas de usuario + merchant hints en español.
+- [x] Migración `20260406090000_phase4_bank_statement_import.sql` aplicada: tabla `transaction_import_batches`, columnas `import_dedupe_key`/`import_batch_id` en `transactions`, índice UNIQUE para deduplicación, funciones PL/pgSQL `rollback_import_batch()` y `create_user_notification()` (SECURITY DEFINER), trigger `prevent_resurrect()`.
+- [x] Hooks en `hooks/usePhaseFour.ts`: `useImportBatchesQuery`, `useImportPreviewMutation`, `useConfirmImportMutation`, `useRollbackImportMutation`.
+- [x] Tests unitarios: `tests/unit/imports-parser.test.ts` (detección Santander, OFX, QIF) y `tests/unit/imports-matching.test.ts` (fuzzy duplicates, reglas, unexpected charges, similitud).
+- [x] Validación ejecutada: `npm run type-check`, `npm run lint`, `npm run test -- --run` y `npm run build`.
+- [ ] **E2E happy-path pendiente**: test Playwright del flujo completo upload → preview → confirm → rollback en iPhone 14 y Desktop Chrome (actualmente solo cubre redirect de auth).
 
 **Skills:** `spanish-finance-categorizer`, `anomaly-detector` (duplicate detection)  
 **Instructions:** `security.instructions.md`
