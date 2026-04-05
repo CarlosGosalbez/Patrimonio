@@ -948,16 +948,10 @@ WebAuthn API (W3C, Safari iOS 14.5+) permite Face ID / Touch ID sin app nativa.
 
 ```html
 <meta name="apple-mobile-web-app-capable" content="yes" />
-<meta
-  name="apple-mobile-web-app-status-bar-style"
-  content="black-translucent"
-/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="Patrimio" />
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
-<meta
-  name="viewport"
-  content="width=device-width, initial-scale=1, viewport-fit=cover"
-/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 ```
 
 ### 9.2 Service Worker (Estrategias de Caché)
@@ -1184,18 +1178,37 @@ Listados en política de privacidad con DPA firmado:
 
 ## 15. ROADMAP DE FASES
 
-### Fase 0: Setup y Fundaciones (Semana 1-2)
+> **Leyenda:** ✅ Completado · 🔄 En progreso · ⬜ Pendiente
 
-- [ ] Repositorio GitHub con estructura Next.js 14
-- [ ] Supabase project: DB, Auth, Storage configurados
-- [ ] RLS activado en todas las tablas
-- [ ] Migraciones iniciales del esquema
-- [ ] Deploy base en Vercel (dominio provisional)
-- [ ] GitHub Actions CI básico
-- [ ] Variables de entorno configuradas
-- [ ] Seed de categorías del sistema
+### ✅ Fase 0: Setup y Fundaciones — COMPLETADA (2026-04-05)
 
-### Fase 1: Autenticación Completa (Semana 3-4)
+- [x] Repositorio GitHub (`CarlosGosalbez/Patrimio`) con estructura Next.js 14 + TypeScript 5 + Tailwind + shadcn/ui
+- [x] Supabase project `febokmcgjatrfdfuaeyk` (eu-west-1): DB, Auth, Storage configurados
+- [x] RLS activado en todas las tablas
+- [x] 19 migraciones aplicadas al remoto (`supabase db push` vía pooler `aws-0-eu-west-1:6543`)
+  - ENUMs · profiles · categories · accounts · transactions · recurring_commitments
+  - budgets · auto_categorization_rules · custom_alerts · investments · investment_operations
+  - investment_snapshots · market_cache · notifications · materialized_views · rpc_functions
+  - `moddatetime` extension + wrapper function (`120001_setup_extensions`)
+- [x] Seed de 25+ categorías del sistema aplicado
+- [x] Seed de alertas fiscales predefinidas (IBI, IRPF, IVTM, seguros)
+- [x] `types/database.ts` generado desde schema real (1065 líneas)
+- [x] `lib/supabase/client.ts` + `server.ts` + `middleware.ts`
+- [x] `lib/financial/formatters.ts` (`formatCurrency`, `formatDate`, `decToCents`, `centsToDec`, `parseInputToCents`)
+- [x] GitHub Actions CI (`ci.yml`): type-check → lint → unit tests → build
+- [x] Sentry configurado: `sentry.client/server/edge.config.ts` + `instrumentation.ts` + `global-error.tsx` + `withSentryConfig` en `next.config.mjs`
+- [x] `vercel.json` configurado con headers de seguridad, región `fra1`, env references
+- [x] Unit tests Vitest: 9/9 pasan (`tests/unit/formatters.test.ts`)
+- [x] `npm run build` ✅ · `npm run type-check` ✅ · CI green
+- [x] Skill `supabase-migration` actualizado con patrón de push remoto (sin Docker)
+
+**Notas de implementación:**
+
+- La extensión `moddatetime` requiere una migración explícita (`120001`) antes de crear tablas con triggers `updated_at`. No se habilita automáticamente en Supabase Cloud.
+- `supabase link` no funciona con tokens `sb_` (nuevo formato). Usar siempre `--db-url` con `DATABASE_URL_POOLER` (puerto 6543).
+- Vercel env vars y GitHub Actions secrets pendientes de configurar manualmente en sus respectivos dashboards.
+
+### ⬜ Fase 1: Autenticación Completa (Semana 3-4)
 
 - [ ] Login / Register con validación robusta
 - [ ] Verificación de email
@@ -1205,7 +1218,7 @@ Listados en política de privacidad con DPA firmado:
 - [ ] Onboarding: crear primera cuenta + configurar moneda
 - [ ] RLS verificado con tests de acceso cruzado
 
-### Fase 2: Transacciones Core (Semana 5-7)
+### ⬜ Fase 2: Transacciones Core (Semana 5-7)
 
 - [ ] CRUD completo de transacciones
 - [ ] Entrada rápida mobile-optimizada
@@ -1214,7 +1227,7 @@ Listados en política de privacidad con DPA firmado:
 - [ ] Reglas de auto-categorización (motor determinista)
 - [ ] Dashboard básico (saldo del mes, últimas transacciones)
 
-### Fase 3: Compromisos Futuros + Suscripciones + Avisos (Semana 8-10)
+### ⬜ Fase 3: Compromisos Futuros + Suscripciones + Avisos (Semana 8-10)
 
 - [ ] CRUD de compromisos recurrentes con `commitment_type`
 - [ ] Timeline visual 24 meses
@@ -1225,7 +1238,7 @@ Listados en política de privacidad con DPA firmado:
 - [ ] Módulo Avisos Personalizados (M10): CRUD, seed alertas fiscales, Edge Function `check-alerts`
 - [ ] Lógica de impago para ingresos esperados no recibidos
 
-### Fase 4: Importación de Extractos (Semana 11-12)
+### ⬜ Fase 4: Importación de Extractos (Semana 11-12)
 
 - [ ] Parser SheetJS para Excel/CSV
 - [ ] Detección automática de columnas
@@ -1235,14 +1248,14 @@ Listados en política de privacidad con DPA firmado:
 - [ ] Detección de cobros de suscripciones canceladas en import pipeline
 - [ ] Verificación de ingresos esperados no recibidos post-import
 
-### Fase 5: Dashboard y Análisis (Semana 12-13)
+### ⬜ Fase 5: Dashboard y Análisis (Semana 12-13)
 
 - [ ] Dashboard completo con todos los widgets
 - [ ] Vistas de análisis por período
 - [ ] Presupuestos con alertas y detección estadística de anomalías
 - [ ] Informes exportables (PDF/Excel)
 
-### Fase 6: Inversiones (Semana 14-16)
+### ⬜ Fase 6: Inversiones (Semana 14-16)
 
 - [ ] CRUD de posiciones de inversión
 - [ ] Integración API de cotizaciones con caché
@@ -1251,7 +1264,7 @@ Listados en política de privacidad con DPA firmado:
 - [ ] Historial de operaciones con precio medio automático
 - [ ] Gráfico evolución cartera histórico
 
-### Fase 7: Polish y PWA (Semana 17-18)
+### ⬜ Fase 7: Polish y PWA (Semana 17-18)
 
 - [ ] PWA completa (manifest, service worker, offline mode)
 - [ ] Optimizaciones iOS/Safari (safe area, touch targets, teclado)
@@ -1261,7 +1274,7 @@ Listados en política de privacidad con DPA firmado:
 - [ ] Accessibility audit (WCAG 2.1 AA)
 - [ ] Performance optimization (LCP < 2.5s)
 
-### Fase 8: Seguridad y Compliance (Semana 19)
+### ⬜ Fase 8: Seguridad y Compliance (Semana 19)
 
 - [ ] Security audit completo (OWASP checklist)
 - [ ] Penetration testing básico
@@ -1269,7 +1282,7 @@ Listados en política de privacidad con DPA firmado:
 - [ ] Implementación RGPD (exportar/eliminar datos)
 - [ ] Cookie consent (si aplica — no cookies de terceros previstas)
 
-### Fase 9: Lanzamiento (Semana 20)
+### ⬜ Fase 9: Lanzamiento (Semana 20)
 
 - [ ] Dominio definitivo (patrimio.app o similar)
 - [ ] Certificado SSL, HSTS preload
