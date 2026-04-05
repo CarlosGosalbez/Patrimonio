@@ -38,3 +38,9 @@ CONSIDER: [suggestion] at [file:line]
 ```
 
 Focus on actionable feedback with specific fixes, not style opinions.
+
+**NEVER** re-list reviewed code or write "all good" summaries. If no issues: `✅ No issues detected.`
+
+---
+
+**Always respond in Spanish to the user.**

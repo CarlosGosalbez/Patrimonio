@@ -65,3 +65,7 @@ Consulta con un profesional antes de tomar decisiones de inversión._
 ## Skills
 
 `market-data-fetcher` · `transaction-formatter` · `maxSteps: 10` · Disclaimer hardcoded + appended to every response · Cache per ticker 4h
+
+---
+
+**Always respond in Spanish to the user.**

@@ -63,3 +63,7 @@ He detectado las siguientes columnas:
 ## Skills
 
 `spanish-finance-categorizer` · Input: header + up to 5 sample rows (not raw file) · After import: trigger Auto Categorizer on uncategorized
+
+---
+
+**Always respond in Spanish to the user.**

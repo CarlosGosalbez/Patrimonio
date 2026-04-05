@@ -148,3 +148,52 @@ Before finalizing a migration, verify:
 - [ ] `updated_at` trigger is added
 - [ ] Rollback is documented at the top
 - [ ] Monetary columns are `INTEGER` with `_cents` suffix
+
+## Applying Migrations to Remote Supabase (NO Docker)
+
+Patrimio works **remote-only**. Never use `supabase start` or Docker.
+
+### Prerequisites
+
+The `moddatetime` extension must be enabled via a setup migration before any table migration that uses `updated_at` triggers. The project has `20260405120001_setup_extensions.sql` for this purpose. **Do not create new migrations without this extension already applied.**
+
+### DB Push Command
+
+```powershell
+# Use DATABASE_URL_POOLER from .env.local (port 6543, Transaction pooler)
+npx supabase db push --db-url "postgresql://postgres.febokmcgjatrfdfuaeyk:PASSWORD@aws-0-eu-west-1.pooler.supabase.com:6543/postgres"
+```
+
+**Important notes:**
+
+- Use **port 6543** (Transaction pooler) NOT 5432 (direct connection — DNS often fails)
+- URL format: `postgres.[PROJECT_REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:6543/postgres`
+- Region for this project: `eu-west-1` (verify in Supabase Dashboard > Settings > Database)
+- `supabase link` requires a Personal Access Token (`sbp_...`). As of 2026 Supabase issues tokens with `sb_` prefix that are NOT compatible with `supabase link`. Use `--db-url` directly instead.
+
+### Generate Types After Migration
+
+```powershell
+npx supabase gen types typescript --db-url "postgresql://postgres.febokmcgjatrfdfuaeyk:PASSWORD@aws-0-eu-west-1.pooler.supabase.com:6543/postgres" --schema public > types/database.ts
+```
+
+This uses Docker (postgres-meta image) so Docker Desktop must be running.
+
+### moddatetime Extension
+
+Supabase does not auto-enable the `moddatetime` extension. The project uses a wrapper function in `public` schema:
+
+```sql
+-- In 20260405120001_setup_extensions.sql (already applied):
+CREATE EXTENSION IF NOT EXISTS moddatetime SCHEMA extensions;
+
+CREATE OR REPLACE FUNCTION public.moddatetime()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+```
+
+This wrapper lets all triggers use `EXECUTE FUNCTION moddatetime(updated_at)` without schema prefix. **Always verify this migration is applied before adding new tables with `updated_at` triggers.**

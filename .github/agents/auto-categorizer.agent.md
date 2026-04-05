@@ -55,3 +55,7 @@ Always return structured JSON for programmatic processing:
 - Tool calls only access data for the authenticated user (`user.id` from JWT)
 - See `lib/ai/skills/spanish-finance-categorizer.ts` for merchant database
 - Max 100 transactions in context per batch categorization
+
+---
+
+**Always respond in Spanish to the user.**

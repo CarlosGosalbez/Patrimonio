@@ -27,6 +27,20 @@ Every feature you ship must have:
 5. **Tests**: ≥1 unit test + ≥1 E2E scenario
 6. **Security sign-off**: security-reviewer invoked after API route
 
+## Output when done (CRITICAL)
+
+NEVER write extensive summaries or re-list code. Only:
+
+```
+✅ Feature complete:
+1. Migration + types
+2. API route validated
+3. UI component
+4. Tests (2 unit, 1 E2E)
+
+⚠️ Review: [only if blockers exist]
+```
+
 ---
 
 ## Phase 1 — Schema (if needed)
@@ -71,8 +85,7 @@ export async function POST(req: Request) {
 
   const body = await req.json();
   const parsed = InputSchema.safeParse(body);
-  if (!parsed.success)
-    return NextResponse.json({ error: parsed.error }, { status: 400 });
+  if (!parsed.success) return NextResponse.json({ error: parsed.error }, { status: 400 });
 
   // All DB operations filter by user.id — never trust body user_id
   const { data, error: dbError } = await supabase
@@ -81,8 +94,7 @@ export async function POST(req: Request) {
     .select()
     .single();
 
-  if (dbError)
-    return NextResponse.json({ error: dbError.message }, { status: 500 });
+  if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 });
   return NextResponse.json(data, { status: 201 });
 }
 ```
@@ -150,9 +162,7 @@ import { describe, it, expect, vi } from "vitest";
 vi.mock("@/lib/supabase/server", () => ({
   createServerClient: vi.fn(() => ({
     auth: {
-      getUser: vi
-        .fn()
-        .mockResolvedValue({ data: { user: { id: "user-123" } } }),
+      getUser: vi.fn().mockResolvedValue({ data: { user: { id: "user-123" } } }),
     },
     from: vi.fn(() => ({ insert: vi.fn(), select: vi.fn(), single: vi.fn() })),
   })),
@@ -197,3 +207,7 @@ FEATURE COMPLETE: [feature name]
 ```
 
 Store feature architecture decisions in project memory for future consistency.
+
+---
+
+**Always respond in Spanish to the user.**

@@ -1,0 +1,1075 @@
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
+export type Database = {
+  public: {
+    Tables: {
+      accounts: {
+        Row: {
+          account_type: string
+          bank_name: string | null
+          color: string | null
+          created_at: string
+          currency: string
+          current_balance_cents: number
+          deleted_at: string | null
+          iban: string | null
+          icon: string | null
+          id: string
+          initial_balance_cents: number
+          is_default: boolean
+          is_hidden: boolean
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_type: string
+          bank_name?: string | null
+          color?: string | null
+          created_at?: string
+          currency?: string
+          current_balance_cents?: number
+          deleted_at?: string | null
+          iban?: string | null
+          icon?: string | null
+          id?: string
+          initial_balance_cents?: number
+          is_default?: boolean
+          is_hidden?: boolean
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_type?: string
+          bank_name?: string | null
+          color?: string | null
+          created_at?: string
+          currency?: string
+          current_balance_cents?: number
+          deleted_at?: string | null
+          iban?: string | null
+          icon?: string | null
+          id?: string
+          initial_balance_cents?: number
+          is_default?: boolean
+          is_hidden?: boolean
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      auto_categorization_rules: {
+        Row: {
+          category_id: string
+          created_at: string
+          deleted_at: string | null
+          id: string
+          is_active: boolean
+          is_case_sensitive: boolean
+          is_regex: boolean
+          pattern: string
+          priority: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category_id: string
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          is_active?: boolean
+          is_case_sensitive?: boolean
+          is_regex?: boolean
+          pattern: string
+          priority?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category_id?: string
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          is_active?: boolean
+          is_case_sensitive?: boolean
+          is_regex?: boolean
+          pattern?: string
+          priority?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "auto_categorization_rules_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      budgets: {
+        Row: {
+          alert_threshold: number
+          category_id: string
+          created_at: string
+          currency: string
+          deleted_at: string | null
+          end_date: string | null
+          id: string
+          is_active: boolean
+          limit_cents: number
+          period: Database["public"]["Enums"]["budget_period"]
+          start_date: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          alert_threshold?: number
+          category_id: string
+          created_at?: string
+          currency?: string
+          deleted_at?: string | null
+          end_date?: string | null
+          id?: string
+          is_active?: boolean
+          limit_cents: number
+          period?: Database["public"]["Enums"]["budget_period"]
+          start_date: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          alert_threshold?: number
+          category_id?: string
+          created_at?: string
+          currency?: string
+          deleted_at?: string | null
+          end_date?: string | null
+          id?: string
+          is_active?: boolean
+          limit_cents?: number
+          period?: Database["public"]["Enums"]["budget_period"]
+          start_date?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "budgets_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      categories: {
+        Row: {
+          color: string | null
+          created_at: string
+          deleted_at: string | null
+          icon: string | null
+          id: string
+          is_income: boolean
+          name: string
+          parent_id: string | null
+          sort_order: number
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          deleted_at?: string | null
+          icon?: string | null
+          id?: string
+          is_income?: boolean
+          name: string
+          parent_id?: string | null
+          sort_order?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          deleted_at?: string | null
+          icon?: string | null
+          id?: string
+          is_income?: boolean
+          name?: string
+          parent_id?: string | null
+          sort_order?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "categories_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      custom_alerts: {
+        Row: {
+          advance_notice_days: number
+          auto_deactivate: boolean
+          category_id: string | null
+          created_at: string
+          currency: string
+          deleted_at: string | null
+          description: string | null
+          dismissed_until: string | null
+          due_date: string
+          expected_amount_cents: number | null
+          id: string
+          is_active: boolean
+          name: string
+          recurrence: Database["public"]["Enums"]["alert_recurrence_type"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          advance_notice_days?: number
+          auto_deactivate?: boolean
+          category_id?: string | null
+          created_at?: string
+          currency?: string
+          deleted_at?: string | null
+          description?: string | null
+          dismissed_until?: string | null
+          due_date: string
+          expected_amount_cents?: number | null
+          id?: string
+          is_active?: boolean
+          name: string
+          recurrence: Database["public"]["Enums"]["alert_recurrence_type"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          advance_notice_days?: number
+          auto_deactivate?: boolean
+          category_id?: string | null
+          created_at?: string
+          currency?: string
+          deleted_at?: string | null
+          description?: string | null
+          dismissed_until?: string | null
+          due_date?: string
+          expected_amount_cents?: number | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          recurrence?: Database["public"]["Enums"]["alert_recurrence_type"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "custom_alerts_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      investment_operations: {
+        Row: {
+          created_at: string
+          currency: string
+          deleted_at: string | null
+          fee_cents: number
+          id: string
+          investment_id: string
+          notes: string | null
+          operation_date: string
+          operation_type: Database["public"]["Enums"]["operation_type"]
+          price_cents: number
+          quantity: number
+          total_cents: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          deleted_at?: string | null
+          fee_cents?: number
+          id?: string
+          investment_id: string
+          notes?: string | null
+          operation_date: string
+          operation_type: Database["public"]["Enums"]["operation_type"]
+          price_cents: number
+          quantity: number
+          total_cents: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          deleted_at?: string | null
+          fee_cents?: number
+          id?: string
+          investment_id?: string
+          notes?: string | null
+          operation_date?: string
+          operation_type?: Database["public"]["Enums"]["operation_type"]
+          price_cents?: number
+          quantity?: number
+          total_cents?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "investment_operations_investment_id_fkey"
+            columns: ["investment_id"]
+            isOneToOne: false
+            referencedRelation: "investments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      investment_snapshots: {
+        Row: {
+          created_at: string
+          currency: string
+          id: string
+          snapshot_date: string
+          total_invested_cents: number
+          total_value_cents: number
+          unrealized_pl_cents: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          id?: string
+          snapshot_date: string
+          total_invested_cents?: number
+          total_value_cents?: number
+          unrealized_pl_cents?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          id?: string
+          snapshot_date?: string
+          total_invested_cents?: number
+          total_value_cents?: number
+          unrealized_pl_cents?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      investments: {
+        Row: {
+          avg_purchase_price_cents: number
+          created_at: string
+          currency: string
+          current_price_cents: number | null
+          current_value_cents: number | null
+          deleted_at: string | null
+          id: string
+          investment_type: Database["public"]["Enums"]["investment_type"]
+          is_active: boolean
+          last_price_update: string | null
+          market: string | null
+          name: string
+          notes: string | null
+          quantity: number
+          ticker: string
+          total_invested_cents: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avg_purchase_price_cents?: number
+          created_at?: string
+          currency?: string
+          current_price_cents?: number | null
+          current_value_cents?: number | null
+          deleted_at?: string | null
+          id?: string
+          investment_type: Database["public"]["Enums"]["investment_type"]
+          is_active?: boolean
+          last_price_update?: string | null
+          market?: string | null
+          name: string
+          notes?: string | null
+          quantity?: number
+          ticker: string
+          total_invested_cents?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avg_purchase_price_cents?: number
+          created_at?: string
+          currency?: string
+          current_price_cents?: number | null
+          current_value_cents?: number | null
+          deleted_at?: string | null
+          id?: string
+          investment_type?: Database["public"]["Enums"]["investment_type"]
+          is_active?: boolean
+          last_price_update?: string | null
+          market?: string | null
+          name?: string
+          notes?: string | null
+          quantity?: number
+          ticker?: string
+          total_invested_cents?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      market_cache: {
+        Row: {
+          asset_type: Database["public"]["Enums"]["investment_type"]
+          change_cents: number | null
+          change_percent: number | null
+          currency: string
+          data_source: string | null
+          id: string
+          market: string | null
+          name: string | null
+          price_cents: number
+          ticker: string
+          updated_at: string
+          volume: number | null
+        }
+        Insert: {
+          asset_type: Database["public"]["Enums"]["investment_type"]
+          change_cents?: number | null
+          change_percent?: number | null
+          currency?: string
+          data_source?: string | null
+          id?: string
+          market?: string | null
+          name?: string | null
+          price_cents: number
+          ticker: string
+          updated_at?: string
+          volume?: number | null
+        }
+        Update: {
+          asset_type?: Database["public"]["Enums"]["investment_type"]
+          change_cents?: number | null
+          change_percent?: number | null
+          currency?: string
+          data_source?: string | null
+          id?: string
+          market?: string | null
+          name?: string | null
+          price_cents?: number
+          ticker?: string
+          updated_at?: string
+          volume?: number | null
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          message: string
+          read_at: string | null
+          severity: Database["public"]["Enums"]["alert_severity"]
+          target_id: string | null
+          target_type: string | null
+          title: string
+          type: Database["public"]["Enums"]["notification_type"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message: string
+          read_at?: string | null
+          severity?: Database["public"]["Enums"]["alert_severity"]
+          target_id?: string | null
+          target_type?: string | null
+          title: string
+          type: Database["public"]["Enums"]["notification_type"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          read_at?: string | null
+          severity?: Database["public"]["Enums"]["alert_severity"]
+          target_id?: string | null
+          target_type?: string | null
+          title?: string
+          type?: Database["public"]["Enums"]["notification_type"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          currency: string
+          deleted_at: string | null
+          full_name: string | null
+          id: string
+          locale: string
+          onboarding_completed: boolean
+          timezone: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          currency?: string
+          deleted_at?: string | null
+          full_name?: string | null
+          id?: string
+          locale?: string
+          onboarding_completed?: boolean
+          timezone?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          currency?: string
+          deleted_at?: string | null
+          full_name?: string | null
+          id?: string
+          locale?: string
+          onboarding_completed?: boolean
+          timezone?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      recurring_commitments: {
+        Row: {
+          account_id: string
+          advance_notice_days: number | null
+          amount_cents: number
+          cancelled_at: string | null
+          category_id: string | null
+          commitment_type: Database["public"]["Enums"]["commitment_type_enum"]
+          created_at: string
+          currency: string
+          deleted_at: string | null
+          description: string | null
+          end_date: string | null
+          frequency: Database["public"]["Enums"]["frequency_type"]
+          id: string
+          interest_rate: number | null
+          is_active: boolean
+          is_automated: boolean
+          is_income: boolean
+          is_variable_rate: boolean | null
+          maturity_year: number | null
+          name: string
+          next_due_date: string
+          service_name: string | null
+          start_date: string
+          tolerance_days: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_id: string
+          advance_notice_days?: number | null
+          amount_cents: number
+          cancelled_at?: string | null
+          category_id?: string | null
+          commitment_type?: Database["public"]["Enums"]["commitment_type_enum"]
+          created_at?: string
+          currency?: string
+          deleted_at?: string | null
+          description?: string | null
+          end_date?: string | null
+          frequency: Database["public"]["Enums"]["frequency_type"]
+          id?: string
+          interest_rate?: number | null
+          is_active?: boolean
+          is_automated?: boolean
+          is_income?: boolean
+          is_variable_rate?: boolean | null
+          maturity_year?: number | null
+          name: string
+          next_due_date: string
+          service_name?: string | null
+          start_date: string
+          tolerance_days?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_id?: string
+          advance_notice_days?: number | null
+          amount_cents?: number
+          cancelled_at?: string | null
+          category_id?: string | null
+          commitment_type?: Database["public"]["Enums"]["commitment_type_enum"]
+          created_at?: string
+          currency?: string
+          deleted_at?: string | null
+          description?: string | null
+          end_date?: string | null
+          frequency?: Database["public"]["Enums"]["frequency_type"]
+          id?: string
+          interest_rate?: number | null
+          is_active?: boolean
+          is_automated?: boolean
+          is_income?: boolean
+          is_variable_rate?: boolean | null
+          maturity_year?: number | null
+          name?: string
+          next_due_date?: string
+          service_name?: string | null
+          start_date?: string
+          tolerance_days?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recurring_commitments_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recurring_commitments_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      transactions: {
+        Row: {
+          account_id: string
+          amount_cents: number
+          category_id: string | null
+          created_at: string
+          currency: string
+          deleted_at: string | null
+          description: string
+          id: string
+          import_batch_id: string | null
+          import_source: string | null
+          is_income: boolean
+          notes: string | null
+          receipt_url: string | null
+          tags: string[] | null
+          transaction_date: string
+          transfer_id: string | null
+          updated_at: string
+          user_id: string
+          value_date: string | null
+        }
+        Insert: {
+          account_id: string
+          amount_cents: number
+          category_id?: string | null
+          created_at?: string
+          currency?: string
+          deleted_at?: string | null
+          description: string
+          id?: string
+          import_batch_id?: string | null
+          import_source?: string | null
+          is_income?: boolean
+          notes?: string | null
+          receipt_url?: string | null
+          tags?: string[] | null
+          transaction_date?: string
+          transfer_id?: string | null
+          updated_at?: string
+          user_id: string
+          value_date?: string | null
+        }
+        Update: {
+          account_id?: string
+          amount_cents?: number
+          category_id?: string | null
+          created_at?: string
+          currency?: string
+          deleted_at?: string | null
+          description?: string
+          id?: string
+          import_batch_id?: string | null
+          import_source?: string | null
+          is_income?: boolean
+          notes?: string | null
+          receipt_url?: string | null
+          tags?: string[] | null
+          transaction_date?: string
+          transfer_id?: string | null
+          updated_at?: string
+          user_id?: string
+          value_date?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_transfer_id_fkey"
+            columns: ["transfer_id"]
+            isOneToOne: false
+            referencedRelation: "transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+    }
+    Views: {
+      monthly_account_balance: {
+        Row: {
+          account_id: string | null
+          month: string | null
+          net_amount_cents: number | null
+          transaction_count: number | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      monthly_category_spending: {
+        Row: {
+          avg_cents: number | null
+          category_id: string | null
+          month: string | null
+          total_cents: number | null
+          transaction_count: number | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+    }
+    Functions: {
+      create_default_custom_alerts: {
+        Args: { p_user_id: string }
+        Returns: undefined
+      }
+      get_net_worth: {
+        Args: { p_user_id: string }
+        Returns: {
+          cash_cents: number
+          currency: string
+          investments_cents: number
+          total_cents: number
+        }[]
+      }
+      project_cash_flow: {
+        Args: { p_months?: number; p_user_id: string }
+        Returns: {
+          month_date: string
+          net_cents: number
+          projected_expense_cents: number
+          projected_income_cents: number
+        }[]
+      }
+      recalculate_avg_purchase_price: {
+        Args: { p_investment_id: string }
+        Returns: undefined
+      }
+    }
+    Enums: {
+      alert_recurrence_type:
+        | "monthly"
+        | "quarterly"
+        | "semiannual"
+        | "annual"
+        | "biennial"
+        | "once"
+      alert_severity: "info" | "warning" | "critical"
+      budget_period: "monthly" | "annual"
+      commitment_type_enum:
+        | "mortgage"
+        | "rent_income"
+        | "rent_expense"
+        | "subscription"
+        | "tax"
+        | "insurance"
+        | "utility"
+        | "other"
+      frequency_type:
+        | "daily"
+        | "weekly"
+        | "biweekly"
+        | "monthly"
+        | "bimonthly"
+        | "quarterly"
+        | "semiannual"
+        | "annual"
+      investment_type:
+        | "stock"
+        | "etf"
+        | "fund"
+        | "crypto"
+        | "deposit"
+        | "bond"
+        | "reit"
+        | "other"
+      notification_type:
+        | "budget_exceeded"
+        | "commitment_due"
+        | "investment_alert"
+        | "custom_alert_due"
+        | "subscription_unexpected_charge"
+        | "expected_income_unpaid"
+        | "anomaly_detected"
+        | "system"
+      operation_type:
+        | "buy"
+        | "sell"
+        | "dividend"
+        | "split"
+        | "fee"
+        | "transfer_in"
+        | "transfer_out"
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+}
+
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
+
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
+
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
+
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
+
+export const Constants = {
+  public: {
+    Enums: {
+      alert_recurrence_type: [
+        "monthly",
+        "quarterly",
+        "semiannual",
+        "annual",
+        "biennial",
+        "once",
+      ],
+      alert_severity: ["info", "warning", "critical"],
+      budget_period: ["monthly", "annual"],
+      commitment_type_enum: [
+        "mortgage",
+        "rent_income",
+        "rent_expense",
+        "subscription",
+        "tax",
+        "insurance",
+        "utility",
+        "other",
+      ],
+      frequency_type: [
+        "daily",
+        "weekly",
+        "biweekly",
+        "monthly",
+        "bimonthly",
+        "quarterly",
+        "semiannual",
+        "annual",
+      ],
+      investment_type: [
+        "stock",
+        "etf",
+        "fund",
+        "crypto",
+        "deposit",
+        "bond",
+        "reit",
+        "other",
+      ],
+      notification_type: [
+        "budget_exceeded",
+        "commitment_due",
+        "investment_alert",
+        "custom_alert_due",
+        "subscription_unexpected_charge",
+        "expected_income_unpaid",
+        "anomaly_detected",
+        "system",
+      ],
+      operation_type: [
+        "buy",
+        "sell",
+        "dividend",
+        "split",
+        "fee",
+        "transfer_in",
+        "transfer_out",
+      ],
+    },
+  },
+} as const
+

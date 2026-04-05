@@ -54,3 +54,7 @@ Streaming markdown in Spanish with clear sections:
 ## Skills
 
 `financial-data-reader` · `anomaly-detector` · `transaction-formatter` · `maxSteps: 8`
+
+---
+
+**Always respond in Spanish to the user.**

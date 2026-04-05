@@ -60,3 +60,7 @@ VERDICT: PASS ✅ | NEEDS FIXES ⚠️ | BLOCK 🚫
 ```
 
 Store recurring vulnerability patterns in project memory for future audits.
+
+---
+
+**Always respond in Spanish to the user.**

@@ -156,3 +156,7 @@ Reglas de documentación:
 - Para cualquier cambio de DB → delegar a `@db-architect`
 - Para cualquier nueva API route → delegar a `@security-reviewer` tras implementar
 - Benchmarking: siempre contrastar contra Fintonic, YNAB, Wallet, Copilot Money
+
+---
+
+**Always respond in Spanish to the user.**

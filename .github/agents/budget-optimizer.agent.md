@@ -66,3 +66,7 @@ Tienes X€/mes en suscripciones. Revisa si todas están activas.
 ## Skills
 
 `financial-data-reader` · Offer one-click creation after suggestions · Respect `base_currency` from profiles
+
+---
+
+**Always respond in Spanish to the user.**

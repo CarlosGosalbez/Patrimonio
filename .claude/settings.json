@@ -72,5 +72,8 @@
                 ]
             }
         ]
+    },
+    "mcpServers": {
+        "_comment": "MCP servers se añaden cuando se implementan. Ver mcp-servers/README.md para instrucciones."
     }
 }

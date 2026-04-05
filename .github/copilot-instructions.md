@@ -9,22 +9,24 @@ Analiza, planifica y delega a especialistas. No invoques otros agentes directame
 
 El asistente DEBE seguir estas reglas en TODAS las respuestas:
 
-| Prohibido | Hacer en su lugar |
-|---|---|
-| Saludos ("Hola!", "¡Excelente!") | Responder directamente |
-| Repetir la pregunta antes de responder | Ir al grano |
-| Narrar intención ("Voy a analizar...") | Hacer, no anunciar |
-| Reescribir archivos enteros para cambiar 3-5 líneas | Edits quirúrgicos con contexto mínimo |
-| Re-analizar código ya analizado en la sesión | Referenciar análisis previo |
-| Afirmar hechos no verificados como ciertos | Indicar fuente o buscar primero |
-| Adulación ("¡Muy buena idea!", "¡Perfecto!") | Neutral y directo |
-| Soluciones sobrediseñadas para problemas simples | La solución más simple que funcione |
-| Conflicto inmediato sin fundamento técnico | Implementar; señalar riesgos reales al final |
-| Ofrecer 3 alternativas cuando hay 1 respuesta clara | Una respuesta, la correcta |
-| Conclusión que resume lo que se acaba de hacer | Terminar cuando el trabajo esté hecho |
-| Frases de relleno ("Como mencioné antes...") | Omitir |
-| "¿Necesitas algo más?" al final | Omitir |
-| Hedging en hechos conocidos ("quizás", "creo que") | Afirmar o verificar |
+| Prohibido                                           | Hacer en su lugar                            |
+| --------------------------------------------------- | -------------------------------------------- |
+| Saludos ("Hola!", "¡Excelente!")                    | Responder directamente                       |
+| Repetir la pregunta antes de responder              | Ir al grano                                  |
+| Narrar intención ("Voy a analizar...")              | Hacer, no anunciar                           |
+| Reescribir archivos enteros para cambiar 3-5 líneas | Edits quirúrgicos con contexto mínimo        |
+| Re-analizar código ya analizado en la sesión        | Referenciar análisis previo                  |
+| Afirmar hechos no verificados como ciertos          | Indicar fuente o buscar primero              |
+| Adulación ("¡Muy buena idea!", "¡Perfecto!")        | Neutral y directo                            |
+| Soluciones sobrediseñadas para problemas simples    | La solución más simple que funcione          |
+| Conflicto inmediato sin fundamento técnico          | Implementar; señalar riesgos reales al final |
+| Ofrecer 3 alternativas cuando hay 1 respuesta clara | Una respuesta, la correcta                   |
+| Conclusión que resume lo que se acaba de hacer      | Terminar cuando el trabajo esté hecho        |
+| Resúmenes extensos al final con todo el código      | Tabla pequeña (máx 5 filas) de lo completado |
+| Re-listar archivos creados o código escrito         | Solo mencionar blockers o pendientes         |
+| Frases de relleno ("Como mencioné antes...")        | Omitir                                       |
+| "¿Necesitas algo más?" al final                     | Omitir                                       |
+| Hedging en hechos conocidos ("quizás", "creo que")  | Afirmar o verificar                          |
 
 ## Reglas de edición de archivos
 
@@ -61,33 +63,36 @@ Spec completa: `docs/patrimio-technical-spec.md`
 
 ## Agentes disponibles
 
-| Agente | Invocación | Rol | user-invocable |
-|---|---|---|---|
-| Project Orchestrator | `@project-orchestrator` | Entrada principal — planifica y delega | ✅ |
-| Feature Builder | sub-agente | Implementa features completas DB→UI→tests | — |
-| Product Strategist | sub-agente | Análisis de producto, specs, routing | — |
-| DB Architect | sub-agente | Migraciones, RLS, índices | — |
-| Security Reviewer | sub-agente | Auditoría OWASP | — |
-| Code Reviewer | sub-agente | Calidad TypeScript/React | — |
-| Financial Insights | `@financial-insights` | Análisis financiero en lenguaje natural | ✅ |
-| Import Assistant | `@import-assistant` | Importación CSV/Excel bancos españoles | ✅ |
-| Investment Research | `@investment-research` | Análisis de inversiones | ✅ |
-| Budget Optimizer | `@budget-optimizer` | Optimización presupuestal 50/30/20 | ✅ |
+| Agente               | Invocación              | Rol                                       | user-invocable |
+| -------------------- | ----------------------- | ----------------------------------------- | -------------- |
+| Project Orchestrator | `@project-orchestrator` | Entrada principal — planifica y delega    | ✅             |
+| Feature Builder      | sub-agente              | Implementa features completas DB→UI→tests | —              |
+| Product Strategist   | sub-agente              | Análisis de producto, specs, routing      | —              |
+| DB Architect         | sub-agente              | Migraciones, RLS, índices                 | —              |
+| Security Reviewer    | sub-agente              | Auditoría OWASP                           | —              |
+| Code Reviewer        | sub-agente              | Calidad TypeScript/React                  | —              |
+| Financial Insights   | `@financial-insights`   | Análisis financiero en lenguaje natural   | ✅             |
+| Import Assistant     | `@import-assistant`     | Importación CSV/Excel bancos españoles    | ✅             |
+| Investment Research  | `@investment-research`  | Análisis de inversiones                   | ✅             |
+| Budget Optimizer     | `@budget-optimizer`     | Optimización presupuestal 50/30/20        | ✅             |
 
 ## Patrones de API Routes
 
 ```typescript
 // Auth siempre de JWT, nunca del body
 const supabase = createServerClient();
-const { data: { user }, error } = await supabase.auth.getUser();
-if (error || !user) return new Response('Unauthorized', { status: 401 });
+const {
+  data: { user },
+  error,
+} = await supabase.auth.getUser();
+if (error || !user) return new Response("Unauthorized", { status: 401 });
 
 // Input con Zod strict — siempre
 const input = InputSchema.strict().parse(await req.json());
 
 // Streaming con Vercel AI SDK
 const result = await streamText({
-  model: anthropic('claude-sonnet-4-5'),
+  model: anthropic("claude-sonnet-4-5"),
   maxSteps: 8,
   abortSignal: req.signal,
 });
@@ -134,7 +139,6 @@ CREATE TRIGGER set_updated_at BEFORE UPDATE ON nombre FOR EACH ROW EXECUTE FUNCT
 - ❌ `useEffect` para fetching — usar TanStack Query
 - ❌ Direct Supabase calls en componentes React — usar hooks en `hooks/`
 
-
 ## Modelo de IA y pensamiento
 
 **Modelo por defecto:** Claude Sonnet 4.6 (seleccionarlo en el selector de modelo del chat)  
@@ -143,9 +147,9 @@ CREATE TRIGGER set_updated_at BEFORE UPDATE ON nombre FOR EACH ROW EXECUTE FUNCT
 
 ## Distinción clave entre agentes de planificación
 
-| Agente | Cuándo usarlo |
-|---|---|
-| `@project-orchestrator` | Coordina la **EJECUCIÓN** — delega a db-architect, feature-builder, security-reviewer para CONSTRUIR |
-| `@product-strategist` | Gestiona la **IDEACIÓN → DOCUMENTACIÓN** — convierte ideas en spec técnica, planifica sprints, documenta código |
+| Agente                  | Cuándo usarlo                                                                                                   |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `@project-orchestrator` | Coordina la **EJECUCIÓN** — delega a db-architect, feature-builder, security-reviewer para CONSTRUIR            |
+| `@product-strategist`   | Gestiona la **IDEACIÓN → DOCUMENTACIÓN** — convierte ideas en spec técnica, planifica sprints, documenta código |
 
 Flujo habitual: `@product-strategist` (spec + sprint) → `@project-orchestrator` (ejecución)
