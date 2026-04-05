@@ -1,7 +1,7 @@
 # PATRIMIO — Especificación Técnica Completa
 
-**Versión:** 1.0.0  
-**Fecha:** 2025  
+**Versión:** 1.1.0  
+**Fecha:** 2026  
 **Clasificación:** Documento Técnico de Arquitectura y Producto  
 **Autor:** Arquitectura de Sistema
 
@@ -15,7 +15,7 @@
 4. [Base de Datos — Esquema Completo](#4-base-de-datos--esquema-completo)
 5. [Seguridad — Capas y Protocolos](#5-seguridad--capas-y-protocolos)
 6. [Autenticación y Autorización](#6-autenticación-y-autorización)
-7. [Módulos Funcionales](#7-módulos-funcionales)
+7. [Módulos Funcionales](#7-módulos-funcionales) (M0–M10)
 8. [Integraciones Externas](#8-integraciones-externas)
 9. [PWA e Experiencia Mobile (iOS/Safari)](#9-pwa-e-experiencia-mobile-iossafari)
 10. [Testing y Calidad](#11-testing-y-calidad)
@@ -266,7 +266,7 @@ CREATE INDEX idx_transactions_tags ON transactions USING gin(tags);
 
 **RLS**: `user_id = auth.uid() AND deleted_at IS NULL`
 
-#### `recurring_commitments` — Compromisos futuros
+#### `recurring_commitments` — Compromisos futuros y suscripciones
 
 ```sql
 CREATE TABLE recurring_commitments (
@@ -274,23 +274,32 @@ CREATE TABLE recurring_commitments (
   user_id           UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   name              VARCHAR(200) NOT NULL,
   type              transaction_type NOT NULL, -- income o expense
+  commitment_type   commitment_type_enum NOT NULL DEFAULT 'other',
+  -- ENUM: mortgage, rent_income, rent_expense, subscription, tax, insurance, utility, other
   amount_cents      INTEGER NOT NULL,
   currency          VARCHAR(3) NOT NULL DEFAULT 'EUR',
   frequency         frequency_type NOT NULL, -- ENUM: weekly, biweekly, monthly, quarterly, annual, custom
-  custom_days       SMALLINT, -- Si frequency = custom, cada N días
+  custom_days       SMALLINT,
   start_date        DATE NOT NULL,
-  end_date          DATE, -- NULL = indefinido; fecha de vencimiento hipoteca, etc.
+  end_date          DATE,
   account_id        UUID REFERENCES accounts(id),
   category_id       UUID REFERENCES categories(id),
   description       TEXT,
   notes             TEXT,
-  last_generated    DATE, -- Última fecha en que se generó instancia
-  auto_generate     BOOLEAN DEFAULT true, -- Si debe crear transacciones automáticamente
+  last_generated    DATE,
+  auto_generate     BOOLEAN DEFAULT true,
   is_active         BOOLEAN DEFAULT true,
+  -- Campos suscripciones: si cancelled_at está set y aparece cargo posterior → alerta
+  cancelled_at      DATE,
+  service_name      VARCHAR(100), -- Nombre exacto que aparece en extracto bancario
+  -- Campos ingresos esperados: si no llega en tolerance_days → notificación impago
+  tolerance_days    SMALLINT DEFAULT 3,
   created_at        TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at        TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   deleted_at        TIMESTAMPTZ
 );
+
+CREATE INDEX idx_commitments_user ON recurring_commitments(user_id) WHERE deleted_at IS NULL;
 ```
 
 **RLS**: `user_id = auth.uid() AND deleted_at IS NULL`
@@ -411,6 +420,44 @@ CREATE TABLE auto_categorization_rules (
 ```
 
 **RLS**: `user_id = auth.uid()`
+
+#### `custom_alerts` — Avisos personalizados (impuestos, seguros, fechas clave)
+
+```sql
+CREATE TABLE custom_alerts (
+  id                   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id              UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  name                 VARCHAR(200) NOT NULL,
+  description          TEXT,
+  alert_category       VARCHAR(100), -- 'IBI', 'IRPF', 'seguro_coche', 'impuesto_vehiculo', 'basura', custom
+  expected_amount_cents INTEGER,     -- Presupuesto orientativo para el gasto
+  due_date             DATE NOT NULL, -- Próxima fecha límite de pago
+  recurrence           alert_recurrence_type NOT NULL, -- ENUM: annual, one_time, custom
+  recurrence_month     SMALLINT,    -- Mes del año (1-12) para recurrencias anuales
+  recurrence_day       SMALLINT,    -- Día del mes (1-31)
+  advance_notice_days  SMALLINT DEFAULT 30, -- Avisar X días antes del vencimiento
+  is_active            BOOLEAN DEFAULT true,
+  last_notified_at     TIMESTAMPTZ,
+  dismissed_until      DATE,        -- Snooze: no volver a avisar hasta esta fecha
+  created_at           TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at           TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  deleted_at           TIMESTAMPTZ
+);
+
+CREATE INDEX idx_custom_alerts_user ON custom_alerts(user_id, due_date)
+  WHERE deleted_at IS NULL AND is_active = true;
+```
+
+**RLS**: `user_id = auth.uid() AND deleted_at IS NULL`
+
+**Alertas predefinidas del sistema (seed, editables por el usuario):**
+
+- IBI: recurrencia anual, aviso 30 días antes (mes configurable por comunidad autónoma)
+- IRPF / Declaración de la Renta: anual, 30 junio, aviso 45 días antes
+- Impuesto de Circulación (IVTM): anual, fecha variable por municipio
+- Seguro del Coche: anual, aviso 30 días antes de renovación
+- Seguro del Hogar: anual
+- Tasa de Basura: anual o semestral, configurable
 
 #### `market_cache` — Caché de cotizaciones (no tiene RLS de usuario)
 
@@ -563,21 +610,9 @@ Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
 
 ### 5.5 Política de Contraseñas y Sesiones
 
-```text
-Contraseña mínima:
-  - 12 caracteres mínimo
-  - Al menos 1 mayúscula, 1 minúscula, 1 número, 1 símbolo
-  - Score zxcvbn >= 3 (de 4)
-  - No puede ser igual a las últimas 5 contraseñas
-  - No puede contener el email del usuario
+**Contraseña:** mínimo 12 chars · mayúscula + minúscula + número + símbolo · zxcvbn ≥ 3 · no igual a últimas 5 · no contiene email
 
-Sesiones:
-  - Access token: JWT, expira en 1 hora
-  - Refresh token: opaco, expira en 7 días, rotación en cada uso
-  - Sesión inactiva: logout automático tras 30 minutos sin actividad
-  - Máximo 5 sesiones activas simultáneas por usuario
-  - Login en nuevo dispositivo: notificación email inmediata
-```
+**Sesiones:** JWT expira 1h · refresh token 7 días con rotación · auto-logout 30min inactivo · máx. 5 sesiones simultáneas · email en login desde dispositivo nuevo
 
 ---
 
@@ -607,12 +642,7 @@ Usuario → Email + Password + (TOTP si activo)
 6. Códigos de recuperación se muestran UNA VEZ y se almacenan hasheados (bcrypt) en BD
 7. 2FA queda activado — cada login requiere el código TOTP
 
-**Aplicaciones compatibles:**
-
-- Google Authenticator (iOS/Android)
-- Authy (iOS/Android/Desktop)
-- Apple Passwords (iOS 17+, integrado en Safari) ← prioritario para iPhone
-- 1Password, Bitwarden, Dashlane
+**Aplicaciones compatibles:** Apple Passwords (iOS 17+, integrado en Safari — prioridad), Google Authenticator, Authy, 1Password, Bitwarden
 
 ### 6.3 Row Level Security — Políticas Tipo
 
@@ -639,24 +669,18 @@ CREATE POLICY "users_delete_transactions" ON transactions
 
 ### 6.4 Biometría Web — Face ID / Touch ID (WebAuthn)
 
-Patrimio es una **aplicación web** desplegada en Vercel y accesible desde el navegador. Al añadirla al escritorio desde Safari en iPhone («Añadir a pantalla de inicio»), se instala en modo standalone y se comporta como una app nativa, incluyendo soporte completo de biometría.
+WebAuthn API (W3C, Safari iOS 14.5+) permite Face ID / Touch ID sin app nativa.
 
-La **WebAuthn API** (estándar W3C, soportada en Safari iOS 14.5+) permite usar Face ID y Touch ID directamente desde la web sin necesidad de app nativa ni App Store:
+| Modo             | Descripción                                      | Requisito            |
+| ---------------- | ------------------------------------------------ | -------------------- |
+| 2FA biométrico   | Face/Touch ID como segundo factor                | iOS 14.5+            |
+| Passkey          | Login sin contraseña                             | iOS 16+ / Safari 17+ |
+| Re-autenticación | Acciones críticas (borrar cuenta, exportar RGPD) | iOS 14.5+            |
 
-| Modo                 | Descripción                                                                     | Requisito iOS/Safari |
-| -------------------- | ------------------------------------------------------------------------------- | -------------------- |
-| **2FA biométrico**   | Face ID / Touch ID como segundo factor tras email+contraseña                    | iOS 14.5+            |
-| **Passkey**          | Login sin contraseña, solo biometría                                            | iOS 16+ / Safari 17+ |
-| **Re-autenticación** | Confirmar identidad antes de acciones críticas (eliminar cuenta, exportar RGPD) | iOS 14.5+            |
-
-**Implementación:**
-
-- Frontend: `@simplewebauthn/browser`
-- Backend (API route Next.js): `@simplewebauthn/server`
-- Tabla en BD: `webauthn_credentials` — almacena credential ID, public key y metadata por dispositivo
-- El usuario puede registrar múltiples dispositivos (iPhone + iPad + MacBook)
-
-**Importante:** WebAuthn solo funciona en HTTPS (cubierto por Vercel) y en la misma origin. Funciona correctamente tanto en Safari (navegador) como instalado en la pantalla de inicio en modo PWA.
+- Frontend: `@simplewebauthn/browser` · Backend: `@simplewebauthn/server`
+- Tabla `webauthn_credentials`: credential ID, public key, metadata por dispositivo
+- Multidevice: iPhone + iPad + MacBook registrables simultáneamente
+- Requiere HTTPS (cubierto por Vercel); funciona en Safari y en PWA standalone
 
 ---
 
@@ -686,7 +710,7 @@ La **WebAuthn API** (estándar W3C, soportada en Safari iOS 14.5+) permite usar 
 - **Top categorías**: Donut chart de los 5 mayores gastos del mes
 - **Próximos compromisos**: Lista de los 7 próximos vencimientos/cuotas
 - **Cartera resumen**: Valor total inversiones + P&L del día
-- **Alertas activas**: Badge con presupuestos al límite o vencimientos próximos
+- **Alertas activas**: Badge unificado con: presupuestos al límite · suscripciones cobradas indebidamente · ingresos esperados no recibidos · avisos personalizados próximos (IBI, IRPF, seguros)
 - **Últimas transacciones**: 5 más recientes con categoría e importe
 
 **Personalización:** el usuario puede reordenar y ocultar widgets
@@ -723,9 +747,11 @@ La **WebAuthn API** (estándar W3C, soportada en Safari iOS 14.5+) permite usar 
 4. **Preview interactivo**: tabla con todas las transacciones detectadas, editable
 5. **Mapeo de columnas**: si la detección falla, el usuario arrastra para asignar columnas
 6. **Deduplicación**: comparación contra transacciones existentes (fecha + importe + descripción similar) con flag "posible duplicado"
-7. **Auto-categorización**: aplica las reglas del usuario (motor determinista, sin IA)
-8. **Confirmación y ajuste bulk**: el usuario puede modificar categorías de múltiples transacciones similares en un paso
-9. Import → transacciones creadas con `import_source` y `import_batch_id` para rollback si es necesario
+7. **Detección de cobros de suscripciones canceladas**: para cada transacción importada, se comprueba si su descripción coincide con el `service_name` de algún `recurring_commitment` donde `cancelled_at < transaction_date`. Si hay coincidencia → flag `⚠️ Cobro inesperado: suscripción cancelada` y genera notificación `subscription_unexpected_charge`
+8. **Verificación de ingresos esperados**: tras importar, el sistema comprueba los compromisos de tipo `income` cuya fecha de cobro esperada ha pasado (`tolerance_days`) sin que haya transacción coincidente → genera notificación `expected_income_unpaid`
+9. **Auto-categorización**: aplica las reglas del usuario (motor determinista, sin IA)
+10. **Confirmación y ajuste bulk**: el usuario puede modificar categorías de múltiples transacciones similares en un paso
+11. Import → transacciones creadas con `import_source` y `import_batch_id` para rollback si es necesario
 
 **Formatos de extracto bancarios españoles soportados:**
 
@@ -747,9 +773,11 @@ La **WebAuthn API** (estándar W3C, soportada en Safari iOS 14.5+) permite usar 
 **Funcionalidades:**
 
 - Crear compromisos con todos los parámetros: nombre, tipo, importe, frecuencia, inicio, fin
+- **Tipo de compromiso**: hipoteca, alquiler cobrado/pagado, suscripción, impuesto, seguro, suministro, otro (afecta lógica de alertas)
 - **Proyección visual**: curva de saldo estimado a 12 meses combinando compromisos + promedio histórico
 - **Alertas de vencimiento**: notificación configurable X días antes de que venza un compromiso
 - **Alerta de saldo insuficiente**: proyección detecta si el saldo podría ser negativo en algún mes y avisa
+- **Alerta de impago (ingresos)**: Edge Function diaria verifica compromisos `type=income` cuya fecha esperada ha transcurrido más de `tolerance_days` sin transacción coincidente → notificación `expected_income_unpaid` (ej: alquiler no cobrado)
 - **Auto-generación de transacciones**: opcionalmente crea la transacción el día que toca (configurable)
 - **Gestión de hipoteca**: campo específico para el año de vencimiento, amortización anticipada, tipo fijo/variable
 - **Tabla anual de compromisos**: vista matricial mes × compromiso con totales
@@ -809,6 +837,45 @@ La **WebAuthn API** (estándar W3C, soportada en Safari iOS 14.5+) permite usar 
 
 ---
 
+### 7.10 Suscripciones (M9)
+
+**Objetivo:** Detectar cobros de suscripciones canceladas o no autorizadas.
+
+**Funcionalidades:**
+
+- CRUD de suscripciones vinculadas a `recurring_commitments` (`commitment_type = 'subscription'`)
+- Campo `service_name`: texto que aparece en el extracto bancario (p.ej. "NETFLIX", "SPOTIFY") — usado para matching en importación
+- Campo `cancelled_at`: fecha en que el usuario canceló el servicio. Si se importa un cargo posterior → alerta `subscription_unexpected_charge` con botón "Reclamar"
+- **Panel de suscripciones**: lista con estado (activa / cancelada / alerta de cobro inesperado), importe mensual total, próxima renovación
+- **Detector en importación**: matching por descripción contra `service_name` (contains, case-insensitive). Si `cancelled_at < fecha_cargo` → marcado en rojo en el preview de importación y notificación tras confirmar
+- **Comparativa vs año anterior**: gasto total en suscripciones mes a mes
+
+**DB:** Usa `recurring_commitments` con `commitment_type = 'subscription'`. No requiere tabla nueva.
+
+---
+
+### 7.11 Avisos Personalizados (M10)
+
+**Objetivo:** Recordatorios configurables para obligaciones fiscales, seguros y pagos periódicos no recurrentes en el flujo de caja habitual.
+
+**Funcionalidades:**
+
+- CRUD de avisos sobre tabla `custom_alerts`
+- **Alertas predefinidas del sistema** (editables): IBI, IRPF, Impuesto Circulación, Seguro Coche, Seguro Hogar, Tasa de Basura
+- Campos configurables por aviso: fecha límite · importe máximo esperado · días de antelación del aviso · recurrencia (anual / única vez / personalizado)
+- **Snooze**: posponer el aviso hasta una fecha concreta (`dismissed_until`)
+- **Vinculación a categoría**: al crear el aviso, el usuario puede asociarlo a una categoría de gasto para que el dashboard detecte si ya se registró el pago y desactive el aviso automáticamente
+- **Widget en Dashboard**: sección "Próximos vencimientos" con avisos de los siguientes 60 días ordenados por urgencia
+- **Email digest semanal** (opcional): resumen de avisos activos enviado por Resend
+
+**Edge Function `check-alerts` (cron diario):**
+
+1. Consulta `custom_alerts` donde `due_date - advance_notice_days <= TODAY` y `last_notified_at IS NULL OR last_notified_at < hoy`
+2. Consulta `recurring_commitments (income)` donde fecha esperada ha pasado más de `tolerance_days` y no existe transacción coincidente
+3. Genera notificaciones en tabla `notifications` + envía email si el canal está activado
+
+---
+
 ## 8. INTEGRACIONES EXTERNAS
 
 ### 8.1 APIs de Cotizaciones Financieras
@@ -835,6 +902,9 @@ La **WebAuthn API** (estándar W3C, soportada en Safari iOS 14.5+) permite usar 
 - Notificación de nuevo login desde dispositivo desconocido
 - Alertas de presupuesto (semanal digest opcional)
 - Alerta de vencimiento de compromiso
+- **Alerta de cobro inesperado de suscripción cancelada**
+- **Alerta de ingreso esperado no recibido (impago)**
+- **Avisos personalizados (IBI, IRPF, seguros, etc.)** — puede incluirse en digest semanal
 - Informe mensual automático (opcional, toggle del usuario)
 
 ### 8.3 Sentry (Error Monitoring)
@@ -1144,21 +1214,26 @@ Listados en política de privacidad con DPA firmado:
 - [ ] Reglas de auto-categorización (motor determinista)
 - [ ] Dashboard básico (saldo del mes, últimas transacciones)
 
-### Fase 3: Compromisos Futuros (Semana 8-9)
+### Fase 3: Compromisos Futuros + Suscripciones + Avisos (Semana 8-10)
 
-- [ ] CRUD de compromisos recurrentes
+- [ ] CRUD de compromisos recurrentes con `commitment_type`
 - [ ] Timeline visual 24 meses
 - [ ] Proyección de flujo de caja
 - [ ] Alertas de vencimiento
 - [ ] Auto-generación de transacciones recurrentes (Edge Function cron)
+- [ ] Módulo Suscripciones (M9): panel, `cancelled_at`, detector de cobros inesperados
+- [ ] Módulo Avisos Personalizados (M10): CRUD, seed alertas fiscales, Edge Function `check-alerts`
+- [ ] Lógica de impago para ingresos esperados no recibidos
 
-### Fase 4: Importación de Extractos (Semana 10-11)
+### Fase 4: Importación de Extractos (Semana 11-12)
 
 - [ ] Parser SheetJS para Excel/CSV
 - [ ] Detección automática de columnas
 - [ ] Preview interactivo y deduplicación
 - [ ] Formatos bancarios españoles específicos
 - [ ] Bulk categorización post-import (motor de reglas)
+- [ ] Detección de cobros de suscripciones canceladas en import pipeline
+- [ ] Verificación de ingresos esperados no recibidos post-import
 
 ### Fase 5: Dashboard y Análisis (Semana 12-13)
 

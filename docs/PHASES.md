@@ -1,6 +1,6 @@
 # PATRIMIO — Implementation Phase Plan
 
-**Version:** 1.0.0  
+**Version:** 1.1.0  
 **Date:** 2026  
 **Purpose:** Implementation guide for Patrimio — a personal finance web app (PWA). Each phase includes deliverables, required skills, and verifiable exit criteria.
 
@@ -8,13 +8,13 @@
 
 ## Global Risk Summary
 
-| Dimension     | Level       | Required Action                                             |
-| ------------- | ----------- | ----------------------------------------------------------- |
-| Security      | 🔴 Critical | → Invoke **Security Reviewer** on auth, RLS, and API routes |
-| DB Complexity | 🔴 Critical | → Invoke **DB Architect** on every migration                |
-| Performance   | 🟡 Medium   | → Materialized views + market data cache from Phase 6       |
-| UX / Mobile   | 🟡 Medium   | → Check `frontend.instructions.md` on every UI component    |
-| Compliance    | 🟡 Medium   | → IRPF disclaimers in Phase 6, GDPR/RGPD in Phase 9         |
+| Dimension     | Level       | Required Action                                                                  |
+| ------------- | ----------- | -------------------------------------------------------------------------------- |
+| Security      | 🔴 Critical | → Invoke **Security Reviewer** on auth, RLS, and API routes                      |
+| DB Complexity | 🔴 Critical | → Invoke **DB Architect** on every migration                                     |
+| Performance   | 🟡 Medium   | → Materialized views created in Phase 0 · market data cache activated in Phase 6 |
+| UX / Mobile   | 🟡 Medium   | → Check `frontend.instructions.md` on every UI component                         |
+| Compliance    | 🟡 Medium   | → IRPF disclaimers in Phase 6, GDPR/RGPD in Phase 9                              |
 
 ---
 
@@ -48,12 +48,14 @@
   - `profiles`, `accounts`, `categories`, `transactions`, `recurring_commitments`
   - `investments`, `investment_operations`, `investment_snapshots`
   - `budgets`, `auto_categorization_rules`, `market_cache`, `notifications`
-  - All ENUMs (`investment_type`, `operation_type`, `frequency_type`, `budget_period`, etc.)
+  - **`custom_alerts`** — new table for personalized fiscal/insurance alerts
+  - All ENUMs: `investment_type`, `operation_type`, `frequency_type`, `budget_period`, `commitment_type_enum`, `alert_recurrence_type`
   - `moddatetime` triggers for `updated_at` on all tables
   - Materialized views: `monthly_account_balance`, `monthly_category_spending`
   - RPC functions: `get_net_worth`, `project_cash_flow`, `recalculate_avg_purchase_price`
   - **RLS enabled on ALL tables** — minimum policy: `auth.uid() = user_id`
 - [ ] System categories seed (25+ categories: Salary, Mortgage, Groceries, etc.)
+- [ ] **Custom alerts seed**: IBI, IRPF, IVTM, Seguro Coche, Seguro Hogar, Tasa de Basura (editables per user)
 - [ ] `types/database.ts` generated with Supabase CLI
 - [ ] `lib/supabase/client.ts` + `lib/supabase/server.ts` + `lib/supabase/middleware.ts`
 - [ ] Base deploy on Vercel (provisional `*.vercel.app` domain)
@@ -140,11 +142,11 @@
 
 ---
 
-## PHASE 3 — Dashboard + Future Commitments (~2 weeks)
+## PHASE 3 — Dashboard + Commitments + Subscriptions + Custom Alerts (~3 weeks)
 
-**Goal:** User has a complete view of their financial situation and upcoming obligations at a glance.
+**Goal:** User has a complete view of their financial situation, upcoming obligations, active subscriptions, and personalized fiscal alerts at a glance.
 
-### Modules: M1 (Dashboard) + M4 (Commitments)
+### Modules: M1 (Dashboard) + M4 (Commitments) + M9 (Subscriptions) + M10 (Custom Alerts)
 
 #### Dashboard (M1)
 
@@ -154,14 +156,14 @@
 - [ ] **Top categories**: Recharts donut chart top 5 monthly expenses
 - [ ] **Upcoming commitments**: list of next 7 due dates
 - [ ] **Portfolio summary**: initial placeholder (total value + day P&L = 0 until Phase 6)
-- [ ] **Active alerts**: badge for over-budget or upcoming expirations
+- [ ] **Active alerts**: unified badge for: over-budget · subscription unexpected charges · unpaid expected income · upcoming custom alerts (IBI, IRPF, insurance)
 - [ ] **Recent transactions**: 5 most recent
 - [ ] **Customization**: drag & drop to reorder widgets, toggle to hide (Zustand store)
 - [ ] ISR with 5-minute revalidation for dashboard data
 
 #### Future Commitments (M4)
 
-- [ ] CRUD for recurring commitments (mortgage, rent, subscriptions…)
+- [ ] CRUD for recurring commitments with **`commitment_type`** field (mortgage, rent_income, rent_expense, subscription, tax, insurance, utility, other)
 - [ ] Active commitments list view with status (active/paused/expired)
 - [ ] **Horizontal timeline** 24 months: visual bar with commitments per month
 - [ ] **Cash flow projection**: Recharts area chart over 12 months
@@ -170,17 +172,38 @@
 - [ ] **Expiry alerts** X days before: notification trigger
 - [ ] **Mortgage fields**: maturity year, fixed/variable rate, early repayment
 - [ ] **Annual matrix view**: month × commitment with annual totals
+- [ ] **Unpaid income detection**: Edge Function `check-alerts` verifies `type=income` commitments whose expected date has passed >`tolerance_days` without a matching transaction → generates `expected_income_unpaid` notification (e.g. unpaid rent)
+
+#### Subscriptions (M9)
+
+- [ ] Subscriptions panel filtered from `recurring_commitments` where `commitment_type = 'subscription'`
+- [ ] **`service_name` field**: exact text that appears in bank statement (used for import matching)
+- [ ] **`cancelled_at` field**: date the user cancelled the subscription
+- [ ] Subscription status badge: active / cancelled / ⚠️ unexpected charge detected
+- [ ] Total monthly subscription cost widget
+- [ ] Next renewal date per subscription
+- [ ] Month-over-month comparison of subscription spending (Recharts bar chart)
+
+#### Custom Alerts (M10)
+
+- [ ] CRUD for `custom_alerts` table: name, category, due_date, expected_amount_cents, recurrence, advance_notice_days
+- [ ] **Predefined system alerts** (from seed, fully editable): IBI, IRPF, Impuesto Circulación, Seguro Coche, Seguro Hogar, Tasa de Basura
+- [ ] **Snooze**: dismiss alert until a specific date (`dismissed_until`)
+- [ ] **Category linking**: associate alert to a spending category — dashboard auto-disables it when the payment is registered
+- [ ] **“Upcoming deadlines” dashboard widget**: alerts in next 60 days sorted by urgency
+- [ ] **Edge Function `check-alerts`** (daily cron): queries `custom_alerts` with `due_date - advance_notice_days <= TODAY` → generates `custom_alert_due` notification + optional email via Resend
+- [ ] Weekly email digest of active alerts (user toggle)
 
 **Skills:** `financial-data-reader`, `transaction-formatter`  
 **Instructions:** `frontend.instructions.md`, `financial-logic.instructions.md`
 
-**Exit criteria:** Dashboard loads in < 2s (Lighthouse) · cash flow projection is mathematically correct · recurring generation Edge Function tested
+**Exit criteria:** Dashboard loads in < 2s (Lighthouse) · cash flow projection is mathematically correct · recurring generation Edge Function tested · `check-alerts` cron verified for unpaid income detection · custom alert fires X days before due date · cancelled subscription flagged correctly in subscriptions panel
 
 ---
 
 ## PHASE 4 — Bank Statement Import (~2 weeks)
 
-**Goal:** User can import months of banking history in minutes without errors.
+**Goal:** User can import months of banking history in minutes without errors, and the system auto-detects unexpected charges and unpaid income.
 
 ### Module: M3 — Import
 
@@ -191,15 +214,18 @@
 - [ ] **Interactive preview**: editable table with all detected transactions before confirming
 - [ ] **Manual column mapping**: drag & drop if detection fails
 - [ ] **Deduplication**: compare date + amount + similar description against existing transactions → "possible duplicate" flag
+- [ ] **Cancelled subscription charge detection**: for each imported transaction, match description against `service_name` of `recurring_commitments` where `cancelled_at < transaction_date` (case-insensitive contains) → flag ⚠️ `Unexpected charge: cancelled subscription` in preview + generate `subscription_unexpected_charge` notification after confirming
+- [ ] **Expected income verification**: after import, check `type=income` commitments whose expected date has elapsed > `tolerance_days` with no matching transaction → generate `expected_income_unpaid` notification
 - [ ] **Bulk auto-categorization**: apply user's auto-categorization rules on the imported batch
 - [ ] **Bulk confirmation**: modify categories for multiple similar transactions in one step
 - [ ] **Import identifiers**: `import_source`, `import_batch_id` on each transaction
 - [ ] **Import rollback**: soft-delete all transactions from an `import_batch_id`
 - [ ] **Spanish bank formats**: specific parsers for Santander, BBVA, CaixaBank, ING, Sabadell
-      **Skills:** `spanish-finance-categorizer`, `anomaly-detector` (duplicate detection)  
-       **Instructions:** `security.instructions.md`
 
-**Exit criteria:** Real statement import for each supported bank with no data loss · deduplication rate > 95% in test with known duplicate transactions · rollback functional
+**Skills:** `spanish-finance-categorizer`, `anomaly-detector` (duplicate detection)  
+**Instructions:** `security.instructions.md`
+
+**Exit criteria:** Real statement import for each supported bank with no data loss · deduplication rate > 95% in test with known duplicate transactions · cancelled subscription charge flagged correctly in preview · unpaid income notification generated after import · rollback functional
 
 ---
 
@@ -383,6 +409,8 @@
 | Reorderable dashboard widgets without tech decision         | Medium | 3 days  | Use `dnd-kit` with persistence in Supabase `profiles.widget_config` JSONB    |
 | FIFO calculation for sales not implemented (avg price only) | High   | 2 weeks | Add `method` field to `investments` (fifo/avg) + logic in RPC                |
 | Historical prices for charts without defined data source    | High   | 1 week  | Use FMP `/historical-price-full/` for initial seed of `investment_snapshots` |
+| Custom alerts seed per municipality (IBI/IVTM dates vary)   | Low    | 3 days  | Default to configurable month/day; user adjusts on first use                 |
+| `service_name` matching may miss multi-word variants        | Medium | 3 days  | Add `service_name_aliases TEXT[]` to `recurring_commitments`                 |
 
 ### Improvements — Database Layer
 
@@ -426,20 +454,20 @@
 
 ## Global Effort Estimate
 
-| Phase                             | Duration    | Complexity   |
-| --------------------------------- | ----------- | ------------ |
-| Phase 0 — Foundations             | ~2 weeks    | 🔴 High      |
-| Phase 1 — Authentication          | ~2 weeks    | 🔴 High      |
-| Phase 2 — Core Transactions       | ~3 weeks    | 🔴 High      |
-| Phase 3 — Dashboard + Commitments | ~2 weeks    | 🟡 Medium    |
-| Phase 4 — Bank Statement Import   | ~2 weeks    | 🔴 High      |
-| Phase 5 — Analytics & Budgets     | ~2 weeks    | 🟡 Medium    |
-| Phase 6 — Investments             | ~3 weeks    | 🔴 Very High |
-| Phase 7 — Reports & Export        | ~1 week     | 🟡 Medium    |
-| Phase 8 — PWA & Polish            | ~2 weeks    | 🟡 Medium    |
-| Phase 9 — Security & Compliance   | ~1 week     | 🔴 High      |
-| Phase 10 — Launch                 | ~1 week     | 🟢 Low       |
-| **TOTAL**                         | **~21 wks** |              |
+| Phase                                                             | Duration    | Complexity   |
+| ----------------------------------------------------------------- | ----------- | ------------ |
+| Phase 0 — Foundations                                             | ~2 weeks    | 🔴 High      |
+| Phase 1 — Authentication                                          | ~2 weeks    | 🔴 High      |
+| Phase 2 — Core Transactions                                       | ~3 weeks    | 🔴 High      |
+| Phase 3 — Dashboard + Commitments + Subscriptions + Custom Alerts | ~3 weeks    | 🔴 High      |
+| Phase 4 — Bank Statement Import                                   | ~2 weeks    | 🔴 High      |
+| Phase 5 — Analytics & Budgets                                     | ~2 weeks    | 🟡 Medium    |
+| Phase 6 — Investments                                             | ~3 weeks    | 🔴 Very High |
+| Phase 7 — Reports & Export                                        | ~1 week     | 🟡 Medium    |
+| Phase 8 — PWA & Polish                                            | ~2 weeks    | 🟡 Medium    |
+| Phase 9 — Security & Compliance                                   | ~1 week     | 🔴 High      |
+| Phase 10 — Launch                                                 | ~1 week     | 🟢 Low       |
+| **TOTAL**                                                         | **~22 wks** |              |
 
 ---
 
