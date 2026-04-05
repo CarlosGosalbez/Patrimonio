@@ -55,7 +55,7 @@ Invoke `db-architect` with full column spec:
 Then run:
 
 ```bash
-npx supabase gen types typescript --local > types/database.ts
+npm run db:types   # = supabase gen types typescript --linked --schema public (no Docker)
 ```
 
 ---
@@ -141,12 +141,17 @@ export function useCreate[Resource]() {
 
 ### Component checklist
 
-- [ ] `React Hook Form` + same Zod schema as API (shared `lib/schemas/`)
+- [ ] `React Hook Form` + same Zod schema as API (shared `lib/schemas/`) with `safeString`/`safeName` helpers
 - [ ] `inputMode="decimal"` on all amount fields
 - [ ] Touch targets ≥ 44×44px
 - [ ] `formatCurrency` / `formatDate` from `lib/financial/formatters.ts`
 - [ ] Loading + error states handled
-- [ ] `aria-label` on interactive elements
+- [ ] **A11y:** `useId()` for input IDs → `<label htmlFor={id}>` on every field
+- [ ] **A11y:** Error messages: `role="alert"` + `aria-describedby` linking input → error
+- [ ] **A11y:** `aria-required` on required fields; `aria-invalid={!!error}` when error present
+- [ ] **A11y:** `focus-visible:ring-2` on every interactive element — never remove outline without replacement
+- [ ] **A11y:** Color-only state → add icon/text alongside
+- [ ] **A11y:** Async regions → `aria-live="polite"` + spinner has `sr-only` text
 
 ---
 

@@ -1,85 +1,239 @@
 # PATRIMIO — Codex Agent Instructions
 
-> Leer siempre `docs/patrimio-technical-spec.md` antes de cambios arquitectónicos.
-> Stack no negociable: Next.js 14 + Supabase + Claude Sonnet 4.6 + Vercel.
+> Config: `.codex/config.toml` — model, approval policy, shell commands, skills, rules.
+> Always read `docs/patrimio-technical-spec.md` before architectural changes.
+> Non-negotiable stack: Next.js 14 + Supabase + Claude Sonnet 4.6 + Vercel.
 
 ---
 
-## Protocolo de respuesta — obligatorio
+## Response protocol — required
 
-| Prohibido                                              | Hacer en su lugar                     |
-| ------------------------------------------------------ | ------------------------------------- |
-| Saludos / adulación ("¡Claro!", "¡Excelente!")         | Responder directamente                |
-| Narrar intención ("Voy a analizar...")                 | Hacer, no anunciar                    |
-| Reescribir archivos enteros para cambios de 3-5 líneas | Edits quirúrgicos con contexto mínimo |
-| Re-analizar lo ya analizado en la sesión               | Referenciar análisis previo           |
-| Afirmar hechos sin verificar                           | Leer el archivo primero               |
-| Alternativas cuando hay una respuesta clara            | Una respuesta, la correcta            |
-| Concluir resumiendo lo que se acaba de hacer           | Terminar cuando el trabajo esté hecho |
-| "¿Necesitas algo más?"                                 | Omitir                                |
-| Hedging en hechos conocidos ("quizás", "creo que")     | Afirmar o verificar                   |
+| Forbidden                                       | Do instead                                  |
+| ----------------------------------------------- | ------------------------------------------- |
+| Greetings / praise ("¡Claro!", "¡Excelente!")   | Respond directly                            |
+| Narrate intent ("I’m going to analyze...")      | Act, don’t announce                         |
+| Rewrite entire files for 3-5 line changes       | Surgical edits with minimal context         |
+| Re-analyze already-analyzed code in the session | Reference previous analysis                 |
+| State unverified facts as true                  | Read the file first                         |
+| Alternatives when there is one clear answer     | One answer, the correct one                 |
+| Extensive summaries when done                   | Small table (max 5 rows) of completed steps |
+| Re-list code written or files created           | Only mention blockers or pending items      |
+| "Do you need anything else?"                    | Omit                                        |
+| Hedging on known facts ("maybe", "I think")     | Assert or verify                            |
+
+**Required closing format:**
+
+```text
+✅ Hecho:
+1. [paso completado]
+2. [paso completado]
+
+⚠️ Pendiente: [solo si hay blockers]
+```
+
+---
+
+## Available skills
+
+Read the corresponding SKILL.md before executing tasks in that domain:
+
+| Skill                         | File                                                  | When to load                            |
+| ----------------------------- | ----------------------------------------------------- | --------------------------------------- |
+| `supabase-migration`          | `.claude/skills/supabase-migration/SKILL.md`          | Any CREATE TABLE, ALTER, RLS, migration |
+| `transaction-formatter`       | `.claude/skills/transaction-formatter/SKILL.md`       | Formatting amounts or dates in UI       |
+| `spanish-finance-categorizer` | `.claude/skills/spanish-finance-categorizer/SKILL.md` | Auto-categorization, CSV bank import    |
+| `market-data-fetcher`         | `.claude/skills/market-data-fetcher/SKILL.md`         | Stock, ETF, crypto prices               |
+| `anomaly-detector`            | `.claude/skills/anomaly-detector/SKILL.md`            | Alerts, unusual patterns, duplicates    |
+| `report-generator`            | `.claude/skills/report-generator/SKILL.md`            | PDF/Excel exports, module M7            |
+| `context-optimizer`           | `.claude/skills/context-optimizer/SKILL.md`           | Session approaching context limit       |
+
+---
+
+## Domain rules (path-scoped)
+
+Auto-loaded based on the file being edited:
+
+| Regla     | Archivo                      | Se aplica en                                     |
+| --------- | ---------------------------- | ------------------------------------------------ |
+| Security  | `.claude/rules/security.md`  | `app/api/**`, `lib/supabase/**`, `middleware.ts` |
+| Database  | `.claude/rules/database.md`  | `supabase/**`, `types/database.ts`               |
+| Financial | `.claude/rules/financial.md` | `lib/financial/**`, `types/financial.ts`         |
+| Frontend  | `.claude/rules/frontend.md`  | `app/**/*.tsx`, `components/**`, `hooks/**`      |
+| AI Agents | `.claude/rules/ai-agents.md` | `app/api/ai/**`, `lib/ai/**`                     |
+| Testing   | `.claude/rules/testing.md`   | `tests/**`, `*.test.ts`, `*.spec.ts`             |
 
 ---
 
 ## Stack
 
-| Capa     | Tecnología                                                                |
+| Layer    | Technology                                                                |
 | -------- | ------------------------------------------------------------------------- |
 | Frontend | Next.js 14 App Router · TypeScript 5 · Tailwind · shadcn/ui               |
-| Estado   | Zustand (global) · TanStack Query (server) · React Hook Form + Zod        |
+| State    | Zustand (global) · TanStack Query (server) · React Hook Form + Zod        |
 | Backend  | Supabase (PostgreSQL 15 · Auth JWT+TOTP · Storage · Realtime · Edge Deno) |
 | Deploy   | Vercel (Edge Middleware · CDN)                                            |
-| IA       | Claude Sonnet 4.6 · Vercel AI SDK (streaming)                             |
+| AI       | Claude Sonnet 4.6 · Vercel AI SDK (streaming)                             |
 | Testing  | Vitest (unit) · Playwright (E2E + iPhone 14 + Desktop Chrome)             |
 
 ---
 
-## Reglas críticas — NUNCA violar
+## Supabase CLI — Remote mode (no Docker required)
 
-1. **RLS en toda tabla Supabase** — sin excepciones. `auth.uid() = user_id`
-2. **Importes monetarios en centavos INTEGER** — `850.75€ → 85075`. Nunca FLOAT/DECIMAL
-3. **Zod `.strict()` en todos los inputs de API routes** — previene mass assignment
-4. **`service_role` key solo en Edge Functions Deno del servidor** — nunca en cliente
-5. **Soft deletes** — `deleted_at TIMESTAMPTZ`. Nunca DELETE físico
-6. **UUID v4 primary keys** — `gen_random_uuid()`. Nunca SERIAL/BIGSERIAL
-7. **`user_id` en agentes IA siempre del JWT** — nunca del request body
-8. **`types/database.ts` no editar manualmente** — regenerar con `npx supabase gen types typescript`
-9. **Signed URLs para Storage** — nunca paths directos ni URLs públicas
-10. **`dangerouslySetInnerHTML` siempre con DOMPurify** — nunca sin sanitizar
+Never run `supabase start` — it requires Docker. Always connect to the remote project.
+
+**Required env var** (set in `.env.local`):
+
+```text
+SUPABASE_ACCESS_TOKEN=<from https://supabase.com/dashboard/account/tokens>
+```
+
+**Link project once** (run from project root):
+
+```bash
+npx supabase link --project-ref <your-project-ref>
+```
+
+**Correct commands:**
+
+| Task                  | Command                                              |
+| --------------------- | ---------------------------------------------------- |
+| Apply migrations      | `npm run db:push` (= `supabase db push --linked`)    |
+| Generate types        | `npm run db:types` (= `supabase gen types --linked`) |
+| Create migration file | `npm run db:diff -f migration_name`                  |
+| Preview diff          | `npx supabase db diff --linked`                      |
+
+**Common errors and fixes:**
+
+| Error                | Fix                                                           |
+| -------------------- | ------------------------------------------------------------- |
+| `Docker not found`   | Never use `supabase start/stop/status` — already in deny list |
+| `project not linked` | Run `npx supabase link --project-ref <ref>` once              |
+| `types out of date`  | Run `npm run db:types` after every migration                  |
+| `Invalid API key`    | Check `SUPABASE_ACCESS_TOKEN` is set in `.env.local`          |
+| `permission denied`  | Verify RLS policies include `auth.uid() = user_id`            |
 
 ---
 
-## Modelo y especialistas de IA
+## Critical rules — NEVER break
 
-**Modelo por defecto:** Claude Sonnet 4.6 — para todas las tareas habituales
-**Claude Opus:** solo para errores muy complejos o decisiones de arquitectura con múltiples dependencias
+1. **RLS on every Supabase table** — no exceptions. `auth.uid() = user_id`
+2. **Monetary amounts as integer cents** — `850.75€ → 85075`. Never FLOAT/DECIMAL
+3. **Zod `.strict()` on all API route inputs** — prevents mass assignment
+4. **`service_role` key only in server-side Edge Functions** — never in client
+5. **Soft deletes** — `deleted_at TIMESTAMPTZ`. Never physical DELETE
+6. **UUID v4 primary keys** — `gen_random_uuid()`. Never SERIAL/BIGSERIAL
+7. **Agent `user_id` always from JWT** — never from request body
+8. **`types/database.ts` never edit manually** — regenerate with `npm run db:types` (Management API, no Docker)
+9. **Signed URLs for Storage** — never direct paths or public URLs
+10. **`dangerouslySetInnerHTML` always with DOMPurify** — never without sanitization
+11. **Never use Docker** — all Supabase operations use remote Management API (`npm run db:push`, `npm run db:types`)
+12. **i18n required everywhere** — all UI strings via `next-intl` `useTranslations()`, no hardcoded text
+13. **UX/UI via shadcn/ui + Radix + Tailwind v4** — never install MUI/Chakra/AntDesign
+14. **Dependencies always current** — verify non-deprecated before use; `@supabase/ssr` not `auth-helpers-nextjs`
+15. **WCAG 2.2 AA accessibility required** — every input has `<label htmlFor>` via `useId()`, errors use `role="alert"` + `aria-describedby`, `focus-visible:ring-2` on all interactive elements, never convey state by color alone
+16. **Hardened Zod schemas on all forms** — use `safeString()`/`safeName()` helpers with `isomorphic-dompurify`; call `hasPromptInjection()` before any user text reaches LLM
 
-### Equipo de agentes (Codex puede invocar como sub-tareas o como referencia de rol)
+---
 
-| Rol                      | Aplica cuándo                                                                        |
-| ------------------------ | ------------------------------------------------------------------------------------ |
-| **project-orchestrator** | Cualquier feature multi-capa — analizar impacto en DB + API + UI + tests + seguridad |
-| **product-strategist**   | Convertir ideas en spec técnica, planificar sprints, documentar código               |
-| **db-architect**         | Cualquier cambio de schema, nueva tabla, índices, triggers                           |
-| **security-reviewer**    | Toda nueva API route o migración — verificación OWASP                                |
-| **feature-builder**      | Implementar feature completa desde DB hasta E2E                                      |
-| **code-reviewer**        | Revisión TypeScript, accesibilidad, rendimiento                                      |
+## AI model and specialists
 
-### Checklist por tarea (aplicar siempre)
+**Default model:** Claude Sonnet 4.6 — for all routine tasks
+**Claude Opus:** only for very complex bugs or architectural decisions with multiple dependencies
 
-```
-Tarea nueva → Impacta: ¿DB? ¿API? ¿UI? ¿Tests? ¿Seguridad?
-DB change → migración + RLS + trigger + índices + regenerar types
-API route nueva → Zod .strict() + JWT auth + invocar security-reviewer
-Componente nuevo → mobile-first + touch targets ≥44px + inputMode en importes
+### Agent team (Codex can invoke as sub-tasks or as role reference)
+
+| Role                     | When to invoke                                                               |
+| ------------------------ | ---------------------------------------------------------------------------- |
+| **project-orchestrator** | Any multi-layer feature — analyze impact on DB + API + UI + tests + security |
+| **product-strategist**   | Convert ideas into technical spec, sprint planning, code documentation       |
+| **db-architect**         | Any schema change, new table, indexes, triggers                              |
+| **security-reviewer**    | Every new API route or migration — OWASP verification                        |
+| **feature-builder**      | Implement full feature from DB to E2E                                        |
+| **code-reviewer**        | TypeScript review, accessibility, performance                                |
+
+### Task checklist (always apply)
+
+```text
+New task → Impacts: DB? API? UI? Tests? Security? i18n?
+DB change → migration + RLS + trigger + indexes + regenerate types (npm run db:types)
+New API route → Zod .strict() + JWT auth + invoke security-reviewer
+New component → mobile-first + touch targets ≥44px + all strings via t() + shadcn/ui
+New form → safeString/safeName Zod helpers + useId() labels + role="alert" errors + focus-visible rings
+AI route → hasPromptInjection() check before any user text reaches LLM
+i18n → extract ALL strings to messages/[locale].json before commit
+Dependencies → verify non-deprecated + run npm audit after install
 Tests → ≥1 unit (Vitest) + ≥1 E2E (Playwright iPhone 14)
 ```
 
 ---
 
-## Patrones de código
+## i18n — next-intl (required everywhere)
 
-### DB — Template de migración
+**Library:** `next-intl` — mandatory for all UI text. Never hardcode strings.
+
+```typescript
+// Client Component
+import { useTranslations } from "next-intl";
+const t = useTranslations("transactions");
+return <h2>{t("title")}</h2>;  // → messages/es.json: { "transactions": { "title": "..." } }
+
+// Server Component (RSC)
+import { getTranslations } from "next-intl/server";
+const t = await getTranslations("dashboard");
+```
+
+Rules:
+
+- New components: all display strings in `messages/es.json` + `messages/en.json`
+- Modified components: migrate hardcoded strings to `t()` as part of the change
+- Currency/dates: `formatCurrency()` from `lib/financial/formatters.ts` + `useFormatter()` from next-intl
+- DB FTS indexes: specify language explicitly (`to_tsvector('spanish', ...)` or `'simple'` for multilingual)
+
+---
+
+## UI & Design System
+
+**Stack (community gold standard 2024-2026):**
+
+| Library         | Role                                                        |
+| --------------- | ----------------------------------------------------------- |
+| shadcn/ui       | Component primitives — composable, accessible, customizable |
+| Radix UI        | Headless primitives (WCAG 2.2 AA) — used under shadcn/ui    |
+| Tailwind CSS v4 | Utility-first styling — zero-runtime, mobile-first          |
+| Recharts        | Financial charts — `ResponsiveContainer` required           |
+| Lucide React    | Icons — official shadcn/ui icon set, tree-shakeable         |
+
+Rules:
+
+- **Never install** MUI, Chakra UI, Ant Design, or any competitor
+- Colors via CSS variables (`--color-primary`) — never hardcoded hex
+- `cn()` from `lib/utils.ts` for conditional classes
+- Every interactive element: `min-h-[44px]` (Apple HIG minimum)
+- Layouts: mobile-first (`sm:` → `md:` → `lg:`) — never desktop-first
+
+---
+
+## Dependency Freshness
+
+Before using any API, prop, or import in new or modified code:
+
+1. Verify it is NOT deprecated in the currently installed version
+2. If deprecated, replace with the current correct API — never leave deprecated code
+3. After `npm install`, run `npm audit` — fix HIGH/CRITICAL before committing
+
+**Known migration paths:**
+
+- `@supabase/auth-helpers-nextjs` → `@supabase/ssr`
+- `next/head` → `metadata` export in `layout.tsx`/`page.tsx`
+- `getServerSideProps` / `getStaticProps` → RSC `async` components
+- `useRouter` from `next/router` → `useRouter` from `next/navigation`
+- `ai/react` useChat import path → verify against installed `ai` package version
+
+---
+
+## Code patterns
+
+### DB — Migration template
 
 ```sql
 -- supabase/migrations/YYYYMMDDHHMMSS_add_[tabla].sql
@@ -120,31 +274,31 @@ CREATE TRIGGER trg_[tabla]_updated_at
 
 ### FK ON DELETE — Decisión por tipo de relación
 
-| FK target    | ON DELETE | Razón                                           |
-| ------------ | --------- | ----------------------------------------------- |
-| `auth.users` | CASCADE   | Usuario borrado → todo su patrimonio borrado    |
-| `categories` | SET NULL  | La transacción sobrevive sin categoría          |
-| `accounts`   | RESTRICT  | No se puede borrar cuenta con registros activos |
-| `budgets`    | SET NULL  | Transacciones sobreviven sin presupuesto        |
+| FK target    | ON DELETE | Reason                                    |
+| ------------ | --------- | ----------------------------------------- |
+| `auth.users` | CASCADE   | User deleted → all their data deleted     |
+| `categories` | SET NULL  | Transaction survives without category     |
+| `accounts`   | RESTRICT  | Cannot delete account with active records |
+| `budgets`    | SET NULL  | Transactions survive without budget       |
 
-### API Routes — Patrón base
+### API Routes — Base pattern
 
 ```typescript
-// app/api/[recurso]/route.ts
+// app/api/[resource]/route.ts
 import { createServerClient } from "@/lib/supabase/server";
 import { z } from "zod";
 import { NextResponse } from "next/server";
 
 const InputSchema = z
   .object({
-    // NUNCA incluir user_id aquí — siempre viene del JWT
+    // NEVER include user_id here — always comes from JWT
     amount_cents: z.number().int().positive(),
     description: z.string().max(500).trim(),
   })
-  .strict(); // .strict() OBLIGATORIO
+  .strict(); // .strict() REQUIRED
 
 export async function POST(req: Request) {
-  // 1. Auth del JWT — NUNCA del body
+  // 1. Auth from JWT — NEVER from body
   const supabase = createServerClient();
   const {
     data: { user },
@@ -152,28 +306,26 @@ export async function POST(req: Request) {
   } = await supabase.auth.getUser();
   if (error || !user) return new Response("Unauthorized", { status: 401 });
 
-  // 2. Validar input
+  // 2. Validate input
   const parsed = InputSchema.safeParse(await req.json());
-  if (!parsed.success)
-    return NextResponse.json({ error: parsed.error }, { status: 400 });
+  if (!parsed.success) return NextResponse.json({ error: parsed.error }, { status: 400 });
 
-  // 3. Query filtrando por user.id del JWT
+  // 3. Query filtered by user.id from JWT
   const { data, error: dbError } = await supabase
     .from("tabla")
-    .insert({ ...parsed.data, user_id: user.id }) // user.id del JWT siempre
+    .insert({ ...parsed.data, user_id: user.id }) // user.id always from JWT
     .select()
     .single();
 
-  if (dbError)
-    return NextResponse.json({ error: dbError.message }, { status: 500 });
+  if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 });
   return NextResponse.json(data, { status: 201 });
 }
 ```
 
-### Agentes IA — Patrón de streaming
+### AI agents — Streaming pattern
 
 ```typescript
-// app/api/ai/[agente]/route.ts
+// app/api/ai/[agent]/route.ts
 import { streamText, tool } from "ai";
 import { anthropic } from "@ai-sdk/anthropic";
 import { createServerClient } from "@/lib/supabase/server";
@@ -205,17 +357,17 @@ export async function POST(req: Request) {
     system: SYSTEM_PROMPT,
     messages: input.messages,
     maxSteps: 8,
-    abortSignal: req.signal, // Cancelar si el cliente desconecta
+    abortSignal: req.signal, // Cancel if client disconnects
     tools: {
       getTransactions: tool({
-        description: "Obtiene transacciones del usuario",
+        description: "Fetches user transactions",
         parameters: z.object({ month: z.number(), year: z.number() }).strict(),
         execute: async ({ month, year }) => {
-          // user.id siempre del closure JWT externo — nunca como parámetro
+          // user.id always from external JWT closure — never as parameter
           const { data } = await supabase
             .from("transactions")
             .select("*")
-            .eq("user_id", user.id) // ← CRÍTICO: siempre filtrar por user autenticado
+            .eq("user_id", user.id) // ← CRITICAL: always filter by authenticated user
             .limit(100);
           return data;
         },
@@ -227,56 +379,50 @@ export async function POST(req: Request) {
 }
 ```
 
-### Datos financieros
+### Financial data
 
 ```typescript
-// SIEMPRE usar lib/financial/formatters.ts — nunca formatear inline
-import {
-  formatCurrency,
-  centsToDec,
-  decToCents,
-} from "@/lib/financial/formatters";
+// ALWAYS use lib/financial/formatters.ts — never format inline
+import { formatCurrency, centsToDec, decToCents } from "@/lib/financial/formatters";
 
-// Display: centavos → UI
+// Display: cents → UI
 formatCurrency(85075, "EUR"); // → "850,75 €" (locale es-ES)
 
-// Input usuario: euros → centavos para guardar
+// User input: euros → cents to save
 decToCents(850.75); // → 85075
 
-// Nunca: amount * 100 (error de float)  ✗
-// Nunca: parseFloat(input)              ✗
-// Siempre: decToCents(parseFloat(input)) o mejor, inputMode="decimal" + decToCents
+// Never: amount * 100 (float error)  ✗
+// Never: parseFloat(input)           ✗
+// Always: decToCents(parseFloat(input)) or better, inputMode="decimal" + decToCents
 ```
 
 ### UI — Next.js App Router
 
 **RSC vs Client Component:**
 
-| Caso de uso                 | RSC (default)             | Client (`"use client"`)   |
-| --------------------------- | ------------------------- | ------------------------- |
-| Fetch de datos del servidor | ✅                        | ❌ usar TanStack Query    |
-| Estado interactivo / hooks  | ❌                        | ✅                        |
-| Supabase con auth           | ✅ `createServerClient()` | Via hooks en `hooks/`     |
-| Formularios                 | ❌                        | ✅ React Hook Form        |
-| Streaming IA                | ❌                        | ✅ `useChat` de Vercel AI |
+| Use case                  | RSC (default)             | Client (`"use client"`)     |
+| ------------------------- | ------------------------- | --------------------------- |
+| Server data fetch         | ✅                        | ❌ use TanStack Query       |
+| Interactive state / hooks | ❌                        | ✅                          |
+| Supabase with auth        | ✅ `createServerClient()` | Via hooks in `hooks/`       |
+| Forms                     | ❌                        | ✅ React Hook Form          |
+| AI streaming              | ❌                        | ✅ `useChat` from Vercel AI |
 
-**Reglas de componentes:**
+**Component rules:**
 
-- Importes: `inputMode="decimal"`, guardar siempre en centavos
-- Touch targets: `min-h-[44px]` — crítico en mobile
-- Formateo: siempre `lib/financial/formatters.ts`, nunca inline
-- Soft delete en UI: `onDelete` → `PATCH deleted_at`, nunca DELETE
+- Amounts: `inputMode="decimal"`, always save as cents
+- Touch targets: `min-h-[44px]` — critical on mobile
+- Formatting: always `lib/financial/formatters.ts`, never inline
+- Soft delete in UI: `onDelete` → `PATCH deleted_at`, never DELETE
 
 ### Tests
 
 ```typescript
-// Unit (Vitest) — mock Supabase y Anthropic siempre
+// Unit (Vitest) — always mock Supabase and Anthropic
 vi.mock("@/lib/supabase/server", () => ({
   createServerClient: () => ({
     auth: {
-      getUser: vi
-        .fn()
-        .mockResolvedValue({ data: { user: { id: "uid-test" } }, error: null }),
+      getUser: vi.fn().mockResolvedValue({ data: { user: { id: "uid-test" } }, error: null }),
     },
     from: vi.fn().mockReturnThis(),
     select: vi.fn().mockReturnThis(),
@@ -286,14 +432,12 @@ vi.mock("@/lib/supabase/server", () => ({
 }));
 
 vi.mock("ai", () => ({
-  streamText: vi
-    .fn()
-    .mockResolvedValue({ toDataStreamResponse: () => new Response("ok") }),
+  streamText: vi.fn().mockResolvedValue({ toDataStreamResponse: () => new Response("ok") }),
 }));
 ```
 
 ```typescript
-// E2E (Playwright) — siempre incluir iPhone 14
+// E2E (Playwright) — always include iPhone 14
 // playwright.config.ts
 projects: [
   { name: "mobile", use: { ...devices["iPhone 14"] } },
@@ -303,29 +447,29 @@ projects: [
 
 ---
 
-## Estructura de directorios (referencia)
+## Directory structure (reference)
 
-```
+```text
 app/(auth)/          # Login, register, 2FA
-app/(app)/           # Rutas autenticadas + sidebar layout
-app/api/ai/          # 5 endpoints de agentes IA
+app/(app)/           # Authenticated routes + sidebar layout
+app/api/ai/          # 5 AI agent endpoints
 lib/supabase/        # client.ts, server.ts, middleware.ts
-lib/ai/agents/       # Definición de agentes Claude
+lib/ai/agents/       # Claude agent definitions
 lib/financial/       # formatters.ts, calculations.ts, projections.ts
-lib/market/          # fetcher.ts (Yahoo→AlphaVantage→FMP con fallback)
+lib/market/          # fetcher.ts (Yahoo→AlphaVantage→FMP with fallback)
 supabase/migrations/ # YYYYMMDDHHMMSS_name.sql
 supabase/functions/  # market-updater, generate-recurring, send-alerts
-types/database.ts    # GENERADO — no editar
-types/financial.ts   # Tipos de dominio
+types/database.ts    # GENERATED — do not edit
+types/financial.ts   # Domain types
 ```
 
 ---
 
-## Comandos de desarrollo
+## Development commands
 
 ```bash
 npm run dev           # Dev server
-npm run build         # Build producción
+npm run build         # Production build
 npm run type-check    # tsc --noEmit
 
 npm run test          # Vitest unit tests
@@ -333,27 +477,27 @@ npm run test:e2e      # Playwright E2E
 npm run lint          # ESLint
 npm run format        # Prettier
 
-npx supabase db diff -f migration_name   # Crear migración desde cambios locales
-npx supabase db push                     # Aplicar migraciones
-npx supabase gen types typescript --local > types/database.ts
+npx supabase db diff -f migration_name          # Generate migration from local changes
+npx supabase db push --linked                   # Apply migrations (remote, no Docker)
+npx supabase gen types typescript --linked > types/database.ts
 ```
 
 ---
 
-## Auto-verificación tras cambios
+## Post-change verification
 
-Ejecutar en orden después de cualquier implementación:
+Run in order after any implementation:
 
 ```bash
-npm run type-check   # Sin errores de tipos
-npm run lint         # Sin warnings ESLint
-npm run test         # Tests unitarios pasan
+npm run type-check   # No type errors
+npm run lint         # No ESLint warnings
+npm run test         # Unit tests pass
 ```
 
-Checklist adicional:
+Additional checklist:
 
-- [ ] Toda tabla nueva tiene `ALTER TABLE X ENABLE ROW LEVEL SECURITY`
-- [ ] Toda API route nueva valida con `supabase.auth.getUser()` antes de cualquier lógica
-- [ ] Ningún importe monetario usa `float` o `.toFixed()` en cálculos
-- [ ] Después de migración: `npx supabase gen types typescript --local > types/database.ts`
-- [ ] Datos sensibles (tokens, keys) solo en variables de entorno — nunca en código
+- [ ] Every new table has `ALTER TABLE X ENABLE ROW LEVEL SECURITY`
+- [ ] Every new API route validates with `supabase.auth.getUser()` before any logic
+- [ ] No monetary amount uses `float` or `.toFixed()` in calculations
+- [ ] After migration: `npx supabase gen types typescript --linked > types/database.ts`
+- [ ] Sensitive data (tokens, keys) only in environment variables — never in code

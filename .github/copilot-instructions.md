@@ -50,6 +50,12 @@ Spec completa: `docs/patrimio-technical-spec.md`
 - UUID v4 como primary key en todas las tablas
 - Signed URLs para Storage — nunca paths directos
 - `user_id` en agentes IA: siempre del JWT, nunca del body
+- **Never Docker** — Supabase: `npm run db:push`, `npm run db:types` (Management API remota)
+- **i18n obligatorio** — todas las strings UI via `next-intl` `useTranslations()`; nunca texto hardcodeado
+- **UX/UI: shadcn/ui + Radix + Tailwind v4** — nunca instalar MUI/Chakra/AntDesign
+- **Dependencias actualizadas** — verificar que no estén deprecated; `@supabase/ssr` no `auth-helpers-nextjs`
+- **WCAG 2.2 AA accesibilidad obligatoria** — cada input tiene `<label htmlFor>` via `useId()`, errores con `role="alert"` + `aria-describedby`, `focus-visible:ring-2` en todos los elementos interactivos, nunca transmitir estado solo por color
+- **Formularios seguros** — usar helpers `safeString()`/`safeName()` con `isomorphic-dompurify`; llamar `hasPromptInjection()` antes de que cualquier texto de usuario llegue al LLM
 
 ## Convenciones de código
 
@@ -60,6 +66,8 @@ Spec completa: `docs/patrimio-technical-spec.md`
 **Finanzas:** `lib/financial/formatters.ts` siempre para display · locale `es-ES` · nunca floats, siempre centavos INTEGER
 
 **Estado:** Zustand para estado global · TanStack Query para datos del servidor · React Hook Form + Zod para formularios
+
+**i18n:** `next-intl` en todos los componentes · strings en `messages/es.json` + `messages/en.json` · currency/fechas via `formatCurrency()` + `useFormatter()` de next-intl
 
 ## Agentes disponibles
 

@@ -25,6 +25,17 @@ You are a **senior Supabase/PostgreSQL database architect** for Patrimio — a f
 - **PKs**: UUID v4 via `gen_random_uuid()`, never SERIAL/BIGSERIAL
 - **Trigger set**: `trg_*_updated_at` + `trg_*_no_resurrect` on every table
 - **Audit trigger** on financial tables: transactions, investment_operations, accounts
+- **Never Docker** — all Supabase ops: `npm run db:push`, `npm run db:types` (Management API)
+- **i18n**: multilingual user-visible text uses JSONB `name_i18n` pattern; FTS indexes always specify language
+- **Dependencies**: use current `@supabase/supabase-js@2` APIs; no deprecated patterns; `@supabase/ssr` replaces `@supabase/auth-helpers-nextjs`
+
+## Security constraints (non-negotiable)
+
+- **FTS with user input**: use `websearch_to_tsquery` or `plainto_tsquery` — NEVER `to_tsquery` with raw user strings (operators `&`, `|`, `!`, `:*` enable logic injection). In TypeScript: `textSearch(col, q, { type: "websearch" })`
+- **SECURITY DEFINER functions**: always add `SET search_path = public, pg_catalog` (schema injection prevention); always check `auth.uid() = p_user_id` explicitly (DEFINER bypasses RLS)
+- **Role grants**: `authenticated` → `SELECT, INSERT, UPDATE` only; `anon` → `SELECT` on public system tables only. Never `DELETE`, never `ALL PRIVILEGES`, never `TRUNCATE`
+- **Edge Functions from client**: verify JWT with `supabase.auth.getUser()` before any logic; service_role client used only for RLS-bypass ops — always filter by `user.id` manually
+- **Storage**: `createSignedUrl()` with expiry only — never `getPublicUrl()` on user files
 
 ## Output when done (CRITICAL)
 
@@ -60,8 +71,10 @@ CREATE INDEX idx_t_user_date ON t(user_id, transaction_date DESC) WHERE deleted_
 -- FK join columns:
 CREATE INDEX idx_t_category ON t(category_id) WHERE deleted_at IS NULL;
 
--- Full-text search (descriptions):
-CREATE INDEX idx_t_fts ON t USING gin(to_tsvector('spanish', coalesce(description,'') || ' ' || name));
+-- Full-text search — ALWAYS specify language explicitly:
+CREATE INDEX idx_t_fts    ON t USING gin(to_tsvector('spanish', coalesce(description,'') || ' ' || name));
+-- For multilingual content (i18n), use 'simple' (no stemming, works for any language):
+-- CREATE INDEX idx_t_fts_ml ON t USING gin(to_tsvector('simple', coalesce(description,'')));
 
 -- JSONB metadata:
 CREATE INDEX idx_t_meta ON t USING gin(metadata jsonb_path_ops);
@@ -150,7 +163,7 @@ const supabase = createClient(
 2. FK rationale for each relationship
 3. Index strategy explanation
 4. Edge Function stub if scheduled behavior needed
-5. `npx supabase gen types typescript --local > types/database.ts` reminder
+5. `npm run db:types` reminder — uses `--linked` Management API, no Docker required
 
 Store new table names, FK decisions, and index strategies in your project memory.
 

@@ -198,13 +198,64 @@ const supabase = createClient(
 - `EXPLAIN (ANALYZE, BUFFERS)` before shipping any complex query
 - Max 3 JOINs per query — use materialized views for more
 - No `SELECT *` in application code — always enumerate columns
+
+---
+
+## 11. Database security rules (non-negotiable)
+
+### FTS injection — user input must use safe query parsers
+
+```sql
+-- WRONG: to_tsquery accepts operators (&, |, !, :*) — user input can manipulate query logic
+WHERE col @@ to_tsquery('spanish', user_input)
+
+-- CORRECT: websearch_to_tsquery treats input as literal search words
+WHERE col @@ websearch_to_tsquery('spanish', user_input)
+```
+
+In TypeScript — always pass `type: "websearch"` or `type: "plain"` to `textSearch()`:
+
+```typescript
+supabase.from("t").textSearch("description", q, { type: "websearch", config: "spanish" });
+// NEVER: .textSearch("description", q)  — defaults to to_tsquery (unsafe)
+```
+
+### SECURITY DEFINER functions — mandatory `search_path` + ownership check
+
+```sql
+-- Every SECURITY DEFINER function MUST have both:
+CREATE FUNCTION my_fn(p_user_id UUID)
+  LANGUAGE plpgsql SECURITY DEFINER
+  SET search_path = public, pg_catalog   -- prevents schema injection via search_path
+  AS $$
+BEGIN
+  IF p_user_id <> auth.uid() THEN        -- explicit check: DEFINER bypasses RLS
+    RAISE EXCEPTION 'Access denied';
+  END IF;
+  ...
+END;
+$$;
+```
+
+### Role grants — minimum privilege
+
+- `anon` role: `SELECT` only on public system tables (e.g. read-only categories)
+- `authenticated` role: `SELECT, INSERT, UPDATE` only — never `DELETE`, never `TRUNCATE`
+- RLS restricts `authenticated` further to `auth.uid() = user_id`
+- Never `GRANT ALL PRIVILEGES` — enumerate permissions explicitly
+
+### Edge Function security — when invoked from client
+
+- Verify `Authorization` header JWT via `supabase.auth.getUser()` before any logic
+- Use user-scoped client (anon key + auth header) for queries that respect RLS
+- Use service_role client ONLY for operations needing RLS bypass, always filtering by `user.id` manually
 - Connection pooling: Supabase uses PgBouncer in **transaction mode** — NEVER use advisory locks or `SET LOCAL`
 - `LIMIT` on every paginated query — default page size: 50 rows
 - Use `.rpc()` for complex aggregations (single round-trip vs multiple .select())
 
 ## 11. DO NOT
 
-- Edit `types/database.ts` manually → `npx supabase gen types typescript --local > types/database.ts`
+- Edit `types/database.ts` manually → `npm run db:types` (Management API, no Docker needed)
 - Use `SERIAL` / `BIGSERIAL` primary keys
 - Store monetary amounts as DECIMAL, FLOAT, or NUMERIC
 - Use physical DELETE (use soft delete via `deleted_at`)

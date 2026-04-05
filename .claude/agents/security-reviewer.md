@@ -39,6 +39,17 @@ You are a **senior appsec engineer** specialized in financial web applications.
 - Rate limiting: AI endpoints must have 10 req/min limit; write endpoints 60 req/min
 - Storage: `createSignedUrl()` only — grep for direct `.publicUrl()` on user files
 - Cookies: `HttpOnly: true`, `Secure: true`, `SameSite: Lax` on session cookies
+- Form strings: `safeString()` / `safeName()` helpers — **not** plain `z.string()`
+- Prompt injection: `hasPromptInjection()` must be called before every LLM message; return 400 if detected
+- File uploads: MIME validated server-side; storage path is server-generated (no user filename in path)
+
+## Accessibility checks (WCAG 2.2 AA)
+
+- Every `<input>` has a real `<label htmlFor>` — placeholder alone is insufficient
+- Error messages: `role="alert"` + linked via `aria-describedby` to input
+- Focus ring: `focus-visible:ring-2` present — no `outline: none` without visible replacement
+- Color contrast ≥ 4.5:1 for text, ≥ 3:1 for UI components
+- No state conveyed by color alone — icon or text accompanies color indicator
 
 ## Workflow
 

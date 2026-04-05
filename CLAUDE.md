@@ -48,7 +48,13 @@ DB rules load from `.claude/rules/database.md` when editing `supabase/**`.
 5. Soft deletes via `deleted_at TIMESTAMPTZ` — no physical DELETE
 6. UUID v4 primary keys
 7. Agent `user_id` always from JWT, never from request body
-8. `types/database.ts` — never edit manually, regenerate with CLI
+8. `types/database.ts` — never edit manually, regenerate with `npm run db:types` (no Docker)
+9. **Never Docker** — all Supabase ops use remote Management API
+10. **i18n required** — all UI strings via `next-intl` `useTranslations()`, no hardcoded text
+11. **shadcn/ui + Radix + Tailwind v4** — never install MUI/Chakra/AntDesign
+12. **Dependencies current** — verify non-deprecated; `@supabase/ssr` not `auth-helpers-nextjs`
+13. **WCAG 2.2 AA everywhere** — `useId()` for form IDs, `role="alert"` on errors, `aria-live` for async, `focus-visible:ring-2` on all interactive elements
+14. **Hardened Zod on all forms** — `safeString()`/`safeName()` helpers with `isomorphic-dompurify`; `.strict()` on every schema; `hasPromptInjection()` before any user text reaches LLM
 
 ---
 
@@ -62,7 +68,7 @@ npm run test:e2e      # Playwright E2E
 npm run lint          # ESLint
 npx supabase db diff -f migration_name   # Create migration
 npx supabase db push                     # Apply migrations
-npx supabase gen types typescript --local > types/database.ts
+npm run db:types   # supabase gen types typescript --linked (remote, no Docker)
 ```
 
 ---

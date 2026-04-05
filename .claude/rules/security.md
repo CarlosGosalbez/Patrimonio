@@ -69,14 +69,8 @@ try {
 response.headers.set("X-Frame-Options", "DENY");
 response.headers.set("X-Content-Type-Options", "nosniff");
 response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
-response.headers.set(
-  "Strict-Transport-Security",
-  "max-age=31536000; includeSubDomains",
-);
-response.headers.set(
-  "Permissions-Policy",
-  "camera=(), microphone=(), geolocation=()",
-);
+response.headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+response.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
 // CSP: use nonce for inline scripts (generated per-request)
 response.headers.set(
   "Content-Security-Policy",
@@ -99,11 +93,50 @@ response.headers.set(
 // Only allow same-origin + Vercel preview URLs
 const ALLOWED_ORIGINS = [process.env.NEXT_PUBLIC_APP_URL, /\.vercel\.app$/];
 const origin = req.headers.get("origin");
-if (
-  origin &&
-  !ALLOWED_ORIGINS.some((o) =>
-    typeof o === "string" ? o === origin : o.test(origin),
-  )
-)
+if (origin && !ALLOWED_ORIGINS.some((o) => (typeof o === "string" ? o === origin : o.test(origin))))
   return new Response("Forbidden", { status: 403 });
 ```
+
+---
+
+## Form injection prevention
+
+- All free-text inputs: `safeString()` helper (DOMPurify check — any embedded HTML fails validation)
+- Name fields: `safeName` with regex `/^[^<>"'\`;\\]+$/` — rejects all HTML special chars
+- All schemas: `.strict()` REQUIRED — rejects undeclared fields (mass assignment prevention)
+- Monetary amounts: validated as string with `/^\d+([.,]\d{1,2})?$/` before converting to cents
+- UUIDs: `z.string().uuid()` — never trust raw IDs from user input
+- Prompt injection: call `hasPromptInjection(input)` before passing any user string to Claude; return 400 if detected
+
+```ts
+import DOMPurify from "isomorphic-dompurify";
+
+export const safeString = (max = 500) =>
+  z
+    .string()
+    .trim()
+    .max(max)
+    .refine((v) => v === DOMPurify.sanitize(v), { message: "Input contains unsafe content" });
+
+const PROMPT_INJECTION_PATTERNS = [
+  /ignore\s+previous\s+instructions/i,
+  /system\s*:/i,
+  /\[INST\]/i,
+  /<\|.*?\|>/,
+  /###\s*instruction/i,
+];
+export const hasPromptInjection = (s: string) => PROMPT_INJECTION_PATTERNS.some((p) => p.test(s));
+```
+
+---
+
+## Accessibility (a11y) — WCAG 2.2 AA
+
+- Every form input: `<label htmlFor={id}>` using `React.useId()` — never aria-label as primary label
+- Error messages: `role="alert"` + linked via `aria-describedby` — triggers immediate screen reader announcement
+- Focus ring: `focus-visible:ring-2` on every interactive element — NEVER `outline: none` without a visible replacement
+- Color contrast: ≥ 4.5:1 for body text, ≥ 3:1 for large text and UI components (buttons, inputs)
+- Color-only info: always add icon or text alongside color — never convey state by color alone
+- Async regions: wrap with `aria-live="polite"` for non-urgent updates, `aria-live="assertive"` only for real errors
+- Loading spinners: always include `<span className="sr-only">Loading...</span>` inside
+- Reduced motion: use Tailwind's `motion-safe:` / `motion-reduce:` variants — never force animations

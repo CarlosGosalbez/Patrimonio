@@ -54,34 +54,118 @@ import { formatCurrency, formatCents } from "@/lib/financial/formatters";
 // ✅ formatCurrency(amount, currency)
 ```
 
-## Forms — React Hook Form + Zod
+## Forms — React Hook Form + Zod (secure pattern)
+
+**All form fields must be validated client-side AND server-side.** Client validation improves UX; server Zod is the security boundary.
 
 ```tsx
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import DOMPurify from "isomorphic-dompurify";
+import { useId } from "react";
+import { useTranslations } from "next-intl";
 
-const schema = z
+// ── Secure field validators (reuse across forms) ───────────────────────────
+export const safeString = (max = 500) =>
+  z
+    .string()
+    .trim()
+    .max(max)
+    .refine((v) => v === DOMPurify.sanitize(v), { message: "Input contains unsafe content" });
+export const safeName = z
+  .string()
+  .trim()
+  .min(1)
+  .max(200)
+  .regex(/^[^<>"'`;\\]+$/);
+export const uuidField = z.string().uuid();
+export const dateField = z.string().date();
+
+// ── Schema ─────────────────────────────────────────────────────────────────
+const TransactionSchema = z
   .object({
-    amount: z.number().positive(), // Display value (user types 850.75)
-    description: z.string().min(1).max(500),
+    description: safeString(500),
+    category_id: uuidField,
+    transaction_date: dateField,
   })
-  .strict();
+  .strict(); // .strict() REQUIRED — rejects unknown fields
 
-type FormValues = z.infer<typeof schema>;
+type FormValues = z.infer<typeof TransactionSchema>;
 
+// ── Accessible form component ──────────────────────────────────────────────
 export function TransactionForm() {
-  const form = useForm<FormValues>({ resolver: zodResolver(schema) });
+  const t = useTranslations("transactions.form");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<FormValues>({ resolver: zodResolver(TransactionSchema) });
 
-  // Convert to cents BEFORE sending to API
-  const onSubmit = (values: FormValues) => {
-    const payload = {
-      ...values,
-      amount_cents: Math.round(values.amount * 100), // ← cents conversion
-    };
-    // POST to API
+  const descId = useId();
+  const errId = useId();
+
+  const onSubmit = async (values: FormValues) => {
+    // amount_cents conversion happens here — NEVER in the schema
+    await fetch("/api/transactions", {
+      method: "POST",
+      body: JSON.stringify(values),
+    });
   };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} noValidate aria-label={t("formLabel")}>
+      {/* Every field: label → description → input → error (linked via IDs) */}
+      <div className="space-y-1">
+        <label htmlFor={descId} className="text-sm font-medium">
+          {t("description.label")}
+          <span aria-hidden="true" className="text-destructive ml-1">
+            *
+          </span>
+          <span className="sr-only"> (required)</span>
+        </label>
+        <input
+          id={descId}
+          type="text"
+          aria-required
+          aria-invalid={!!errors.description}
+          aria-describedby={errors.description ? errId : undefined}
+          className="focus-visible:ring-primary focus-visible:ring-2"
+          {...register("description")}
+        />
+        {errors.description && (
+          <p id={errId} role="alert" className="text-destructive flex items-center gap-1 text-xs">
+            <AlertCircle className="h-3 w-3" aria-hidden="true" />
+            {errors.description.message}
+          </p>
+        )}
+      </div>
+    </form>
+  );
 }
+```
+
+**Amount input — special pattern (no injection + iOS keyboard + cents):**
+
+```tsx
+// Amounts are handled separately: user types "850.75" → sent to API as 85075
+const AmountSchema = z.object({
+  amount: z
+    .string()
+    .regex(/^\d+([.,]\d{1,2})?$/, "Invalid format")
+    .transform((v) => Math.round(parseFloat(v.replace(",", ".")) * 100)), // → cents
+});
+
+<input
+  type="text"
+  inputMode="decimal" // numeric keyboard on iOS
+  pattern="[0-9]*[.,]?[0-9]*" // HTML5 validation hint
+  autoComplete="off"
+  autoCorrect="off"
+  spellCheck={false}
+  aria-label={t("amount.label")}
+  {...register("amount")}
+/>;
 ```
 
 ## TanStack Query Data Fetching
@@ -92,8 +176,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 // Query keys are namespaced arrays
 export const transactionKeys = {
   all: ["transactions"] as const,
-  list: (filters: TransactionFilters) =>
-    ["transactions", "list", filters] as const,
+  list: (filters: TransactionFilters) => ["transactions", "list", filters] as const,
   detail: (id: string) => ["transactions", "detail", id] as const,
 };
 
@@ -207,14 +290,7 @@ export function InsightsPanel() {
 ## Recharts — Financial Charts
 
 ```tsx
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { formatCurrency } from "@/lib/financial/formatters";
 
 // All charts are wrapped in ResponsiveContainer for responsive behavior
@@ -235,17 +311,16 @@ Dark mode is system-driven (`prefers-color-scheme`) plus a manual toggle:
 <meta name="color-scheme" content="dark light" />
 ```
 
-
 ## RSC vs Client Components
 
-| Caso de uso | RSC (default) | Client (`"use client"`) |
-|---|---|---|
-| Fetch datos del servidor | ✅ | ❌ usar TanStack Query |
-| Estado interactivo (useState/useEffect) | ❌ | ✅ |
-| Acceso a Supabase con auth | ✅ `createServerClient()` | Via hooks en `hooks/` |
-| Formularios | ❌ | ✅ React Hook Form |
-| Streaming de IA | ❌ | ✅ `useChat` de Vercel AI |
-| Zustand store | ❌ | ✅ |
+| Caso de uso                             | RSC (default)             | Client (`"use client"`)   |
+| --------------------------------------- | ------------------------- | ------------------------- |
+| Fetch datos del servidor                | ✅                        | ❌ usar TanStack Query    |
+| Estado interactivo (useState/useEffect) | ❌                        | ✅                        |
+| Acceso a Supabase con auth              | ✅ `createServerClient()` | Via hooks en `hooks/`     |
+| Formularios                             | ❌                        | ✅ React Hook Form        |
+| Streaming de IA                         | ❌                        | ✅ `useChat` de Vercel AI |
+| Zustand store                           | ❌                        | ✅                        |
 
 **Regla:** empezar con RSC, añadir `"use client"` solo cuando sea necesario.
 
@@ -255,19 +330,132 @@ Para mutaciones simples (sin streaming), Server Actions sobre API routes:
 
 ```typescript
 // app/(app)/transactions/actions.ts
-"use server"
+"use server";
 import { createServerClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
 export async function deleteTransaction(id: string) {
   const supabase = createServerClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) throw new Error("Unauthorized");
 
-  await supabase.from("transactions")
+  await supabase
+    .from("transactions")
     .update({ deleted_at: new Date().toISOString() })
-    .eq("id", id).eq("user_id", user.id);
+    .eq("id", id)
+    .eq("user_id", user.id);
 
   revalidatePath("/app/transactions");
 }
 ```
+
+---
+
+## Internationalisation (i18n) — next-intl
+
+All UI text MUST go through `next-intl`. Never hardcode strings in components.
+
+### Setup pattern
+
+```typescript
+// messages/es.json  — Spanish (default locale for es-ES users)
+// messages/en.json  — English fallback
+// Locale files live in messages/ at project root
+
+// app/[locale]/layout.tsx (route group wraps all app pages)
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages } from "next-intl/server";
+
+export default async function LocaleLayout({ children, params: { locale } }) {
+  const messages = await getMessages();
+  return (
+    <NextIntlClientProvider locale={locale} messages={messages}>
+      {children}
+    </NextIntlClientProvider>
+  );
+}
+```
+
+### Usage in components
+
+```tsx
+import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server"; // RSC
+
+// Client Component
+export function TransactionCard() {
+  const t = useTranslations("transactions");
+  return <h2>{t("title")}</h2>; // messages/es.json → transactions.title
+}
+
+// Server Component
+export async function Page() {
+  const t = await getTranslations("dashboard");
+  return <title>{t("meta.title")}</title>;
+}
+```
+
+### Rules for i18n
+
+- Every new component: extract ALL display strings to message files **before** committing
+- Every updated component: migrate existing hardcoded strings to `t()` calls
+- Locale files path: `messages/[locale].json` — namespace matches component folder (e.g., `transactions`, `dashboard`)
+- Financial values: always format via `formatCurrency(amount, currency)` from `lib/financial/formatters.ts` — NOT via `t()` (currency formatting is handled by the formatter)
+- Dates: use `useFormatter()` from `next-intl` with locale `es-ES` by default
+- Never use `new Intl.NumberFormat()` or `new Intl.DateTimeFormat()` directly — use `next-intl` formatter hooks
+
+### next-intl middleware
+
+```typescript
+// middleware.ts — locale detection
+import createMiddleware from "next-intl/middleware";
+export default createMiddleware({
+  locales: ["es", "en"],
+  defaultLocale: "es",
+});
+export const config = { matcher: ["/((?!api|_next|.*\\..*).*)"] };
+```
+
+---
+
+## UI & Design System — shadcn/ui + Radix UI + Tailwind CSS v4
+
+**Primary stack (community-validated 2024-2026):**
+
+| Library         | Purpose                          | Why                                                                       |
+| --------------- | -------------------------------- | ------------------------------------------------------------------------- |
+| shadcn/ui       | Component primitives             | Composable, accessible, fully customizable — top Next.js ecosystem choice |
+| Radix UI        | Headless primitives under shadcn | WCAG 2.2 AA accessible, keyboard navigable, community gold standard       |
+| Tailwind CSS v4 | Utility-first styling            | Zero-runtime, mobile-first, co-located styles                             |
+| Recharts        | Financial charts                 | React-native, responsive, `ResponsiveContainer` built-in                  |
+| Lucide React    | Icons                            | Consistent, tree-shakeable, official shadcn/ui icon set                   |
+
+**Rules:**
+
+- Never install alternative UI libraries (MUI, Ant Design, Chakra) — shadcn/ui replaces them
+- Never use inline `style` for layout — use Tailwind classes
+- Every chart component wraps in `<ResponsiveContainer width="100%" height={300}>`
+- Colors via Tailwind CSS variables (`--color-primary`, `--color-destructive`) — never hardcoded hex
+- Dark mode: `dark:` Tailwind variants — never conditional JS class injection
+- `cn()` helper from `lib/utils.ts` for conditional class merging (shadcn/ui pattern)
+
+---
+
+## Dependency Freshness Rules
+
+When adding or updating dependencies:
+
+1. **Check for deprecation**: before using any API, prop, or import, verify it's not deprecated in the current version. Check official docs or changelog.
+2. **Latest stable versions**: use `npm install [pkg]@latest` for new packages — never pin old versions unless there is a documented incompatibility.
+3. **Breaking changes**: when upgrading a major version, scan the changelog for deprecated APIs and update call sites. Never leave deprecated usage after an upgrade.
+4. **Peer dependencies**: resolve peer dep warnings immediately — never ignore them.
+5. **Security**: run `npm audit` after installing packages. Fix HIGH/CRITICAL advisories before committing.
+6. **Known deprecated patterns**:
+   - `next/head` → use `metadata` export in `layout.tsx` / `page.tsx` (Next.js 14+)
+   - `getServerSideProps` / `getStaticProps` → use RSC with `async` components (App Router)
+   - `withRouter` / `useRouter` for navigation in forms → use `useRouter` from `next/navigation` not `next/router`
+   - `@supabase/auth-helpers-nextjs` → use `@supabase/ssr` (new package)
+   - `useChat` from `ai/react` → verify current import path in installed `ai` version
+   - Recharts `<CartesianGrid strokeDasharray>` → still valid; `<Tooltip content>` `renderProps` pattern preferred over deprecated `formatter` prop

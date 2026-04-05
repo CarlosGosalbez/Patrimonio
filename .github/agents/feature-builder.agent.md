@@ -43,7 +43,7 @@ Invoke `@db-architect` with full column spec:
 - Which triggers are needed (audit for financial tables?)
 - Index strategy
 
-Then remind: `npx supabase gen types typescript --local > types/database.ts`
+Then remind: `npm run db:types` — uses `--linked` Management API, no Docker required
 
 ---
 
@@ -115,12 +115,20 @@ export function use[Resource]() {
 
 ### Component checklist
 
-- [ ] React Hook Form + Zod schema (shared from `lib/schemas/`)
+- [ ] React Hook Form + Zod schema (shared from `lib/schemas/`) with `safeString`/`safeName` helpers
 - [ ] `inputMode="decimal"` on amount fields
 - [ ] Touch targets ≥ 44×44px
 - [ ] `formatCurrency` / `formatDate` from `lib/financial/formatters.ts`
 - [ ] Loading + error states handled
-- [ ] `aria-label` on interactive elements
+- [ ] **A11y:** `useId()` for input IDs → `<label htmlFor={id}>` on every field (not aria-label as substitute)
+- [ ] **A11y:** Error messages: `role="alert"` + `aria-describedby` linking input → error paragraph
+- [ ] **A11y:** `aria-required` on required fields; `aria-invalid={!!error}` when error present
+- [ ] **A11y:** `focus-visible:ring-2` on every interactive element — never remove outline without replacement
+- [ ] **A11y:** Color-only state → always add icon/text alongside
+- [ ] **A11y:** Async loading regions wrapped with `aria-live="polite"` + spinner has `sr-only` text
+- [ ] All display strings via `useTranslations()` from `next-intl` — no hardcoded text
+- [ ] shadcn/ui components — never install alternative UI libraries
+- [ ] All dependencies verified non-deprecated — check against current API docs before using
 
 ---
 

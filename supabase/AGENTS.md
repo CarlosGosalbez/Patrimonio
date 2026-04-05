@@ -1,53 +1,71 @@
-# supabase/ — Reglas de Base de Datos
+# supabase/ — Database Rules
 
-> Estas reglas amplían el root AGENTS.md para trabajo en migraciones, funciones y schema.
+> These rules extend root AGENTS.md for migration, function, and schema work.
 
-## Antes de cualquier cambio de schema
+## Before any schema change
 
-1. Leer `docs/patrimio-technical-spec.md` §4 — schema existente completo
-2. Verificar si ya existe tabla relacionada en `types/database.ts`
-3. No modificar migraciones ya aplicadas — crear nueva migración
+1. Read `docs/patrimio-technical-spec.md` §4 — full existing schema
+2. Verify if related table already exists in `types/database.ts`
+3. Never modify applied migrations — create a new migration
 
-## Checklist de migración (OBLIGATORIO)
+## Supabase CLI — remote mode (NO Docker)
 
-Todo archivo `supabase/migrations/` DEBE incluir:
+```bash
+npm run db:push   # Apply migrations (remote, no Docker)
+npm run db:types  # Regenerate types — supabase gen types typescript --linked (no Docker)
+npm run db:diff   # Preview diff before pushing
+```
+
+**Never run:** `supabase start`, `supabase stop`, `docker`, or `docker-compose`.
+
+## Migration checklist (MANDATORY)
+
+Every `supabase/migrations/` file MUST include:
 
 - [ ] `id UUID PRIMARY KEY DEFAULT gen_random_uuid()`
 - [ ] `user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE`
 - [ ] `created_at / updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()`
 - [ ] `deleted_at TIMESTAMPTZ` — soft delete
 - [ ] `ALTER TABLE X ENABLE ROW LEVEL SECURITY`
-- [ ] Políticas: SELECT (con `deleted_at IS NULL`) + INSERT + UPDATE
+- [ ] Policies: SELECT (with `deleted_at IS NULL`) + INSERT + UPDATE
 - [ ] `CREATE TRIGGER trg_X_updated_at BEFORE UPDATE ...`
-- [ ] Índices: `idx_X_user(user_id)` + `idx_X_active(user_id) WHERE deleted_at IS NULL`
-- [ ] ROLLBACK documentado al inicio como comentario
-- [ ] CHECK constraints para invariantes de negocio (amounts > 0, names not empty)
+- [ ] `CREATE TRIGGER trg_X_no_resurrect BEFORE UPDATE ...`
+- [ ] Indexes: `idx_X_user(user_id)` + `idx_X_active(user_id) WHERE deleted_at IS NULL`
+- [ ] ROLLBACK documented at top as comment
+- [ ] CHECK constraints for business invariants (amounts > 0, names not empty, currency length = 3)
+- [ ] FTS indexes specify language explicitly: `to_tsvector('spanish', ...)` or `'simple'` for multilingual
+- [ ] `COMMENT ON TABLE` describing the business purpose
+- [ ] `COMMENT ON COLUMN` for monetary columns (document cents meaning)
+- [ ] i18n: multilingual user-visible text uses JSONB `name_i18n` column pattern
+- [ ] FTS queries with user input use `websearch_to_tsquery` / `plainto_tsquery` — never raw `to_tsquery`
+- [ ] `SECURITY DEFINER` functions have `SET search_path = public, pg_catalog` + explicit `auth.uid()` check
+- [ ] Role grants: `authenticated` gets `SELECT, INSERT, UPDATE` only; `anon` gets `SELECT` on public tables only; never `DELETE` or `ALL`
 
-## Columnas monetarias
+## Monetary columns
 
 ```sql
--- CORRECTO
+-- CORRECT
 amount_cents INTEGER NOT NULL
 CONSTRAINT chk_X_amount_positive CHECK (amount_cents > 0)
 
--- INCORRECTO — nunca
+-- WRONG — never
 amount DECIMAL(10,2)
 amount FLOAT
 price NUMERIC
 ```
 
-## RLS — Políticas completas
+## RLS — Complete policies
 
 ```sql
--- SELECT: filtrar deleted_at aquí para que no escale a la app
+-- SELECT: filter deleted_at here so it doesn't leak to the app
 CREATE POLICY "users_select_X" ON X
   FOR SELECT USING (auth.uid() = user_id AND deleted_at IS NULL);
 
--- INSERT: no incluir user_id en WITH CHECK — el valor viene del JWT en la app
+-- INSERT: do not include user_id in WITH CHECK — value comes from JWT in app
 CREATE POLICY "users_insert_X" ON X
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
--- UPDATE: doble verificación USING + WITH CHECK
+-- UPDATE: dual check USING + WITH CHECK
 CREATE POLICY "users_update_X" ON X
   FOR UPDATE USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
 ```
@@ -82,6 +100,6 @@ Deno.serve(async (req) => {
 
 ```bash
 npx supabase db push                                          # Aplicar
-npx supabase gen types typescript --local > types/database.ts # Regenerar tipos
+npm run db:types   # supabase gen types typescript --linked -- no Docker needed
 npm run type-check                                            # Verificar sin errores
 ```

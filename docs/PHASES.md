@@ -36,15 +36,15 @@
 
 ---
 
-## PHASE 0 — Foundations (~2 weeks)
+## PHASE 0 — Foundations ✅ COMPLETED (2026-04-05)
 
 **Goal:** Fully operational infrastructure before writing a single line of product code.
 
 ### Deliverables
 
-- [ ] GitHub repository initialized with Next.js 14 + TypeScript 5 + Tailwind + shadcn/ui structure
-- [ ] Supabase project created: PostgreSQL, Auth configured, Storage with private `receipts` bucket
-- [ ] All base schema migrations applied → `supabase/migrations/`
+- [x] GitHub repository initialized with Next.js 14 + TypeScript 5 + Tailwind + shadcn/ui structure
+- [x] Supabase project created: PostgreSQL, Auth configured, Storage with private `receipts` bucket
+- [x] All base schema migrations applied → `supabase/migrations/`
   - `profiles`, `accounts`, `categories`, `transactions`, `recurring_commitments`
   - `investments`, `investment_operations`, `investment_snapshots`
   - `budgets`, `auto_categorization_rules`, `market_cache`, `notifications`
@@ -54,15 +54,15 @@
   - Materialized views: `monthly_account_balance`, `monthly_category_spending`
   - RPC functions: `get_net_worth`, `project_cash_flow`, `recalculate_avg_purchase_price`
   - **RLS enabled on ALL tables** — minimum policy: `auth.uid() = user_id`
-- [ ] System categories seed (25+ categories: Salary, Mortgage, Groceries, etc.)
-- [ ] **Custom alerts seed**: IBI, IRPF, IVTM, Seguro Coche, Seguro Hogar, Tasa de Basura (editables per user)
-- [ ] `types/database.ts` generated with Supabase CLI
-- [ ] `lib/supabase/client.ts` + `lib/supabase/server.ts` + `lib/supabase/middleware.ts`
-- [ ] Base deploy on Vercel (provisional `*.vercel.app` domain)
-- [ ] Environment variables configured in Vercel Dashboard (see `.env.example`)
-- [ ] Basic GitHub Actions CI (`ci.yml`): type-check → lint → unit tests → build
-- [ ] `lib/financial/formatters.ts` with `formatCurrency`, `formatDate`, `centsToDisplay`, `displayToCents`
-- [ ] ESLint + Prettier + Husky pre-commit hooks configured
+- [x] System categories seed (25+ categories: Salary, Mortgage, Groceries, etc.)
+- [x] **Custom alerts seed**: IBI, IRPF, IVTM, Seguro Coche, Seguro Hogar, Tasa de Basura (editables per user)
+- [x] `types/database.ts` generated with Supabase CLI
+- [x] `lib/supabase/client.ts` + `lib/supabase/server.ts` + `lib/supabase/middleware.ts`
+- [x] Base deploy on Vercel (provisional `*.vercel.app` domain)
+- [x] Environment variables configured in Vercel Dashboard (see `.env.example`)
+- [x] Basic GitHub Actions CI (`ci.yml`): type-check → lint → unit tests → build
+- [x] `lib/financial/formatters.ts` with `formatCurrency`, `formatDate`, `centsToDisplay`, `displayToCents`
+- [x] ESLint + Prettier + Husky pre-commit hooks configured
 
 **Assigned agents:** DB Architect (schema), Security Reviewer (RLS audit)  
 **Required skills:** `supabase-migration`, `supabase-postgres-best-practices`
@@ -71,7 +71,7 @@
 
 ---
 
-## PHASE 1 — Full Authentication (~2 weeks)
+## PHASE 1 — Full Authentication ✅ COMPLETED (2026-04-05)
 
 **Goal:** User can register, log in with 2FA, and manage their session securely.
 
@@ -91,19 +91,22 @@
 
 #### Deliverables
 
-- [ ] Login flow → `supabase.auth.signInWithPassword()` + secure redirect
-- [ ] Registration with real-time password strength validation (zxcvbn)
-- [ ] Mandatory email verification before access
-- [ ] 2FA TOTP setup: QR code display + code verification + 10 hashed recovery codes
-- [ ] TOTP challenge on every login when active
-- [ ] Single-use recovery codes consumption
-- [ ] Forgot/Reset password with expirable link (1h)
-- [ ] Edge auth middleware: `/(app)/*` routes redirect to login with no session
-- [ ] JWT stored in memory + HttpOnly cookie (never localStorage)
-- [ ] Active sessions view with `supabase.auth.admin.listUserSessions()` + individual revocation
-- [ ] Password strength indicator (`PasswordStrength` component)
-- [ ] Minimal onboarding: create first bank account + select base currency
-- [ ] E2E tests: register → login → 2FA → logout → login with TOTP
+- [x] Login flow → `supabase.auth.signInWithPassword()` + secure redirect
+- [x] Registration with real-time password strength validation (zxcvbn)
+- [x] Mandatory email verification before access
+- [x] 2FA TOTP setup: QR code display + code verification + 10 hashed recovery codes
+- [x] TOTP challenge on every login when active
+- [x] Single-use recovery codes consumption
+- [x] Forgot/Reset password with expirable link (1h)
+- [x] Edge auth middleware: `/(app)/*` routes redirect to login with no session
+- [x] JWT stored in memory + HttpOnly cookie (never localStorage)
+- [x] Active sessions view with `supabase.auth.admin.listUserSessions()` + individual revocation
+- [x] Password strength indicator (`PasswordStrength` component)
+- [x] Minimal onboarding: create first bank account + select base currency
+- [x] E2E tests: register → login → 2FA → logout → login with TOTP
+- [x] i18n complete (ES/EN) via `next-intl` — all strings translated, `LanguageSwitcher` component
+- [x] WCAG 2.2 AA: `aria-describedby`, `role="alert"`, `aria-live`, `focus-visible:ring-2`, touch targets ≥44px
+- [x] Migration `20260405130000_create_recovery_codes.sql` applied · `types/database.ts` regenerated
 
 **Assigned agents:** Security Reviewer  
 **Required skills:** —  

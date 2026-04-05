@@ -173,11 +173,21 @@ npx supabase db push --db-url "postgresql://postgres.febokmcgjatrfdfuaeyk:PASSWO
 
 ### Generate Types After Migration
 
+**Use the Management API (no Docker required):**
+
 ```powershell
-npx supabase gen types typescript --db-url "postgresql://postgres.febokmcgjatrfdfuaeyk:PASSWORD@aws-0-eu-west-1.pooler.supabase.com:6543/postgres" --schema public > types/database.ts
+# Option A — preferred: uses SUPABASE_ACCESS_TOKEN via npm script
+npm run db:types
+
+# Option B — explicit (no --linked needed):
+npx supabase gen types typescript --project-id febokmcgjatrfdfuaeyk --schema public > types/database.ts
+
+# Option C — via --db-url (direct DB connection, no Docker):
+npx supabase db pull --db-url "postgresql://postgres.febokmcgjatrfdfuaeyk:PASSWORD@aws-0-eu-west-1.pooler.supabase.com:6543/postgres"
+npx supabase gen types typescript --local > types/database.ts  # Only after db pull sets up local schema
 ```
 
-This uses Docker (postgres-meta image) so Docker Desktop must be running.
+**Correct approach: ALWAYS use Option A or B. Never Docker.**
 
 ### moddatetime Extension
 
