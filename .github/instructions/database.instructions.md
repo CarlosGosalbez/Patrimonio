@@ -130,3 +130,22 @@ Complex financial calculations are in stored procedures (`CREATE OR REPLACE FUNC
 - `recalculate_avg_purchase_price(p_investment_id UUID)` — weighted average price
 
 Call from app via `supabase.rpc('function_name', { params })`.
+
+
+## FK ON DELETE — Matriz de decisión
+
+| FK target | ON DELETE | Razón |
+|---|---|---|
+| `auth.users` | CASCADE | Usuario borrado → todos sus datos borrados |
+| `categories` | SET NULL | La transacción sobrevive sin categoría |
+| `accounts` | RESTRICT | No se puede borrar cuenta con registros activos |
+| `budgets` | SET NULL | Las transacciones sobreviven sin presupuesto |
+
+## CHECK Constraints — Obligatorios en tablas financieras
+
+```sql
+CONSTRAINT chk_table_amount_positive CHECK (amount_cents > 0),
+CONSTRAINT chk_table_name_not_empty  CHECK (char_length(trim(name)) > 0),
+CONSTRAINT chk_table_currency        CHECK (char_length(currency) = 3),
+CONSTRAINT chk_table_deleted_order   CHECK (deleted_at IS NULL OR deleted_at >= created_at)
+```

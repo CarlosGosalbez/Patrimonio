@@ -191,3 +191,39 @@ financiero regulado. Consult a un profesional antes de tomar decisiones de inver
 `;
 // Append to every Investment Research response
 ```
+
+
+## abortSignal — Cancelación de streaming
+
+Siempre pasar `abortSignal: req.signal` a `streamText` para cancelar cuando el cliente desconecta:
+
+```typescript
+const result = await streamText({
+  model: anthropic("claude-sonnet-4-5"),
+  system: SYSTEM_PROMPT,
+  messages: input.messages,
+  maxSteps: 8,
+  abortSignal: req.signal, // REQUERIDO — evita compute desperdiciado
+  tools: { ... },
+});
+return result.toDataStreamResponse();
+```
+
+## Client-side hook para agentes
+
+```typescript
+// hooks/use-agent-chat.ts
+import { useChat } from 'ai/react';
+
+export function useAgentChat(agent: 'insights' | 'budget-optimizer' | 'investment-research') {
+  return useChat({
+    api: `/api/ai/${agent}`,
+    maxSteps: 8,
+    onError: (error) => {
+      // Handle AbortError silently (user navigation)
+      if (error.name === 'AbortError') return;
+      console.error('Agent error:', error);
+    },
+  });
+}
+```

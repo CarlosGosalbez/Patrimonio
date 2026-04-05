@@ -155,3 +155,43 @@ const tables = [
 ```
 
 AI agents must NOT process data for training — Anthropic API is called with Zero Data Retention preference in API agreements.
+
+
+## Rate Limiting
+
+Implementar rate limiting en Edge Middleware para rutas de IA:
+
+```typescript
+// middleware.ts — Rate limit por user_id en rutas AI
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
+
+const ratelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(10, "1 m"), // 10 requests/min por usuario
+});
+
+export async function middleware(req: NextRequest) {
+  if (req.nextUrl.pathname.startsWith('/api/ai/')) {
+    const { success } = await ratelimit.limit(userId);
+    if (!success) return new Response('Too Many Requests', { status: 429 });
+  }
+}
+```
+
+## CORS
+
+- Nunca usar `Access-Control-Allow-Origin: *` en producción
+- API routes de Next.js solo son accesibles desde el mismo origen por defecto
+- Si se necesita CORS para Edge Functions de Supabase, restringir a dominios de Vercel:
+
+```typescript
+const ALLOWED_ORIGINS = [
+  'https://patrimio.vercel.app',
+  'https://patrimio.com',
+];
+const origin = req.headers.get('origin') ?? '';
+if (!ALLOWED_ORIGINS.includes(origin)) {
+  return new Response('Forbidden', { status: 403 });
+}
+```

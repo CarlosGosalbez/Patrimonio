@@ -1,56 +1,96 @@
 # Patrimio — GitHub Copilot Workspace Instructions
 
+## Punto de entrada: @project-orchestrator
+
+Para cualquier tarea compleja (nueva feature, bug multi-capa, decisión de arquitectura) invoca `@project-orchestrator`.
+Analiza, planifica y delega a especialistas. No invoques otros agentes directamente salvo para tareas atómicas conocidas.
+
+## Protocolo anti-desperdicio de tokens (obligatorio)
+
+El asistente DEBE seguir estas reglas en TODAS las respuestas:
+
+| Prohibido | Hacer en su lugar |
+|---|---|
+| Saludos ("Hola!", "¡Excelente!") | Responder directamente |
+| Repetir la pregunta antes de responder | Ir al grano |
+| Narrar intención ("Voy a analizar...") | Hacer, no anunciar |
+| Reescribir archivos enteros para cambiar 3-5 líneas | Edits quirúrgicos con contexto mínimo |
+| Re-analizar código ya analizado en la sesión | Referenciar análisis previo |
+| Afirmar hechos no verificados como ciertos | Indicar fuente o buscar primero |
+| Adulación ("¡Muy buena idea!", "¡Perfecto!") | Neutral y directo |
+| Soluciones sobrediseñadas para problemas simples | La solución más simple que funcione |
+| Conflicto inmediato sin fundamento técnico | Implementar; señalar riesgos reales al final |
+| Ofrecer 3 alternativas cuando hay 1 respuesta clara | Una respuesta, la correcta |
+| Conclusión que resume lo que se acaba de hacer | Terminar cuando el trabajo esté hecho |
+| Frases de relleno ("Como mencioné antes...") | Omitir |
+| "¿Necesitas algo más?" al final | Omitir |
+| Hedging en hechos conocidos ("quizás", "creo que") | Afirmar o verificar |
+
+## Reglas de edición de archivos
+
+- Cambios < 20 líneas: edits quirúrgicos, nunca reescribir el archivo completo
+- Cambios en múltiples bloques: agrupar en una sola operación multi-edit
+- Siempre leer el archivo antes de editarlo — nunca asumir el contenido actual
+
 ## Proyecto
 
-**Patrimio** es una PWA de gestión de patrimonio personal. Stack: Next.js 14 + TypeScript + Supabase + Vercel + Claude API.
-Ver especificación completa en [docs/patrimio-technical-spec.md](../docs/patrimio-technical-spec.md).
+**Patrimio** — PWA de gestión de patrimonio personal.
+Stack: Next.js 14 + TypeScript + Supabase + Vercel + Anthropic Claude API
+Spec completa: `docs/patrimio-technical-spec.md`
 
 ## Reglas de seguridad NO negociables
 
-- RLS activado en TODA tabla Supabase. Política mínima: `auth.uid() = user_id`
-- Importes monetarios en centavos INTEGER siempre (`850.75€ → 85075`)
-- Zod `.strict()` en schemas de entrada de API routes
-- `service_role` key solo en Edge Functions del servidor, nunca en cliente
-- Soft deletes: `deleted_at TIMESTAMPTZ` en lugar de DELETE físico
+- RLS activado en TODA tabla: política mínima `auth.uid() = user_id`
+- Importes monetarios: INTEGER centavos siempre (`850.75€ → 85075`)
+- Zod `.strict()` en TODOS los schemas de API routes
+- `service_role` key: solo en Edge Functions Deno del servidor, nunca en cliente
+- Soft deletes: `deleted_at TIMESTAMPTZ` — nunca DELETE físico
 - UUID v4 como primary key en todas las tablas
-- Signed URLs para Storage, nunca paths directos
+- Signed URLs para Storage — nunca paths directos
+- `user_id` en agentes IA: siempre del JWT, nunca del body
 
 ## Convenciones de código
 
-### TypeScript
+**TypeScript:** `strict: true` · tipos de BD desde `types/database.ts` (no editar manualmente) · `type` para datos · `interface` para props de componentes · alias `@/`
 
-- `strict: true` en tsconfig, sin excepciones
-- Tipos de BD desde `types/database.ts` (generado por Supabase CLI, no editar)
-- Preferir `type` para datos, `interface` para contratos de componentes
-- Importar con alias `@/` siempre (ej: `@/lib/supabase/client`)
+**Naming:** Componentes `PascalCase.tsx` · Hooks `useName.ts` con prefijo `use` · API routes kebab-case · Tablas BD `snake_case_plural` · Edge Functions kebab-case
 
-### Naming
+**Finanzas:** `lib/financial/formatters.ts` siempre para display · locale `es-ES` · nunca floats, siempre centavos INTEGER
 
-- Componentes React: `PascalCase.tsx`
-- Hooks: `use` prefix, camelCase (`useTransactions.ts`)
-- API routes: kebab-case directorios (`api/ai/import-assist/route.ts`)
-- Tablas BD: snake_case plural (`transactions`, `investment_operations`)
-- Edge Functions: kebab-case (`market-updater/index.ts`)
+**Estado:** Zustand para estado global · TanStack Query para datos del servidor · React Hook Form + Zod para formularios
 
-### Formateo de datos financieros
+## Agentes disponibles
 
-- Siempre usar `lib/financial/formatters.ts` para convertir centavos a display
-- Locale `es-ES` para fechas y moneda
-- Nunca calcular importes con floats, solo con INTEGER centavos
+| Agente | Invocación | Rol | user-invocable |
+|---|---|---|---|
+| Project Orchestrator | `@project-orchestrator` | Entrada principal — planifica y delega | ✅ |
+| Feature Builder | sub-agente | Implementa features completas DB→UI→tests | — |
+| Product Strategist | sub-agente | Análisis de producto, specs, routing | — |
+| DB Architect | sub-agente | Migraciones, RLS, índices | — |
+| Security Reviewer | sub-agente | Auditoría OWASP | — |
+| Code Reviewer | sub-agente | Calidad TypeScript/React | — |
+| Financial Insights | `@financial-insights` | Análisis financiero en lenguaje natural | ✅ |
+| Import Assistant | `@import-assistant` | Importación CSV/Excel bancos españoles | ✅ |
+| Investment Research | `@investment-research` | Análisis de inversiones | ✅ |
+| Budget Optimizer | `@budget-optimizer` | Optimización presupuestal 50/30/20 | ✅ |
 
-## Patrones de API Routes (agentes IA)
+## Patrones de API Routes
 
 ```typescript
-// Siempre autenticar desde JWT, nunca del body
+// Auth siempre de JWT, nunca del body
 const supabase = createServerClient();
-const { data: { user } } = await supabase.auth.getUser();
-if (!user) return new Response('Unauthorized', { status: 401 });
+const { data: { user }, error } = await supabase.auth.getUser();
+if (error || !user) return new Response('Unauthorized', { status: 401 });
 
-// Validar input con Zod strict
+// Input con Zod strict — siempre
 const input = InputSchema.strict().parse(await req.json());
 
-// Usar streamText de Vercel AI SDK para agentes
-const result = await streamText({ model: anthropic('claude-sonnet-4-5'), ... });
+// Streaming con Vercel AI SDK
+const result = await streamText({
+  model: anthropic('claude-sonnet-4-5'),
+  maxSteps: 8,
+  abortSignal: req.signal,
+});
 return result.toDataStreamResponse();
 ```
 
@@ -60,29 +100,36 @@ return result.toDataStreamResponse();
 -- supabase/migrations/YYYYMMDDHHMMSS_nombre.sql
 -- ROLLBACK: DROP TABLE IF EXISTS nombre CASCADE;
 CREATE TABLE nombre (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id    UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  -- columnas de negocio: monetarias como INTEGER _cents
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   deleted_at TIMESTAMPTZ
 );
+CREATE INDEX idx_nombre_user ON nombre(user_id);
 ALTER TABLE nombre ENABLE ROW LEVEL SECURITY;
--- Políticas RLS por operación (SELECT, INSERT, UPDATE)
+CREATE POLICY "users_select_nombre" ON nombre FOR SELECT USING (auth.uid() = user_id AND deleted_at IS NULL);
+CREATE POLICY "users_insert_nombre" ON nombre FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "users_update_nombre" ON nombre FOR UPDATE USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+CREATE TRIGGER set_updated_at BEFORE UPDATE ON nombre FOR EACH ROW EXECUTE FUNCTION moddatetime(updated_at);
 ```
 
 ## Testing
 
-- Vitest para unit tests; siempre mockear Anthropic API en tests de agentes
-- Playwright para E2E; configurar proyectos para `iPhone 14` y `iPad Pro 11`
-- Mínimo tests para: utilities financieras, schemas Zod, flujos auth, CRUD con RLS
+- **Vitest**: utilities financieras, schemas Zod, hooks · siempre mockear Anthropic API
+- **Playwright**: happy paths críticos en `iPhone 14` y `Desktop Chrome`
+- Mínimo: utilities financieras, schemas Zod, flujos auth, CRUD con RLS verificado
 
-## Anti-patterns a evitar
+## Anti-patterns de código
 
 - ❌ `localStorage` para tokens o datos sensibles (solo cookies HttpOnly)
 - ❌ Floats para importes monetarios
-- ❌ DELETE físico de registros (usar soft delete)
+- ❌ DELETE físico — usar soft delete con `deleted_at`
 - ❌ Editar `types/database.ts` manualmente
-- ❌ API routes sin validación Zod
+- ❌ API routes sin validación Zod `.strict()`
 - ❌ `dangerouslySetInnerHTML` sin DOMPurify
-- ❌ Pasar `user_id` en el body de requests a agentes IA
+- ❌ `user_id` en el body de requests a agentes IA
 - ❌ Migraciones que modifiquen migraciones ya aplicadas
+- ❌ `useEffect` para fetching — usar TanStack Query
+- ❌ Direct Supabase calls en componentes React — usar hooks en `hooks/`

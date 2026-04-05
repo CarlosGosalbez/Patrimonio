@@ -234,3 +234,40 @@ Dark mode is system-driven (`prefers-color-scheme`) plus a manual toggle:
 // Color scheme meta tag in root layout
 <meta name="color-scheme" content="dark light" />
 ```
+
+
+## RSC vs Client Components
+
+| Caso de uso | RSC (default) | Client (`"use client"`) |
+|---|---|---|
+| Fetch datos del servidor | ✅ | ❌ usar TanStack Query |
+| Estado interactivo (useState/useEffect) | ❌ | ✅ |
+| Acceso a Supabase con auth | ✅ `createServerClient()` | Via hooks en `hooks/` |
+| Formularios | ❌ | ✅ React Hook Form |
+| Streaming de IA | ❌ | ✅ `useChat` de Vercel AI |
+| Zustand store | ❌ | ✅ |
+
+**Regla:** empezar con RSC, añadir `"use client"` solo cuando sea necesario.
+
+## Server Actions
+
+Para mutaciones simples (sin streaming), Server Actions sobre API routes:
+
+```typescript
+// app/(app)/transactions/actions.ts
+"use server"
+import { createServerClient } from "@/lib/supabase/server";
+import { revalidatePath } from "next/cache";
+
+export async function deleteTransaction(id: string) {
+  const supabase = createServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Unauthorized");
+
+  await supabase.from("transactions")
+    .update({ deleted_at: new Date().toISOString() })
+    .eq("id", id).eq("user_id", user.id);
+
+  revalidatePath("/app/transactions");
+}
+```

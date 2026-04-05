@@ -227,3 +227,64 @@ Place test fixture files in `tests/fixtures/`:
 - `portfolio-sample.json` — Test portfolio data
 
 Use a dedicated test Supabase project for E2E (never run against production).
+
+
+## Mock de Supabase en tests unitarios
+
+```typescript
+// tests/utils/supabase-mock.ts
+import { vi } from 'vitest';
+
+export const mockSupabase = {
+  auth: {
+    getUser: vi.fn().mockResolvedValue({
+      data: { user: { id: 'test-user-id' } },
+      error: null,
+    }),
+  },
+  from: vi.fn().mockReturnThis(),
+  select: vi.fn().mockReturnThis(),
+  eq: vi.fn().mockReturnThis(),
+  single: vi.fn().mockResolvedValue({ data: null, error: null }),
+};
+
+vi.mock('@/lib/supabase/server', () => ({
+  createServerClient: () => mockSupabase,
+}));
+```
+
+## Matriz de dispositivos para Playwright
+
+| Proyecto | Dispositivo | Resolución | Prioridad |
+|---|---|---|---|
+| `mobile` | iPhone 14 | 390×844 | Alta — entrada primaria |
+| `tablet` | iPad Pro 11 | 834×1194 | Media |
+| `desktop` | Desktop Chrome | 1280×800 | Alta |
+| `safari-desktop` | Desktop Safari | 1280×800 | Media |
+
+```typescript
+// playwright.config.ts
+projects: [
+  { name: 'mobile', use: { ...devices['iPhone 14'] } },
+  { name: 'desktop', use: { ...devices['Desktop Chrome'] } },
+],
+```
+
+## Verificación de RLS en tests de integración
+
+```typescript
+// Crear dos usuarios y verificar aislamiento
+it('should not expose data between users', async () => {
+  const user1 = await createTestUser();
+  const user2 = await createTestUser();
+
+  // Crear transacción con user1
+  await supabase.auth.signInWithPassword(user1);
+  await supabase.from('transactions').insert({ ... });
+
+  // Verificar que user2 NO la ve
+  await supabase.auth.signInWithPassword(user2);
+  const { data } = await supabase.from('transactions').select();
+  expect(data).toHaveLength(0);
+});
+```
