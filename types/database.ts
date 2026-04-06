@@ -317,6 +317,36 @@ export type Database = {
           },
         ]
       }
+      exchange_rates_cache: {
+        Row: {
+          base_currency: string
+          created_at: string
+          data_source: string | null
+          id: string
+          quote_currency: string
+          rate_value: number
+          updated_at: string
+        }
+        Insert: {
+          base_currency: string
+          created_at?: string
+          data_source?: string | null
+          id?: string
+          quote_currency: string
+          rate_value: number
+          updated_at?: string
+        }
+        Update: {
+          base_currency?: string
+          created_at?: string
+          data_source?: string | null
+          id?: string
+          quote_currency?: string
+          rate_value?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       investment_operations: {
         Row: {
           created_at: string
@@ -330,9 +360,11 @@ export type Database = {
           operation_type: Database["public"]["Enums"]["operation_type"]
           price_cents: number
           quantity: number
+          realized_pl_cents: number | null
           total_cents: number
           updated_at: string
           user_id: string
+          withholding_cents: number
         }
         Insert: {
           created_at?: string
@@ -346,9 +378,11 @@ export type Database = {
           operation_type: Database["public"]["Enums"]["operation_type"]
           price_cents: number
           quantity: number
+          realized_pl_cents?: number | null
           total_cents: number
           updated_at?: string
           user_id: string
+          withholding_cents?: number
         }
         Update: {
           created_at?: string
@@ -362,9 +396,11 @@ export type Database = {
           operation_type?: Database["public"]["Enums"]["operation_type"]
           price_cents?: number
           quantity?: number
+          realized_pl_cents?: number | null
           total_cents?: number
           updated_at?: string
           user_id?: string
+          withholding_cents?: number
         }
         Relationships: [
           {
@@ -414,66 +450,92 @@ export type Database = {
       }
       investments: {
         Row: {
+          account_id: string | null
+          annual_dividend_per_share_cents: number
           avg_purchase_price_cents: number
           created_at: string
           currency: string
           current_price_cents: number | null
           current_value_cents: number | null
+          daily_price_alert_threshold_percent: number | null
           deleted_at: string | null
+          dividend_frequency: Database["public"]["Enums"]["frequency_type"]
           id: string
           investment_type: Database["public"]["Enums"]["investment_type"]
           is_active: boolean
           last_price_update: string | null
           market: string | null
           name: string
+          next_dividend_date: string | null
           notes: string | null
           quantity: number
+          sector: string | null
           ticker: string
           total_invested_cents: number
           updated_at: string
           user_id: string
         }
         Insert: {
+          account_id?: string | null
+          annual_dividend_per_share_cents?: number
           avg_purchase_price_cents?: number
           created_at?: string
           currency?: string
           current_price_cents?: number | null
           current_value_cents?: number | null
+          daily_price_alert_threshold_percent?: number | null
           deleted_at?: string | null
+          dividend_frequency?: Database["public"]["Enums"]["frequency_type"]
           id?: string
           investment_type: Database["public"]["Enums"]["investment_type"]
           is_active?: boolean
           last_price_update?: string | null
           market?: string | null
           name: string
+          next_dividend_date?: string | null
           notes?: string | null
           quantity?: number
+          sector?: string | null
           ticker: string
           total_invested_cents?: number
           updated_at?: string
           user_id: string
         }
         Update: {
+          account_id?: string | null
+          annual_dividend_per_share_cents?: number
           avg_purchase_price_cents?: number
           created_at?: string
           currency?: string
           current_price_cents?: number | null
           current_value_cents?: number | null
+          daily_price_alert_threshold_percent?: number | null
           deleted_at?: string | null
+          dividend_frequency?: Database["public"]["Enums"]["frequency_type"]
           id?: string
           investment_type?: Database["public"]["Enums"]["investment_type"]
           is_active?: boolean
           last_price_update?: string | null
           market?: string | null
           name?: string
+          next_dividend_date?: string | null
           notes?: string | null
           quantity?: number
+          sector?: string | null
           ticker?: string
           total_invested_cents?: number
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "investments_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       market_cache: {
         Row: {
@@ -989,6 +1051,14 @@ export type Database = {
       }
     }
     Functions: {
+      convert_currency_amount: {
+        Args: {
+          p_amount_cents: number
+          p_from_currency: string
+          p_to_currency: string
+        }
+        Returns: number
+      }
       create_default_custom_alerts: {
         Args: { p_user_id: string }
         Returns: undefined
@@ -1055,6 +1125,10 @@ export type Database = {
         Returns: undefined
       }
       refresh_dashboard_views: { Args: never; Returns: undefined }
+      refresh_investment_snapshots: {
+        Args: { p_snapshot_date?: string }
+        Returns: undefined
+      }
       rollback_import_batch: {
         Args: { p_batch_id: string }
         Returns: {

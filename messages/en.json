@@ -221,6 +221,7 @@
     "subtitle": "Financial control center",
     "dashboard": "Dashboard",
     "analytics": "Analytics",
+    "investments": "Investments",
     "imports": "Imports",
     "commitments": "Commitments",
     "alerts": "Alerts",
@@ -559,9 +560,213 @@
       "currentPeriod": "Current period",
       "previousPeriod": "Previous period"
     },
+    "topCategoriesWidget": {
+      "title": "Top categories with budget control",
+      "movements": "movements",
+      "limit": "Limit {amount}",
+      "status": {
+        "available": "Within target",
+        "warning": "Near the limit",
+        "exceeded": "Budget exceeded",
+        "none": "No budget"
+      }
+    },
     "toasts": {
       "exported": "CSV exported successfully",
       "exportError": "The CSV export failed"
+    }
+  },
+  "investments": {
+    "badge": "Phase 6",
+    "title": "Investments",
+    "subtitle": "Manage positions, operations, dividends and simplified tax reporting with cached quotes and realtime updates.",
+      "actions": {
+        "export": "Export Excel",
+        "newOperation": "Record operation",
+        "newPosition": "New position",
+        "refresh": "Refresh",
+        "cancel": "Cancel",
+        "edit": "Edit",
+        "delete": "Delete",
+        "confirmDelete": "Confirm delete"
+      },
+    "tabs": {
+      "overview": "Portfolio",
+      "operations": "Operations",
+      "dividends": "Dividends"
+    },
+    "summary": {
+      "totalValue": "Total value",
+      "totalInvested": "Invested capital",
+      "unrealizedPnL": "Unrealized P&L",
+      "realizedPnL": "Realized P&L",
+      "realizedPnLDetail": "Updated from sales and weighted average cost basis.",
+      "dayChange": "Daily change",
+      "dayChangePercent": "Daily change rate",
+      "lastSync": "Last update",
+      "staleCount": "{count} positions with stale pricing",
+      "positions": "{count} active positions",
+      "currentValue": "Current value",
+      "dividendsGross": "Gross dividends",
+      "dividendsWithholding": "Withholding",
+      "dividendsNet": "Net dividends"
+    },
+    "charts": {
+      "timeline": "Portfolio evolution",
+      "distributionByType": "Distribution by type",
+      "distributionBySector": "Distribution by sector",
+      "distributionByCurrency": "Distribution by currency"
+    },
+    "sections": {
+      "positions": "Active positions",
+      "operations": "Yearly operations history",
+      "dividendCalendar": "Dividend calendar",
+      "fiscalReport": "Simplified tax report",
+      "realizedSales": "Realized sales"
+    },
+    "status": {
+      "live": "Live",
+      "stale": "Stale price",
+      "alert": "Daily alert"
+    },
+    "types": {
+      "stock": "Stock",
+      "etf": "ETF",
+      "fund": "Fund",
+      "crypto": "Crypto",
+      "deposit": "Deposit",
+      "bond": "Bond",
+      "reit": "REIT",
+      "other": "Other"
+    },
+    "frequencies": {
+      "monthly": "Monthly",
+      "quarterly": "Quarterly",
+      "semiannual": "Semiannual",
+      "annual": "Annual"
+    },
+      "fields": {
+        "year": "Year",
+        "search": "Search ticker",
+        "searchHint": "Search by ticker or company name and use the result to prefill the position.",
+        "ticker": "Ticker",
+        "name": "Name",
+        "type": "Type",
+        "account": "Account",
+        "selectAccount": "Select an account",
+        "optionalAccount": "No linked account",
+        "currency": "Currency",
+        "market": "Exchange",
+      "sector": "Sector",
+      "alertThreshold": "Daily alert (%)",
+      "alertThresholdPlaceholder": "5.0",
+      "initialQuantity": "Initial quantity",
+        "initialPrice": "Initial price",
+        "openingDate": "Opening date",
+        "annualDividend": "Annual dividend per share",
+        "dividendFrequency": "Dividend frequency",
+        "nextDividendDate": "Next dividend date",
+        "notes": "Notes",
+        "none": "No data",
+      "quantity": "Quantity",
+      "avgPrice": "Average price",
+        "position": "Position",
+        "selectPosition": "Select a position",
+        "operationType": "Operation type",
+        "operationDate": "Operation date",
+        "additionalUnits": "Additional units",
+        "splitRatio": "Split multiplier",
+        "price": "Price",
+        "dividendPerShare": "Dividend per share",
+        "fee": "Fee",
+        "withholding": "Withholding",
+        "total": "Total",
+        "proceeds": "Sale proceeds",
+        "costBasis": "Cost basis"
+    },
+    "operations": {
+      "buy": "Buy",
+      "sell": "Sell",
+      "dividend": "Dividend",
+      "split": "Split",
+      "fee": "Fee",
+      "transfer_in": "Transfer in",
+      "transfer_out": "Transfer out"
+    },
+    "dialogs": {
+      "position": {
+        "newTitle": "New position",
+        "editTitle": "Edit position",
+        "create": "Create position",
+        "save": "Save changes",
+        "searching": "Searching tickers…"
+      },
+      "operation": {
+        "newTitle": "Record operation",
+        "currentUnits": "Current units: {quantity}",
+        "create": "Save operation"
+      }
+    },
+      "states": {
+        "loading": "Loading investments…",
+        "noTimeline": "There are not enough snapshots yet to draw the portfolio curve.",
+        "noPositions": "There are no active positions yet.",
+        "noPositionsDetail": "Create your first position or add a watchlist entry to start receiving market quotes.",
+        "noDistribution": "There is no allocation data yet.",
+      "notAvailable": "Not available",
+      "noOperations": "There are no operations for the selected year.",
+      "noDividends": "There are no estimated upcoming dividends.",
+      "noFiscalRows": "There are no dividends received in the selected year.",
+      "noSales": "There are no realized sales yet."
+    },
+    "fiscal": {
+      "disclaimer": "Indicative summary only. It is not tax advice and does not replace official filing documents.",
+      "withholdingLabel": "Withholding {amount}"
+    },
+    "toasts": {
+      "positionCreated": "Position created",
+      "positionUpdated": "Position updated",
+      "positionDeleted": "Position deleted",
+      "operationCreated": "Operation recorded",
+      "operationDeleted": "Operation deleted",
+      "exported": "Excel exported successfully",
+      "exportError": "The Excel export failed",
+      "error": "The operation could not be completed"
+    },
+    "distributions": {
+      "uncategorizedSector": "Unclassified sector"
+    },
+    "export": {
+      "sheets": {
+        "summary": "Summary",
+        "positions": "Positions",
+        "operations": "Operations",
+        "dividends": "Dividends"
+      },
+      "columns": {
+        "metric": "Metric",
+        "value": "Value",
+        "currency": "Currency",
+        "ticker": "Ticker",
+        "name": "Name",
+        "type": "Type",
+        "account": "Account",
+        "quantity": "Quantity",
+        "avgPrice": "Average price",
+        "currentPrice": "Current price",
+        "currentValue": "Current value",
+        "unrealizedPnL": "Unrealized P&L",
+        "date": "Date",
+        "operationType": "Operation type",
+        "price": "Price",
+        "fee": "Fee",
+        "withholding": "Withholding",
+        "total": "Total",
+        "realizedPnL": "Realized P&L",
+        "grossDividend": "Gross dividend",
+        "netDividend": "Net dividend",
+        "notes": "Notes"
+      }
     }
   },
   "alerts": {

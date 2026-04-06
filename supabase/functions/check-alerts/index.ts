@@ -81,6 +81,19 @@ interface CategoryRow {
   name: string;
 }
 
+interface InvestmentAlertRow {
+  daily_price_alert_threshold_percent: number | null;
+  id: string;
+  name: string;
+  ticker: string;
+  user_id: string;
+}
+
+interface MarketCacheAlertRow {
+  change_percent: number | null;
+  ticker: string;
+}
+
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL") ?? "",
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
@@ -166,6 +179,7 @@ async function upsertNotification({
     | "commitment_due"
     | "custom_alert_due"
     | "expected_income_unpaid"
+    | "investment_alert"
     | "subscription_unexpected_charge";
   userId: string;
 }) {
@@ -353,6 +367,70 @@ async function createBudgetAndAnomalyNotifications(runDate: string) {
       title: `Gasto inusual · ${category?.name ?? "Categoría"}`,
       type: "anomaly_detected",
       userId,
+    });
+    created += 1;
+  }
+
+  return created;
+}
+
+async function createInvestmentPriceAlerts(runDate: string) {
+  const { data: investments, error: investmentsError } = await supabase
+    .from("investments")
+    .select("id,user_id,ticker,name,daily_price_alert_threshold_percent")
+    .eq("is_active", true)
+    .not("daily_price_alert_threshold_percent", "is", null)
+    .is("deleted_at", null);
+
+  if (investmentsError) {
+    throw new Error(investmentsError.message);
+  }
+
+  const positionRows = (investments ?? []) as InvestmentAlertRow[];
+  const tickers = [...new Set(positionRows.map((row) => row.ticker))];
+
+  if (!tickers.length) {
+    return 0;
+  }
+
+  const { data: marketRows, error: marketError } = await supabase
+    .from("market_cache")
+    .select("ticker,change_percent")
+    .in("ticker", tickers);
+
+  if (marketError) {
+    throw new Error(marketError.message);
+  }
+
+  const marketMap = new Map<string, MarketCacheAlertRow>();
+  for (const row of (marketRows ?? []) as MarketCacheAlertRow[]) {
+    marketMap.set(row.ticker, row);
+  }
+
+  let created = 0;
+
+  for (const position of positionRows) {
+    const threshold = position.daily_price_alert_threshold_percent ?? null;
+    const market = marketMap.get(position.ticker);
+    const changePercent = market?.change_percent ?? null;
+
+    if (threshold == null || changePercent == null || Math.abs(changePercent) < threshold) {
+      continue;
+    }
+
+    const roundedChange = Math.round(changePercent * 10) / 10;
+    const severity =
+      Math.abs(changePercent) >= threshold * 1.5 ? "critical" : "warning";
+
+    await upsertNotification({
+      eventKey: `investment-alert:${position.id}:${runDate}`,
+      message: `${position.name} (${position.ticker}) se mueve ${roundedChange}% en la sesión y supera tu umbral configurado.`,
+      severity,
+      targetId: position.id,
+      targetType: "investment",
+      title: `Movimiento relevante · ${position.ticker}`,
+      type: "investment_alert",
+      userId: position.user_id,
     });
     created += 1;
   }
@@ -644,7 +722,6 @@ Deno.serve(async (request) => {
   }
 
   createdNotifications += await createBudgetAndAnomalyNotifications(runDate);
-
   if (isMonday(runDate)) {
     const { data: profiles, error: profilesError } = await supabase
       .from("profiles")

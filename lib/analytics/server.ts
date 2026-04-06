@@ -2,11 +2,13 @@ import { endOfMonth, startOfMonth, subMonths, subWeeks, subYears } from "date-fn
 import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   buildAnalyticsRange,
+  buildBudget503020Summary,
   buildMonthlyTrendCards,
   buildSeriesBuckets,
   calculateSavingsRate,
   detectSpendingAnomalies,
 } from "@/lib/analytics/calculations";
+import { getBudgetsOverview } from "@/lib/budgets/server";
 import type {
   AnalyticsNotification,
   AnalyticsPeriod,
@@ -83,7 +85,7 @@ export async function getAnalyticsSummary({
   ].sort()[0]!;
   const queryEnd = range.end;
 
-  const [transactionsResult, notificationsResult, snapshotsResult] = await Promise.all([
+  const [transactionsResult, notificationsResult, snapshotsResult, budgetsOverview] = await Promise.all([
     supabase
       .from("transactions")
       .select(transactionSelect)
@@ -105,6 +107,7 @@ export async function getAnalyticsSummary({
       .eq("user_id", userId)
       .order("snapshot_date", { ascending: false })
       .limit(24),
+    getBudgetsOverview({ referenceDate, supabase, userId }),
   ]);
 
   if (transactionsResult.error) {
@@ -144,6 +147,7 @@ export async function getAnalyticsSummary({
       current_month_cents: number;
       current_period_cents: number;
       previous_period_cents: number;
+      transaction_count: number;
     }
   >();
 
@@ -184,11 +188,13 @@ export async function getAnalyticsSummary({
         current_period_cents: 0,
         months: new Map<string, number>(),
         previous_period_cents: 0,
+        transaction_count: 0,
       });
     }
 
     const entry = monthlyTotalsByCategory.get(transaction.category_id)!;
     entry.months.set(monthKey, (entry.months.get(monthKey) ?? 0) + transaction.amount_cents);
+    entry.transaction_count += 1;
 
     if (
       transaction.transaction_date >= toIsoDate(currentMonthStart) &&
@@ -267,8 +273,39 @@ export async function getAnalyticsSummary({
     })),
   );
 
+  const topCategoriesWidget = Array.from(monthlyTotalsByCategory.entries())
+    .map(([categoryId, category]) => {
+      const budget = budgetsOverview.budgets.find((item) => item.category_id === categoryId);
+      const budgetStatus = (budget?.status ?? "none") as
+        | "approaching"
+        | "exceeded"
+        | "none"
+        | "ok"
+        | "warning";
+
+      return {
+        amount_cents: category.current_month_cents,
+        budget_limit_cents: budget?.limit_cents ?? null,
+        budget_status: budgetStatus,
+        category_color: category.category_color,
+        category_id: categoryId,
+        category_name: category.category_name,
+        over_budget: Boolean(budget && category.current_month_cents > budget.limit_cents),
+        transaction_count: category.transaction_count,
+      };
+    })
+    .sort((left, right) => right.amount_cents - left.amount_cents)
+    .slice(0, 5);
+
   return {
     anomalies: detectSpendingAnomalies(categoryMonthlyInputs),
+    budget_rule_503020: buildBudget503020Summary({
+      expenses: Array.from(monthlyTotalsByCategory.values()).map((category) => ({
+        amount_cents: category.current_period_cents,
+        category_name: category.category_name,
+      })),
+      incomeCents,
+    }),
     category_trends: categoryTrends,
     monthly_trend_cards: monthlyTrendCards,
     net_worth_history: ((snapshotsResult.data ?? []) as NetWorthHistoryPoint[]).reverse(),
@@ -276,6 +313,7 @@ export async function getAnalyticsSummary({
     period,
     range,
     series,
+    top_categories_widget: topCategoriesWidget,
     totals: {
       expense_cents: expenseCents,
       income_cents: incomeCents,

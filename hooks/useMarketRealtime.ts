@@ -23,7 +23,7 @@ export function useMarketRealtime() {
       .on(
         "postgres_changes",
         {
-          event: "UPDATE",
+          event: "*",
           schema: "public",
           table: "market_cache",
         },

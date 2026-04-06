@@ -310,29 +310,42 @@
 
 #### Deliverables
 
-- [ ] CRUD for positions: ticker, name, type, shares/units, average price, account
-- [ ] **Ticker search** with autocomplete (FMP API)
-- [ ] **Edge Function `market-updater`** (cron every 15 min): updates `market_cache` for all active tickers
-- [ ] **Real-time quotes** via Supabase Realtime subscribed to `market_cache`
-- [ ] **API fallback chain**: Yahoo Finance → Alpha Vantage → FMP → last snapshot
-- [ ] **Unrealized P&L** per position and total portfolio (in cents!)
-- [ ] **Realized P&L**: sale history with weighted average price calculation (`recalculate_avg_purchase_price` RPC)
-- [ ] **Dividend management**: editable `annual_dividend_per_share_cents`, editable `next_dividend_date`
-- [ ] **Dividend calendar**: list of upcoming estimated payments
-- [ ] **Record operations**: buy (auto-updates avg price), sell, dividend received, stock split
-- [ ] **Portfolio evolution chart**: historical value using `investment_snapshots`
-- [ ] **Portfolio distribution**: by type (stocks/ETF/crypto/funds), by sector, by currency
-- [ ] **Currency normalization**: USD/EUR via Open Exchange Rates
-- [ ] **Price alert**: notification if asset ±X% in a day
-- [ ] **Simplified IRPF fiscal report**: dividends received in the year (for tax return)
-- [ ] **Excel export** of operations for the year
-- [ ] **50/30/20 budget analysis**: built-in page showing needs/wants/savings breakdown from real spending data
-- [ ] **Top categories widget**: auto-computed spending summary with over-budget flags on analysis page
+- [x] CRUD for positions: ticker, name, type, shares/units, average price, account
+- [x] **Ticker search** with autocomplete (FMP API)
+- [x] **Edge Function `market-updater`** (cron every 15 min): updates `market_cache` for all active tickers
+- [x] **Real-time quotes** via Supabase Realtime subscribed to `market_cache`
+- [x] **API fallback chain**: Yahoo Finance → Alpha Vantage → FMP → last snapshot
+- [x] **Unrealized P&L** per position and total portfolio (in cents!)
+- [x] **Realized P&L**: sale history with weighted average price calculation (`recalculate_avg_purchase_price` RPC)
+- [x] **Dividend management**: editable `annual_dividend_per_share_cents`, editable `next_dividend_date`
+- [x] **Dividend calendar**: list of upcoming estimated payments
+- [x] **Record operations**: buy (auto-updates avg price), sell, dividend received, stock split
+- [x] **Portfolio evolution chart**: historical value using `investment_snapshots`
+- [x] **Portfolio distribution**: by type (stocks/ETF/crypto/funds), by sector, by currency
+- [x] **Currency normalization**: USD/EUR via Open Exchange Rates
+- [x] **Price alert**: notification if asset ±X% in a day
+- [x] **Simplified IRPF fiscal report**: dividends received in the year (for tax return)
+- [x] **Excel export** of operations for the year
+- [x] **50/30/20 budget analysis**: built-in page showing needs/wants/savings breakdown from real spending data
+- [x] **Top categories widget**: auto-computed spending summary with over-budget flags on analysis page
 
 **Skills:** `market-data-fetcher`, `financial-data-reader`, `transaction-formatter`, `report-generator`  
 **Instructions:** `financial-logic.instructions.md`
 
 **Exit criteria:** P&L calculated correctly with real market data · average price updated correctly after operations · quotes updating via Realtime · IRPF disclaimer visible · all financial calculation tests green
+
+### Status Update — 2026-04-07
+
+**✅ COMPLETADA** — Todos los deliverables implementados y auditados.
+
+**Fixes aplicados en esta sesión:**
+
+- Eliminados 2 `window.confirm` en `InvestmentsPageClient.tsx` → patrón inline accesible con confirm/cancel
+- Corregido `(value / 100)` en `InvestmentPositionDialog.tsx` → `centsToDec(value)` (financial rule)
+- Corregidas 17 divisiones `/ 100` en `app/api/investments/export/route.ts` → `centsToDec()` (financial rule)
+- Añadidos 5 tests `buildPositionLedger` en `tests/unit/phase6-investments.test.ts` → cobertura WACC completa
+
+**Test coverage:** 11/11 tests passing
 
 ---
 

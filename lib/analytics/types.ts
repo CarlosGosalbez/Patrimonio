@@ -25,6 +25,23 @@ export interface AnalyticsTotals {
   transaction_count: number
 }
 
+export interface Budget503020Bucket {
+  actual_cents: number
+  ideal_cents: number
+  percent_of_income: number | null
+  status: 'over' | 'under' | 'within'
+  target_percent: number
+  variance_cents: number
+}
+
+export interface Budget503020Summary {
+  income_cents: number
+  needs: Budget503020Bucket
+  savings: Budget503020Bucket
+  uncategorized_expense_cents: number
+  wants: Budget503020Bucket
+}
+
 export interface NetWorthHistoryPoint {
   snapshot_date: string
   total_invested_cents: number
@@ -81,8 +98,20 @@ export interface AnalyticsNotification {
   type: Database['public']['Enums']['notification_type']
 }
 
+export interface AnalyticsTopCategoryWidgetItem {
+  amount_cents: number
+  budget_limit_cents: number | null
+  budget_status: 'approaching' | 'exceeded' | 'none' | 'ok' | 'warning'
+  category_color: string | null
+  category_id: string | null
+  category_name: string
+  over_budget: boolean
+  transaction_count: number
+}
+
 export interface AnalyticsSummaryResponse {
   anomalies: SpendingAnomaly[]
+  budget_rule_503020: Budget503020Summary
   category_trends: CategoryTrendRow[]
   monthly_trend_cards: MonthlyTrendCard[]
   net_worth_history: NetWorthHistoryPoint[]
@@ -90,5 +119,6 @@ export interface AnalyticsSummaryResponse {
   period: AnalyticsPeriod
   range: AnalyticsRange
   series: AnalyticsSeriesPoint[]
+  top_categories_widget: AnalyticsTopCategoryWidgetItem[]
   totals: AnalyticsTotals
 }

@@ -219,6 +219,7 @@
     "subtitle": "Centro de control financiero",
     "dashboard": "Dashboard",
     "analytics": "Analytics",
+    "investments": "Inversiones",
     "imports": "Importar",
     "commitments": "Compromisos",
     "alerts": "Alertas",
@@ -557,9 +558,213 @@
       "currentPeriod": "Periodo actual",
       "previousPeriod": "Periodo anterior"
     },
+    "topCategoriesWidget": {
+      "title": "Top categorías con control presupuestario",
+      "movements": "movimientos",
+      "limit": "Límite {amount}",
+      "status": {
+        "available": "Dentro del objetivo",
+        "warning": "Cerca del límite",
+        "exceeded": "Presupuesto excedido",
+        "none": "Sin presupuesto"
+      }
+    },
     "toasts": {
       "exported": "CSV generado correctamente",
       "exportError": "No se pudo exportar el CSV"
+    }
+  },
+  "investments": {
+    "badge": "Phase 6",
+    "title": "Inversiones",
+    "subtitle": "Gestiona posiciones, operaciones, dividendos y fiscalidad simplificada con cotizaciones cacheadas y actualización en tiempo real.",
+      "actions": {
+        "export": "Exportar Excel",
+        "newOperation": "Registrar operación",
+        "newPosition": "Nueva posición",
+        "refresh": "Actualizar",
+        "cancel": "Cancelar",
+        "edit": "Editar",
+        "delete": "Eliminar",
+        "confirmDelete": "Confirmar borrado"
+      },
+    "tabs": {
+      "overview": "Cartera",
+      "operations": "Operaciones",
+      "dividends": "Dividendos"
+    },
+    "summary": {
+      "totalValue": "Valor total",
+      "totalInvested": "Capital invertido",
+      "unrealizedPnL": "P&L no realizado",
+      "realizedPnL": "P&L realizado",
+      "realizedPnLDetail": "Se actualiza con ventas y coste medio ponderado.",
+      "dayChange": "Variación diaria",
+      "dayChangePercent": "Variación porcentual",
+      "lastSync": "Última actualización",
+      "staleCount": "{count} posiciones con precio no fresco",
+      "positions": "{count} posiciones activas",
+      "currentValue": "Valor actual",
+      "dividendsGross": "Dividendos brutos",
+      "dividendsWithholding": "Retenciones",
+      "dividendsNet": "Dividendos netos"
+    },
+    "charts": {
+      "timeline": "Evolución de la cartera",
+      "distributionByType": "Distribución por tipo",
+      "distributionBySector": "Distribución por sector",
+      "distributionByCurrency": "Distribución por divisa"
+    },
+    "sections": {
+      "positions": "Posiciones activas",
+      "operations": "Historial anual de operaciones",
+      "dividendCalendar": "Calendario de dividendos",
+      "fiscalReport": "IRPF simplificado",
+      "realizedSales": "Ventas realizadas"
+    },
+    "status": {
+      "live": "En directo",
+      "stale": "Precio no fresco",
+      "alert": "Alerta diaria"
+    },
+    "types": {
+      "stock": "Acción",
+      "etf": "ETF",
+      "fund": "Fondo",
+      "crypto": "Cripto",
+      "deposit": "Depósito",
+      "bond": "Bono",
+      "reit": "REIT",
+      "other": "Otro"
+    },
+    "frequencies": {
+      "monthly": "Mensual",
+      "quarterly": "Trimestral",
+      "semiannual": "Semestral",
+      "annual": "Anual"
+    },
+      "fields": {
+        "year": "Año",
+        "search": "Buscar ticker",
+        "searchHint": "Busca por ticker o nombre y rellena la posición con el resultado elegido.",
+        "ticker": "Ticker",
+        "name": "Nombre",
+        "type": "Tipo",
+        "account": "Cuenta",
+        "selectAccount": "Selecciona una cuenta",
+        "optionalAccount": "Sin cuenta asociada",
+        "currency": "Divisa",
+        "market": "Mercado",
+      "sector": "Sector",
+      "alertThreshold": "Alerta diaria (%)",
+      "alertThresholdPlaceholder": "5,0",
+      "initialQuantity": "Cantidad inicial",
+        "initialPrice": "Precio inicial",
+        "openingDate": "Fecha inicial",
+        "annualDividend": "Dividendo anual por título",
+        "dividendFrequency": "Frecuencia del dividendo",
+        "nextDividendDate": "Próximo dividendo",
+        "notes": "Notas",
+        "none": "Sin dato",
+      "quantity": "Cantidad",
+      "avgPrice": "Precio medio",
+        "position": "Posición",
+        "selectPosition": "Selecciona una posición",
+        "operationType": "Tipo de operación",
+        "operationDate": "Fecha de la operación",
+        "additionalUnits": "Unidades adicionales",
+        "splitRatio": "Multiplicador del split",
+        "price": "Precio",
+        "dividendPerShare": "Dividendo por título",
+        "fee": "Comisión",
+        "withholding": "Retención",
+        "total": "Total",
+        "proceeds": "Importe de venta",
+        "costBasis": "Coste fiscal"
+    },
+    "operations": {
+      "buy": "Compra",
+      "sell": "Venta",
+      "dividend": "Dividendo",
+      "split": "Split",
+      "fee": "Comisión",
+      "transfer_in": "Transferencia entrante",
+      "transfer_out": "Transferencia saliente"
+    },
+    "dialogs": {
+      "position": {
+        "newTitle": "Nueva posición",
+        "editTitle": "Editar posición",
+        "create": "Crear posición",
+        "save": "Guardar cambios",
+        "searching": "Buscando tickers…"
+      },
+      "operation": {
+        "newTitle": "Registrar operación",
+        "currentUnits": "Unidades actuales: {quantity}",
+        "create": "Guardar operación"
+      }
+    },
+      "states": {
+        "loading": "Cargando inversión…",
+        "noTimeline": "Todavía no hay suficientes snapshots para dibujar la evolución.",
+        "noPositions": "Aún no hay posiciones activas.",
+        "noPositionsDetail": "Crea tu primera posición o añade una de seguimiento para empezar a recibir cotizaciones.",
+        "noDistribution": "Todavía no hay distribución disponible.",
+      "notAvailable": "No disponible",
+      "noOperations": "No hay operaciones registradas para el año seleccionado.",
+      "noDividends": "No hay dividendos próximos estimados.",
+      "noFiscalRows": "No hay dividendos cobrados en el año seleccionado.",
+      "noSales": "No hay ventas realizadas todavía."
+    },
+    "fiscal": {
+      "disclaimer": "Resumen orientativo, no constituye asesoramiento fiscal ni sustituye la documentación oficial para Hacienda.",
+      "withholdingLabel": "Retención {amount}"
+    },
+    "toasts": {
+      "positionCreated": "Posición creada",
+      "positionUpdated": "Posición actualizada",
+      "positionDeleted": "Posición eliminada",
+      "operationCreated": "Operación registrada",
+      "operationDeleted": "Operación eliminada",
+      "exported": "Excel generado correctamente",
+      "exportError": "No se pudo exportar el Excel",
+      "error": "No se pudo completar la operación"
+    },
+    "distributions": {
+      "uncategorizedSector": "Sector no clasificado"
+    },
+    "export": {
+      "sheets": {
+        "summary": "Resumen",
+        "positions": "Posiciones",
+        "operations": "Operaciones",
+        "dividends": "Dividendos"
+      },
+      "columns": {
+        "metric": "Métrica",
+        "value": "Valor",
+        "currency": "Divisa",
+        "ticker": "Ticker",
+        "name": "Nombre",
+        "type": "Tipo",
+        "account": "Cuenta",
+        "quantity": "Cantidad",
+        "avgPrice": "Precio medio",
+        "currentPrice": "Precio actual",
+        "currentValue": "Valor actual",
+        "unrealizedPnL": "P&L no realizado",
+        "date": "Fecha",
+        "operationType": "Tipo operación",
+        "price": "Precio",
+        "fee": "Comisión",
+        "withholding": "Retención",
+        "total": "Total",
+        "realizedPnL": "P&L realizado",
+        "grossDividend": "Dividendo bruto",
+        "netDividend": "Dividendo neto",
+        "notes": "Notas"
+      }
     }
   },
   "alerts": {

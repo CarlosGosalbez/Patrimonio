@@ -54,6 +54,17 @@ function getBudgetTone(status: 'approaching' | 'exceeded' | 'ok' | 'warning') {
   }
 }
 
+function getBudgetRuleTone(status: 'over' | 'under' | 'within') {
+  switch (status) {
+    case 'over':
+      return 'bg-rose-100 text-rose-700'
+    case 'under':
+      return 'bg-amber-100 text-amber-700'
+    case 'within':
+      return 'bg-emerald-100 text-emerald-700'
+  }
+}
+
 function MetricCard({
   detail,
   label,
@@ -302,6 +313,126 @@ export function AnalyticsPageClient() {
                     {t('states.noSnapshots')}
                   </div>
                 )}
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="grid gap-4 xl:grid-cols-[1.1fr,0.9fr]">
+            <Card className="border-border/70">
+              <CardHeader>
+                <CardTitle>{t('budgetRule.title')}</CardTitle>
+              </CardHeader>
+              <CardContent className="grid gap-3">
+                {(
+                  [
+                    ['needs', analyticsQuery.data?.budget_rule_503020.needs],
+                    ['wants', analyticsQuery.data?.budget_rule_503020.wants],
+                    ['savings', analyticsQuery.data?.budget_rule_503020.savings],
+                  ] as const
+                ).map(([key, bucket]) => (
+                  <div
+                    key={key}
+                    className="rounded-2xl border border-border/60 bg-muted/20 px-4 py-3"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <p className="font-medium">{t(`budgetRule.labels.${key}`)}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {t('budgetRule.target', {
+                            percent: bucket?.target_percent ?? 0,
+                          })}
+                        </p>
+                      </div>
+                      <Badge className={getBudgetRuleTone(bucket?.status ?? 'within')}>
+                        {t(`budgetRule.status.${bucket?.status ?? 'within'}`)}
+                      </Badge>
+                    </div>
+
+                    <div className="mt-3 grid gap-3 sm:grid-cols-3">
+                      <div>
+                        <p className="text-xs text-muted-foreground">{t('budgetRule.actual')}</p>
+                        <p className="mt-1 font-semibold">
+                          {formatCurrency(bucket?.actual_cents ?? 0)}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">{t('budgetRule.ideal')}</p>
+                        <p className="mt-1 font-semibold">
+                          {formatCurrency(bucket?.ideal_cents ?? 0)}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">{t('budgetRule.percent')}</p>
+                        <p className="mt-1 font-semibold">
+                          {bucket?.percent_of_income == null
+                            ? t('metrics.notAvailable')
+                            : formatPercentChange(bucket.percent_of_income)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                <p className="text-xs text-muted-foreground">
+                  {t('budgetRule.uncategorized', {
+                    amount: formatCurrency(
+                      analyticsQuery.data?.budget_rule_503020.uncategorized_expense_cents ?? 0,
+                    ),
+                  })}
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border/70">
+              <CardHeader>
+                <CardTitle>{t('topCategoriesWidget.title')}</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {(analyticsQuery.data?.top_categories_widget ?? []).map((category) => (
+                  <div
+                    key={category.category_id ?? category.category_name}
+                    className="rounded-2xl border border-border/60 bg-muted/20 px-4 py-3"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <span
+                          className="h-3 w-3 rounded-full"
+                          style={{ backgroundColor: category.category_color ?? '#0f766e' }}
+                        />
+                        <div>
+                          <p className="font-medium">{category.category_name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {category.transaction_count} {t('topCategoriesWidget.movements')}
+                          </p>
+                        </div>
+                      </div>
+                      <p className="font-semibold">{formatCurrency(category.amount_cents)}</p>
+                    </div>
+                    <div className="mt-3 flex flex-wrap items-center gap-2">
+                      <Badge
+                        variant={
+                          category.budget_status === 'exceeded'
+                            ? 'destructive'
+                            : category.budget_status === 'warning'
+                              ? 'secondary'
+                              : 'outline'
+                        }
+                      >
+                        {t(`topCategoriesWidget.status.${category.budget_status}`)}
+                      </Badge>
+                      {category.over_budget ? (
+                        <Badge variant="destructive">{t('topCategoriesWidget.overBudget')}</Badge>
+                      ) : null}
+                      {category.budget_limit_cents ? (
+                        <p className="text-xs text-muted-foreground">
+                          {t('topCategoriesWidget.limit', {
+                            amount: formatCurrency(category.budget_limit_cents),
+                          })}
+                        </p>
+                      ) : null}
+                    </div>
+                  </div>
+                ))}
               </CardContent>
             </Card>
           </div>
