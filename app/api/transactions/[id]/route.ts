@@ -2,7 +2,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -10,7 +10,7 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
   } = await supabase.auth.getUser();
   if (error || !user) return new Response("Unauthorized", { status: 401 });
 
-  const { id } = params;
+  const { id } = await params;
 
   // Soft delete by setting deleted_at
   const { error: dbError } = await supabase
