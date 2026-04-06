@@ -22,7 +22,14 @@
     },
     {
       "source": "/monitoring",
-      "headers": [{ "key": "Access-Control-Allow-Origin", "value": "https://patrimonio.app" }]
+      "headers": [{ "key": "Access-Control-Allow-Origin", "value": "https://patrimio.vercel.app" }]
+    },
+    {
+      "source": "/api/health",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store, no-cache" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
     }
   ],
   "redirects": [

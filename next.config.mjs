@@ -69,10 +69,8 @@ const nextConfig = {
   poweredByHeader: false,
   compress: true,
   experimental: {
-    serverActions: {
-      bodySizeLimit: "2mb",
-    },
-    instrumentationHook: true,
+    // serverActions is stable in Next.js 15 — no config needed here
+    // instrumentationHook is stable in Next.js 15 — no config needed here
   },
   headers: async () => [
     {

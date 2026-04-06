@@ -66,3 +66,27 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: npm run build
+
+  deployment-check:
+    name: Deployment Health Check
+    runs-on: ubuntu-latest
+    needs: [type-check, lint, test, build]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Wait for Vercel deployment
+        # Waits up to 5 minutes for the Vercel deployment to be live
+        run: |
+          echo "Waiting 90s for Vercel deployment to complete..."
+          sleep 90
+      - name: Check /api/health endpoint
+        run: |
+          HEALTH_URL="https://patrimio.vercel.app/api/health"
+          echo "Checking: $HEALTH_URL"
+          response=$(curl -s -o /tmp/health.json -w "%{http_code}" "$HEALTH_URL")
+          echo "Status: $response"
+          cat /tmp/health.json
+          if [ "$response" != "200" ]; then
+            echo "❌ Health check failed with status $response"
+            exit 1
+          fi
+          echo "✅ Health check passed"
