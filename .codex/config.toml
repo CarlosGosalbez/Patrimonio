@@ -9,16 +9,16 @@
 # -----------------------------------------------------------------------------
 # Model — high-reasoning model; reasoning_effort passed to API for o-series models
 # -----------------------------------------------------------------------------
-model = "gpt-4.5"              # User requested GPT-5.4; replace with latest available model name
+model = "gpt-5.4"              # User requested GPT-5.4; replace with latest available model name
 reasoning_effort = "high"      # Maximum reasoning depth for complex tasks
 
 # -----------------------------------------------------------------------------
 # Approval policy
 #   suggest    → show code only, never apply
 #   auto-edit  → apply file edits without asking, ask before running commands
-#   full-auto  → apply everything (CI/CD only)
+#   full-auto  → apply everything without confirmation
 # -----------------------------------------------------------------------------
-approval_policy = "auto-edit"
+approval_policy = "full-auto"
 
 # Full-auto allowed after this many consecutive failures in auto-edit mode
 full_auto_error_count = 3
