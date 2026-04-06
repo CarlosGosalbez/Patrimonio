@@ -40,6 +40,7 @@ export async function middleware(request: NextRequest) {
   const isAuthRoute = AUTH_ROUTES.some((r) => pathname.startsWith(r));
   const isAppRoute =
     pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/analytics") ||
     pathname.startsWith("/transactions") ||
     pathname.startsWith("/settings") ||
     pathname.startsWith("/onboarding") ||

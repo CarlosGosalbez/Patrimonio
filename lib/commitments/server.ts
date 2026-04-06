@@ -104,6 +104,27 @@ function getDaysUntil(dateValue: string, today: Date = new Date()) {
   return Math.ceil((target.getTime() - current.getTime()) / (24 * 60 * 60 * 1000));
 }
 
+function getMortgageProjection(commitment: CommitmentSelectRow) {
+  if (commitment.commitment_type !== 'mortgage' || !commitment.maturity_year) {
+    return null
+  }
+
+  const nextDueDate = new Date(`${commitment.next_due_date}T00:00:00`)
+  const remainingMonths =
+    (commitment.maturity_year - nextDueDate.getFullYear()) * 12 +
+    (12 - nextDueDate.getMonth() - 1) +
+    1
+
+  if (remainingMonths <= 0) {
+    return null
+  }
+
+  return {
+    remaining_months: remainingMonths,
+    remaining_years: Math.round((remainingMonths / 12) * 10) / 10,
+  }
+}
+
 function toCommitmentItem(commitment: CommitmentSelectRow): CommitmentListItem {
   const normalizedDueDate = normalizeDueDate(commitment.next_due_date, commitment.frequency);
 
@@ -111,6 +132,7 @@ function toCommitmentItem(commitment: CommitmentSelectRow): CommitmentListItem {
     ...commitment,
     account: commitment.account,
     category: commitment.category,
+    mortgage_projection: getMortgageProjection(commitment),
     monthly_equivalent_cents: getMonthlyEquivalent(commitment.amount_cents, commitment.frequency),
     next_due_date: normalizedDueDate,
     next_due_in_days: getDaysUntil(normalizedDueDate),

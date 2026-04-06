@@ -48,6 +48,39 @@ interface ProjectionRow {
   net_cents: number;
 }
 
+interface BudgetRow {
+  alert_threshold: number;
+  category: { name: string | null } | null;
+  category_id: string;
+  end_date: string | null;
+  id: string;
+  is_active: boolean;
+  limit_cents: number;
+  period: "monthly" | "annual";
+  start_date: string;
+  user_id: string;
+}
+
+interface ExpenseTransactionRow {
+  amount_cents: number;
+  category_id: string | null;
+  transaction_date: string;
+  user_id: string;
+}
+
+interface CategoryMonthlyRow {
+  category_id: string | null;
+  month: string;
+  total_cents: number | null;
+  user_id: string;
+}
+
+interface CategoryRow {
+  color: string | null;
+  id: string;
+  name: string;
+}
+
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL") ?? "",
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
@@ -78,6 +111,39 @@ function paymentWindowEnd(dueDate: string) {
   return addDateDays(dueDate, 30);
 }
 
+function monthStart(dateValue: string) {
+  return `${dateValue.slice(0, 7)}-01`;
+}
+
+function monthEnd(dateValue: string) {
+  const date = parseDate(monthStart(dateValue));
+  const lastDay = new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1, 0),
+  ).getUTCDate();
+
+  return `${dateValue.slice(0, 7)}-${String(lastDay).padStart(2, "0")}`;
+}
+
+function yearStart(dateValue: string) {
+  return `${dateValue.slice(0, 4)}-01-01`;
+}
+
+function yearEnd(dateValue: string) {
+  return `${dateValue.slice(0, 4)}-12-31`;
+}
+
+function standardDeviation(values: number[]) {
+  if (!values.length) {
+    return 0;
+  }
+
+  const mean = values.reduce((sum, value) => sum + value, 0) / values.length;
+  const variance =
+    values.reduce((sum, value) => sum + (value - mean) ** 2, 0) / values.length;
+
+  return Math.sqrt(variance);
+}
+
 async function upsertNotification({
   eventKey,
   message,
@@ -95,6 +161,7 @@ async function upsertNotification({
   targetType: string | null;
   title: string;
   type:
+    | "budget_exceeded"
     | "anomaly_detected"
     | "commitment_due"
     | "custom_alert_due"
@@ -122,6 +189,175 @@ async function upsertNotification({
   if (error) {
     throw new Error(error.message);
   }
+}
+
+async function createBudgetAndAnomalyNotifications(runDate: string) {
+  let created = 0;
+  const currentMonth = monthStart(runDate);
+  const [{ data: budgets, error: budgetsError }, { data: expenses, error: expensesError }] =
+    await Promise.all([
+      supabase
+        .from("budgets")
+        .select(
+          "id,user_id,category_id,period,limit_cents,alert_threshold,start_date,end_date,is_active,category:categories(name)",
+        )
+        .eq("is_active", true)
+        .is("deleted_at", null),
+      supabase
+        .from("transactions")
+        .select("user_id,category_id,amount_cents,transaction_date")
+        .eq("is_income", false)
+        .gte("transaction_date", yearStart(runDate))
+        .lte("transaction_date", monthEnd(runDate))
+        .is("deleted_at", null),
+    ]);
+
+  if (budgetsError || expensesError) {
+    throw new Error(budgetsError?.message ?? expensesError?.message ?? "Budget scan failed");
+  }
+
+  const expenseRows = (expenses ?? []) as ExpenseTransactionRow[];
+
+  for (const budget of (budgets ?? []) as BudgetRow[]) {
+    const windowStart = budget.period === "annual" ? yearStart(runDate) : currentMonth;
+    const windowEnd = budget.period === "annual" ? yearEnd(runDate) : monthEnd(runDate);
+
+    if (budget.start_date > windowEnd) {
+      continue;
+    }
+
+    if (budget.end_date && budget.end_date < windowStart) {
+      continue;
+    }
+
+    const spentCents = expenseRows.reduce((sum, transaction) => {
+      if (
+        transaction.user_id !== budget.user_id ||
+        transaction.category_id !== budget.category_id ||
+        transaction.transaction_date < windowStart ||
+        transaction.transaction_date > windowEnd
+      ) {
+        return sum;
+      }
+
+      return sum + transaction.amount_cents;
+    }, 0);
+
+    const progressRatio = budget.limit_cents > 0 ? spentCents / budget.limit_cents : 0;
+
+    if (progressRatio < budget.alert_threshold / 100) {
+      continue;
+    }
+
+    const stage = progressRatio >= 1 ? "exceeded" : "warning";
+    const percent = Math.round(progressRatio * 100);
+
+    await upsertNotification({
+      eventKey: `budget-threshold:${budget.id}:${windowStart}:${stage}`,
+      message: `${
+        budget.category?.name ?? "Categoría"
+      } alcanza ${percent}% del presupuesto en el periodo actual.`,
+      severity: progressRatio >= 1 ? "critical" : "warning",
+      targetId: budget.id,
+      targetType: "budget",
+      title:
+        progressRatio >= 1
+          ? `Presupuesto excedido · ${budget.category?.name ?? "Categoría"}`
+          : `Presupuesto en riesgo · ${budget.category?.name ?? "Categoría"}`,
+      type: "budget_exceeded",
+      userId: budget.user_id,
+    });
+    created += 1;
+  }
+
+  const anomalyStart = monthStart(addDateDays(currentMonth, -180));
+  const { data: monthlySpending, error: monthlySpendingError } = await supabase
+    .from("monthly_category_spending")
+    .select("user_id,category_id,month,total_cents")
+    .gte("month", anomalyStart)
+    .lte("month", currentMonth);
+
+  if (monthlySpendingError) {
+    throw new Error(monthlySpendingError.message);
+  }
+
+  const monthlyRows = (monthlySpending ?? []) as CategoryMonthlyRow[];
+  const categoryIds = [
+    ...new Set(
+      monthlyRows
+        .map((row) => row.category_id)
+        .filter((row): row is string => Boolean(row)),
+    ),
+  ];
+  const categoryMap = new Map<string, CategoryRow>();
+
+  if (categoryIds.length) {
+    const { data: categories, error: categoriesError } = await supabase
+      .from("categories")
+      .select("id,name,color")
+      .in("id", categoryIds);
+
+    if (categoriesError) {
+      throw new Error(categoriesError.message);
+    }
+
+    for (const category of (categories ?? []) as CategoryRow[]) {
+      categoryMap.set(category.id, category);
+    }
+  }
+  const spendingByUserCategory = new Map<string, Map<string, number>>();
+
+  for (const row of monthlyRows) {
+    if (!row.category_id) {
+      continue;
+    }
+
+    const key = `${row.user_id}:${row.category_id}`;
+
+    if (!spendingByUserCategory.has(key)) {
+      spendingByUserCategory.set(key, new Map());
+    }
+
+    spendingByUserCategory.get(key)!.set(row.month.slice(0, 7), row.total_cents ?? 0);
+  }
+
+  for (const [key, totalsByMonth] of spendingByUserCategory.entries()) {
+    const [userId, categoryId] = key.split(":");
+    const currentTotal = totalsByMonth.get(currentMonth.slice(0, 7)) ?? 0;
+    const history = Array.from({ length: 6 }, (_, index) => {
+      const date = parseDate(currentMonth);
+      date.setUTCMonth(date.getUTCMonth() - (index + 1));
+      return totalsByMonth.get(toDateString(date).slice(0, 7)) ?? 0;
+    }).filter((value) => value > 0);
+
+    if (currentTotal <= 0 || history.length < 3) {
+      continue;
+    }
+
+    const mean = history.reduce((sum, value) => sum + value, 0) / history.length;
+    const stdDev = standardDeviation(history);
+
+    if (stdDev === 0 || currentTotal <= mean + stdDev * 2) {
+      continue;
+    }
+
+    const category = categoryMap.get(categoryId);
+    const percent = Math.round(((currentTotal - mean) / mean) * 100);
+
+    await upsertNotification({
+      eventKey: `spending-anomaly:${userId}:${categoryId}:${currentMonth}`,
+      message: `${category?.name ?? "Categoría"} supera en ${percent}% su media histórica.`,
+      severity: "critical",
+      targetId: categoryId,
+      targetType: "category",
+      title: `Gasto inusual · ${category?.name ?? "Categoría"}`,
+      type: "anomaly_detected",
+      userId,
+    });
+    created += 1;
+  }
+
+  return created;
 }
 
 async function hasMatchingExpense(alert: CustomAlertRow) {
@@ -406,6 +642,8 @@ Deno.serve(async (request) => {
     });
     createdNotifications += 1;
   }
+
+  createdNotifications += await createBudgetAndAnomalyNotifications(runDate);
 
   if (isMonday(runDate)) {
     const { data: profiles, error: profilesError } = await supabase

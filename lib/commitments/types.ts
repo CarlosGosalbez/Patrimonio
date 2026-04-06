@@ -28,6 +28,10 @@ export interface TransactionCategorySummary {
 export interface CommitmentListItem extends CommitmentRow {
   account: TransactionAccountSummary | null
   category: TransactionCategorySummary | null
+  mortgage_projection: {
+    remaining_months: number
+    remaining_years: number
+  } | null
   monthly_equivalent_cents: number
   next_due_in_days: number
   status: CommitmentStatus

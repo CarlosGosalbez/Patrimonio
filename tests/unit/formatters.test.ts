@@ -2,8 +2,11 @@ import { describe, it, expect } from "vitest";
 import {
   centsToDec,
   decToCents,
+  formatCents,
   formatCurrency,
+  formatCurrencyCompact,
   formatPercent,
+  formatPercentChange,
   parseInputToCents,
 } from "@/lib/financial/formatters";
 
@@ -43,11 +46,31 @@ describe("financial formatters", () => {
     });
   });
 
+  describe("formatCurrencyCompact", () => {
+    it("formats large amounts with compact notation", () => {
+      const result = formatCurrencyCompact(1250000, "EUR");
+      expect(result).toContain("mil");
+      expect(result).toContain("€");
+    });
+  });
+
+  describe("formatCents", () => {
+    it("formats cents without currency symbol", () => {
+      expect(formatCents(85075)).toContain("850");
+    });
+  });
+
   describe("formatPercent", () => {
     it("formats decimal as percentage", () => {
       const result = formatPercent(0.0575);
       expect(result).toContain("5");
       expect(result).toContain("%");
+    });
+  });
+
+  describe("formatPercentChange", () => {
+    it("adds the sign for positive percentages", () => {
+      expect(formatPercentChange(12.5)).toContain("+");
     });
   });
 
@@ -58,6 +81,10 @@ describe("financial formatters", () => {
 
     it("parses dot decimal separator", () => {
       expect(parseInputToCents("850.75")).toBe(85075);
+    });
+
+    it("parses thousands separators safely", () => {
+      expect(parseInputToCents("1.234,56")).toBe(123456);
     });
 
     it("throws on invalid input", () => {

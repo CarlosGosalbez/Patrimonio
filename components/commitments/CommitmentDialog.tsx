@@ -104,6 +104,18 @@ export function CommitmentDialog({
         </DialogHeader>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
+          {commitment?.mortgage_projection ? (
+            <div className="rounded-2xl border border-border/60 bg-muted/30 px-4 py-3">
+              <p className="text-sm font-medium">{t('mortgageProjection.title')}</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {t('mortgageProjection.detail', {
+                  months: commitment.mortgage_projection.remaining_months,
+                  years: commitment.mortgage_projection.remaining_years,
+                })}
+              </p>
+            </div>
+          ) : null}
+
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="commitment-name">{t('fields.name')}</Label>

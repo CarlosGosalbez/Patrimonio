@@ -215,7 +215,7 @@
 
 ---
 
-## PHASE 4 — Bank Statement Import (~2 weeks)
+## PHASE 4 — Bank Statement Import (~2 weeks) ✅ COMPLETED (2026-04-06)
 
 **Goal:** User can import months of banking history in minutes without errors, and the system auto-detects unexpected charges and unpaid income.
 
@@ -245,7 +245,7 @@
 - [x] Hooks en `hooks/usePhaseFour.ts`: `useImportBatchesQuery`, `useImportPreviewMutation`, `useConfirmImportMutation`, `useRollbackImportMutation`.
 - [x] Tests unitarios: `tests/unit/imports-parser.test.ts` (detección Santander, OFX, QIF) y `tests/unit/imports-matching.test.ts` (fuzzy duplicates, reglas, unexpected charges, similitud).
 - [x] Validación ejecutada: `npm run type-check`, `npm run lint`, `npm run test -- --run` y `npm run build`.
-- [ ] **E2E happy-path pendiente**: test Playwright del flujo completo upload → preview → confirm → rollback en iPhone 14 y Desktop Chrome (actualmente solo cubre redirect de auth).
+- [x] **E2E happy-path**: test Playwright del flujo completo upload → preview → confirm → rollback en iPhone 14 y Desktop Chrome — `tests/e2e/imports.spec.ts` (3 suites: auth guard, happy path, duplicate detection).
 
 **Skills:** `spanish-finance-categorizer`, `anomaly-detector` (duplicate detection)  
 **Instructions:** `security.instructions.md`
@@ -254,7 +254,7 @@
 
 ---
 
-## PHASE 5 — Analytics & Budgets (~2 weeks)
+## PHASE 5 — Analytics & Budgets (~2 weeks) ✅ COMPLETED (2026-04-06)
 
 **Goal:** User understands their financial patterns through data-driven views and automated statistical alerts.
 
@@ -262,29 +262,41 @@
 
 #### Budgets (M6)
 
-- [ ] CRUD for budgets by category (monthly / annual)
-- [ ] Real-time progress bar (spent vs limit), color green → orange → red
-- [ ] Visual alert when configured threshold is exceeded (default 80%)
-- [ ] Month-over-month compliance comparison (Recharts bar chart)
-- [ ] "Available money" per category (limit − spent, optimistic update)
-- [ ] Push / email notification when budget exceeded (integration with `notifications` table)
+- [x] CRUD for budgets by category (monthly / annual)
+- [x] Real-time progress bar (spent vs limit), color green → orange → red
+- [x] Visual alert when configured threshold is exceeded (default 80%)
+- [x] Month-over-month compliance comparison (Recharts bar chart)
+- [x] "Available money" per category (limit − spent, optimistic update)
+- [x] Push / email notification when budget exceeded (integration with `notifications` table)
 
 #### Analytics (M7 partial)
 
-- [ ] **Transaction analytics view**: summary by period (week/month/quarter/year)
-- [ ] **Net worth evolution**: historical line chart (data from `investment_snapshots`)
-- [ ] **Category analysis**: monthly/annual trending, identify growing categories
-- [ ] **CSV export** of transactions for selected period
+- [x] **Transaction analytics view**: summary by period (week/month/quarter/year)
+- [x] **Net worth evolution**: historical line chart (data from `investment_snapshots`)
+- [x] **Category analysis**: monthly/annual trending, identify growing categories
+- [x] **CSV export** of transactions for selected period
 
 #### Automated Statistical Alerts
 
-- [ ] **Anomaly detection**: spending in any category > 2 standard deviations from historical mean → in-app notification
-- [ ] **Monthly trend card**: current month vs 3-month average per category (auto-displayed in analytics view)
-- [ ] Savings rate metric: calculated and displayed monthly (income − expenses / income)
-- [ ] Mortgage payoff projection: years remaining displayed in commitment detail
+- [x] **Anomaly detection**: spending in any category > 2 standard deviations from historical mean → in-app notification
+- [x] **Monthly trend card**: current month vs 3-month average per category (auto-displayed in analytics view)
+- [x] Savings rate metric: calculated and displayed monthly (income − expenses / income)
+- [x] Mortgage payoff projection: years remaining displayed in commitment detail
 
-**Skills:** `financial-data-reader`, `anomaly-detector`, `transaction-formatter`  
-**Instructions:** `financial-logic.instructions.md`
+### Status Update — 2026-04-06 (COMPLETED)
+
+- [x] Nueva pantalla autenticada `/analytics` con i18n completa ES/EN, selector `week/month/quarter/year`, tabs internas (`Resumen`, `Presupuestos`, `Categorías`) y exportación CSV desde cliente.
+- [x] Nuevas APIs `/api/budgets`, `/api/budgets/[id]`, `/api/analytics/summary` y `/api/analytics/export` con auth por JWT, validación Zod `.strict()` y lógica de dominio separada en `lib/budgets/*` y `lib/analytics/*`.
+- [x] Budgets operativos sobre la tabla existente: CRUD mensual/anual, barras de progreso con estados `ok/approaching/warning/exceeded`, disponible por categoría, comparación histórica y optimistic updates en `hooks/usePhaseFive.ts`.
+- [x] Analytics productivos: serie de ingresos/gastos por periodo, savings rate, neto del periodo, análisis de categorías con tendencias y tarjetas de variación mensual.
+- [x] Evolución patrimonial conectada a `investment_snapshots`: el `market-updater` persiste snapshots diarios por usuario para alimentar el gráfico histórico.
+- [x] Alertas automáticas de Phase 5 en `supabase/functions/check-alerts/index.ts`: `budget_exceeded` y `anomaly_detected` con `event_key` idempotente, badge realtime en `AppShell` y reutilización del digest semanal por email.
+- [x] Migración `20260406170000_phase5_budget_analytics_hardening.sql` aplicada remotamente: índice UNIQUE para `notifications(user_id,event_key)`, validación segura de categorías de budget, trigger `prevent_resurrect` en `budgets` e índice específico para consultas de budget/analytics.
+- [x] Proyección hipotecaria incorporada al detalle de compromisos (`CommitmentDialog`) usando `maturity_year` + `next_due_date`.
+- [x] Tests unitarios añadidos para ahorro, anomalías, estados de presupuesto y formatters; validación ejecutada con `npm run type-check`, `npm run lint`, `npm run test -- --run`, `npm run build` y `npx supabase db push --linked`.
+
+**Skills:** `supabase-migration`, `anomaly-detector`, `transaction-formatter`  
+**Instructions:** `.claude/rules/financial.md`, `.claude/rules/database.md`, `.claude/rules/security.md`
 
 **Exit criteria:** Anomaly alert triggers correctly on test dataset with known outliers · savings rate formula correct · budget alerts fire at configured threshold
 

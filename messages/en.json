@@ -220,6 +220,7 @@
   "appShell": {
     "subtitle": "Financial control center",
     "dashboard": "Dashboard",
+    "analytics": "Analytics",
     "imports": "Imports",
     "commitments": "Commitments",
     "alerts": "Alerts",
@@ -436,11 +437,131 @@
       "semiannual": "Semiannual",
       "annual": "Annual"
     },
+    "mortgageProjection": {
+      "title": "Mortgage payoff projection",
+      "detail": "Approximately {months} instalments remain, around {years} years."
+    },
     "toasts": {
       "updated": "Commitment updated",
       "created": "Commitment created",
       "deleted": "Commitment deleted",
       "error": "The action could not be completed"
+    }
+  },
+  "analytics": {
+    "badge": "Phase 5",
+    "title": "Analytics and budgets",
+    "subtitle": "Track deviations, budget health and wealth evolution from one operational view.",
+    "uncategorized": "Uncategorized",
+    "periods": {
+      "week": "Week",
+      "month": "Month",
+      "quarter": "Quarter",
+      "year": "Year"
+    },
+    "actions": {
+      "export": "Export CSV",
+      "newBudget": "New budget",
+      "edit": "Edit",
+      "delete": "Delete",
+      "confirmDelete": "Delete budget",
+      "cancel": "Cancel"
+    },
+    "tabs": {
+      "overview": "Overview",
+      "budgets": "Budgets",
+      "categories": "Categories"
+    },
+    "metrics": {
+      "income": "Period income",
+      "expenses": "Period expenses",
+      "net": "Net result",
+      "savingsRate": "Savings rate",
+      "notAvailable": "Not available"
+    },
+    "charts": {
+      "periodSummary": "Transactional summary by period",
+      "netWorth": "Net worth evolution",
+      "categoryComparison": "Category comparison"
+    },
+    "cards": {
+      "monthlyTrends": "Monthly trend cards",
+      "anomalies": "Statistical alerts",
+      "notifications": "Automatic notifications",
+      "avgThreeMonths": "3M average: {amount}"
+    },
+    "anomalies": {
+      "detail": "Historical mean {mean} · change {percent}"
+    },
+    "notifications": {
+      "budget_exceeded": "Budget",
+      "anomaly_detected": "Anomaly"
+    },
+    "states": {
+      "noSnapshots": "There are no investment snapshots yet to draw the curve.",
+      "noAnomalies": "No relevant statistical anomalies were detected this month.",
+      "noNotifications": "There are no recent automatic notifications."
+    },
+    "budgets": {
+      "confirmDelete": "Delete this budget?",
+      "progress": "Current consumption",
+      "comparison": "Versus previous period: {change}",
+      "thresholdLabel": "Threshold {percent}%",
+      "periods": {
+        "monthly": "Monthly",
+        "annual": "Annual"
+      },
+      "status": {
+        "ok": "Healthy",
+        "approaching": "Approaching",
+        "warning": "At risk",
+        "exceeded": "Exceeded"
+      },
+      "metrics": {
+        "totalLimit": "Total limit",
+        "totalSpent": "Total spent",
+        "available": "Total available",
+        "exceeded": "Exceeded budgets",
+        "spent": "Spent",
+        "limit": "Limit",
+        "availableCategory": "Available"
+      },
+      "dialog": {
+        "newTitle": "New budget",
+        "editTitle": "Edit budget",
+        "create": "Create budget",
+        "save": "Save changes"
+      },
+      "form": {
+        "category": "Category",
+        "selectCategory": "Select a category",
+        "period": "Period",
+        "limit": "Limit",
+        "threshold": "Alert threshold (%)",
+        "startDate": "Start date",
+        "endDate": "End date",
+        "active": "Budget is active"
+      },
+      "empty": {
+        "title": "No active budgets yet",
+        "subtitle": "Create category limits to enable alerts and monthly or annual tracking."
+      },
+      "toasts": {
+        "updated": "Budget updated",
+        "created": "Budget created",
+        "deleted": "Budget deleted",
+        "error": "The operation could not be completed"
+      }
+    },
+    "categories": {
+      "growing": "Growing",
+      "stable": "Stable",
+      "currentPeriod": "Current period",
+      "previousPeriod": "Previous period"
+    },
+    "toasts": {
+      "exported": "CSV exported successfully",
+      "exportError": "The CSV export failed"
     }
   },
   "alerts": {

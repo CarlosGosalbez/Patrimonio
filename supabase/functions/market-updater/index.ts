@@ -23,6 +23,13 @@ interface ActiveTicker {
   market: string | null;
 }
 
+interface InvestmentSnapshotSourceRow {
+  currency: string;
+  current_value_cents: number | null;
+  total_invested_cents: number;
+  user_id: string;
+}
+
 // ─── Yahoo Finance ───────────────────────────────────────────────────────────
 async function fetchFromYahoo(ticker: string): Promise<MarketCacheUpsert | null> {
   const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1d`;
@@ -291,6 +298,62 @@ Deno.serve(async (request) => {
   if (syncError) {
     // Non-fatal: log but don't fail the whole function
     errorList.push(`sync_investment_prices: ${syncError.message}`);
+  }
+
+  const { data: snapshotSource, error: snapshotSourceError } = await supabase
+    .from("investments")
+    .select("user_id,total_invested_cents,current_value_cents,currency")
+    .eq("is_active", true)
+    .is("deleted_at", null);
+
+  if (snapshotSourceError) {
+    errorList.push(`investment_snapshots source: ${snapshotSourceError.message}`);
+  } else {
+    const snapshotDate = new Date().toISOString().slice(0, 10);
+    const snapshotByUser = new Map<
+      string,
+      {
+        currency: string;
+        total_invested_cents: number;
+        total_value_cents: number;
+      }
+    >();
+
+    for (const row of (snapshotSource ?? []) as InvestmentSnapshotSourceRow[]) {
+      if (!snapshotByUser.has(row.user_id)) {
+        snapshotByUser.set(row.user_id, {
+          currency: row.currency,
+          total_invested_cents: 0,
+          total_value_cents: 0,
+        });
+      }
+
+      const entry = snapshotByUser.get(row.user_id)!;
+      entry.total_invested_cents += row.total_invested_cents;
+      entry.total_value_cents += row.current_value_cents ?? 0;
+    }
+
+    if (snapshotByUser.size > 0) {
+      const snapshots = Array.from(snapshotByUser.entries()).map(([userId, entry]) => ({
+        currency: entry.currency,
+        snapshot_date: snapshotDate,
+        total_invested_cents: entry.total_invested_cents,
+        total_value_cents: entry.total_value_cents,
+        unrealized_pl_cents: entry.total_value_cents - entry.total_invested_cents,
+        user_id: userId,
+      }));
+
+      const { error: snapshotUpsertError } = await supabase
+        .from("investment_snapshots")
+        .upsert(snapshots, {
+          ignoreDuplicates: false,
+          onConflict: "user_id,snapshot_date",
+        });
+
+      if (snapshotUpsertError) {
+        errorList.push(`investment_snapshots upsert: ${snapshotUpsertError.message}`);
+      }
+    }
   }
 
   return Response.json({

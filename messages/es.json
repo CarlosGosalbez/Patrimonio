@@ -218,6 +218,7 @@
   "appShell": {
     "subtitle": "Centro de control financiero",
     "dashboard": "Dashboard",
+    "analytics": "Analytics",
     "imports": "Importar",
     "commitments": "Compromisos",
     "alerts": "Alertas",
@@ -434,11 +435,131 @@
       "semiannual": "Semestral",
       "annual": "Anual"
     },
+    "mortgageProjection": {
+      "title": "Proyección hipotecaria",
+      "detail": "Restan aproximadamente {months} cuotas, unas {years} años."
+    },
     "toasts": {
       "updated": "Compromiso actualizado",
       "created": "Compromiso creado",
       "deleted": "Compromiso eliminado",
       "error": "No se pudo completar la acción"
+    }
+  },
+  "analytics": {
+    "badge": "Phase 5",
+    "title": "Analytics y presupuestos",
+    "subtitle": "Controla desviaciones, salud presupuestaria y evolución patrimonial desde una única vista operativa.",
+    "uncategorized": "Sin categoría",
+    "periods": {
+      "week": "Semana",
+      "month": "Mes",
+      "quarter": "Trimestre",
+      "year": "Año"
+    },
+    "actions": {
+      "export": "Exportar CSV",
+      "newBudget": "Nuevo presupuesto",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "confirmDelete": "Eliminar presupuesto",
+      "cancel": "Cancelar"
+    },
+    "tabs": {
+      "overview": "Resumen",
+      "budgets": "Presupuestos",
+      "categories": "Categorías"
+    },
+    "metrics": {
+      "income": "Ingresos del periodo",
+      "expenses": "Gastos del periodo",
+      "net": "Resultado neto",
+      "savingsRate": "Tasa de ahorro",
+      "notAvailable": "No disponible"
+    },
+    "charts": {
+      "periodSummary": "Resumen transaccional por periodo",
+      "netWorth": "Evolución patrimonial",
+      "categoryComparison": "Comparativa de categorías"
+    },
+    "cards": {
+      "monthlyTrends": "Tendencias del mes",
+      "anomalies": "Alertas estadísticas",
+      "notifications": "Notificaciones automáticas",
+      "avgThreeMonths": "Media 3M: {amount}"
+    },
+    "anomalies": {
+      "detail": "Media histórica {mean} · variación {percent}"
+    },
+    "notifications": {
+      "budget_exceeded": "Presupuesto",
+      "anomaly_detected": "Anomalía"
+    },
+    "states": {
+      "noSnapshots": "Todavía no hay snapshots de inversión para dibujar la curva.",
+      "noAnomalies": "No se han detectado anomalías estadísticas relevantes este mes.",
+      "noNotifications": "No hay notificaciones automáticas recientes."
+    },
+    "budgets": {
+      "confirmDelete": "¿Eliminar este presupuesto?",
+      "progress": "Consumo actual",
+      "comparison": "Frente al periodo anterior: {change}",
+      "thresholdLabel": "Umbral {percent}%",
+      "periods": {
+        "monthly": "Mensual",
+        "annual": "Anual"
+      },
+      "status": {
+        "ok": "Controlado",
+        "approaching": "Vigilado",
+        "warning": "Al límite",
+        "exceeded": "Excedido"
+      },
+      "metrics": {
+        "totalLimit": "Límite total",
+        "totalSpent": "Gasto agregado",
+        "available": "Disponible total",
+        "exceeded": "Presupuestos excedidos",
+        "spent": "Gastado",
+        "limit": "Límite",
+        "availableCategory": "Disponible"
+      },
+      "dialog": {
+        "newTitle": "Nuevo presupuesto",
+        "editTitle": "Editar presupuesto",
+        "create": "Crear presupuesto",
+        "save": "Guardar cambios"
+      },
+      "form": {
+        "category": "Categoría",
+        "selectCategory": "Selecciona una categoría",
+        "period": "Periodo",
+        "limit": "Límite",
+        "threshold": "Umbral de alerta (%)",
+        "startDate": "Inicio",
+        "endDate": "Fin",
+        "active": "Presupuesto activo"
+      },
+      "empty": {
+        "title": "No hay presupuestos activos",
+        "subtitle": "Crea límites por categoría para activar alertas y seguimiento mensual o anual."
+      },
+      "toasts": {
+        "updated": "Presupuesto actualizado",
+        "created": "Presupuesto creado",
+        "deleted": "Presupuesto eliminado",
+        "error": "No se pudo completar la operación"
+      }
+    },
+    "categories": {
+      "growing": "Creciendo",
+      "stable": "Estable",
+      "currentPeriod": "Periodo actual",
+      "previousPeriod": "Periodo anterior"
+    },
+    "toasts": {
+      "exported": "CSV generado correctamente",
+      "exportError": "No se pudo exportar el CSV"
     }
   },
   "alerts": {
