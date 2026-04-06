@@ -68,10 +68,10 @@ const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   compress: true,
-  experimental: {
-    // serverActions is stable in Next.js 15 — no config needed here
-    // instrumentationHook is stable in Next.js 15 — no config needed here
-  },
+  // Generate client-side source maps in production so Sentry can upload and
+  // resolve stack traces. Sentry's hideSourceMaps deletes them after upload.
+  productionBrowserSourceMaps: true,
+  experimental: {},
   headers: async () => [
     {
       source: "/(.*)",
@@ -100,5 +100,16 @@ export default withSentryConfig(withPWA(withNextIntl(nextConfig)), {
   // Detecta y monitorea automáticamente Vercel Cron Jobs
   webpack: {
     automaticVercelMonitors: true,
+  },
+
+  // Generate + upload source maps in Sentry, then delete from public output
+  hideSourceMaps: true,
+
+  // Reduce bundle size by removing Sentry logger statements (v10 API)
+  webpack: {
+    automaticVercelMonitors: true,
+    treeshake: {
+      removeDebugLogging: true,
+    },
   },
 });
