@@ -3,6 +3,8 @@ import { Inter } from 'next/font/google'
 import { Toaster } from 'sonner'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages, getTranslations } from 'next-intl/server'
+import { Analytics } from '@vercel/analytics/next'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import { QueryProvider } from '@/components/providers/QueryProvider'
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
 import './globals.css'
@@ -58,6 +60,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             </QueryProvider>
           </ThemeProvider>
         </NextIntlClientProvider>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   )

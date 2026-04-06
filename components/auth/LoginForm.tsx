@@ -1,14 +1,13 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { toast } from 'sonner'
 import { Eye, EyeOff, Loader2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { createClient } from '@/lib/supabase/client'
+import { loginAction } from '@/lib/actions/auth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -20,7 +19,6 @@ type LoginValues = { email: string; password: string }
 export function LoginForm() {
     const t = useTranslations('login')
     const tAuth = useTranslations('auth')
-    const router = useRouter()
     const searchParams = useSearchParams()
     const [showPassword, setShowPassword] = useState(false)
     const [serverError, setServerError] = useState<string | null>(null)
@@ -44,33 +42,19 @@ export function LoginForm() {
 
     const onSubmit = async (values: LoginValues) => {
         setServerError(null)
-        const supabase = createClient()
 
-        const { data, error } = await supabase.auth.signInWithPassword({
-            email: values.email,
-            password: values.password,
-        })
+        const formData = new FormData()
+        formData.append('email', values.email)
+        formData.append('password', values.password)
+        formData.append('next', searchParams.get('next') ?? '/dashboard')
 
-        if (error) {
+        // Server Action sets cookies before redirect — eliminates race condition with middleware
+        const result = await loginAction(formData)
+
+        if (result?.error) {
             setServerError(t('credentialsError'))
-            return
         }
-
-        if (data.session === null && data.user) {
-            router.push('/two-factor')
-            return
-        }
-
-        const { data: aalData } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
-        if (aalData?.nextLevel === 'aal2' && aalData.currentLevel !== aalData.nextLevel) {
-            router.push('/two-factor')
-            return
-        }
-
-        toast.success(t('welcomeBack'))
-        const next = searchParams.get('next') ?? '/dashboard'
-        router.push(next)
-        router.refresh()
+        // On success, the Server Action calls redirect() server-side — no client navigation needed
     }
 
     return (
