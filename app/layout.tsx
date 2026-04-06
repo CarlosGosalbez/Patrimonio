@@ -4,6 +4,7 @@ import { Toaster } from 'sonner'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages, getTranslations } from 'next-intl/server'
 import { QueryProvider } from '@/components/providers/QueryProvider'
+import { ThemeProvider } from '@/components/providers/ThemeProvider'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
@@ -17,8 +18,15 @@ export async function generateMetadata(): Promise<Metadata> {
     manifest: '/manifest.json',
     appleWebApp: {
       capable: true,
-      statusBarStyle: 'default',
+      statusBarStyle: 'black-translucent',
       title: t('brandName'),
+      startupImage: '/apple-icon.png',
+    },
+    formatDetection: {
+      telephone: false,
+    },
+    other: {
+      'mobile-web-app-capable': 'yes',
     },
   }
 }
@@ -26,6 +34,8 @@ export async function generateMetadata(): Promise<Metadata> {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
   viewportFit: 'cover',
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#ffffff' },
@@ -41,10 +51,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang={locale} suppressHydrationWarning>
       <body className={`${inter.variable} font-sans antialiased`}>
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <QueryProvider>
-            {children}
-            <Toaster richColors position="top-center" closeButton />
-          </QueryProvider>
+          <ThemeProvider>
+            <QueryProvider>
+              {children}
+              <Toaster richColors position="top-center" closeButton />
+            </QueryProvider>
+          </ThemeProvider>
         </NextIntlClientProvider>
       </body>
     </html>

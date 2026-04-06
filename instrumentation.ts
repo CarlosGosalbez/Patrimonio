@@ -1,3 +1,5 @@
+import * as Sentry from "@sentry/nextjs";
+
 export async function register() {
   if (process.env.NEXT_RUNTIME === "nodejs") {
     await import("./sentry.server.config");
@@ -7,3 +9,6 @@ export async function register() {
     await import("./sentry.edge.config");
   }
 }
+
+// Captura automáticamente todos los errores de request no manejados en server (requiere @sentry/nextjs >= 8.28.0)
+export const onRequestError = Sentry.captureRequestError;

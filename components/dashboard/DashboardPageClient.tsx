@@ -34,6 +34,8 @@ import { useDashboardSummaryQuery } from '@/hooks/usePhaseThree'
 import { formatCurrency } from '@/lib/financial/formatters'
 import type { DashboardWidgetId } from '@/lib/dashboard/types'
 import { useDashboardPreferencesStore } from '@/stores/useDashboardPreferencesStore'
+import { SwipeableTransactionRow } from '@/components/ui/SwipeableTransactionRow'
+import { useDeleteTransaction } from '@/hooks/useDeleteTransaction'
 
 const widgetLabels: Record<DashboardWidgetId, string> = {
   'active-alerts': 'activeAlerts',
@@ -96,6 +98,7 @@ export function DashboardPageClient() {
   const { data, isLoading } = useDashboardSummaryQuery()
   const hidden = useDashboardPreferencesStore((state) => state.hidden)
   const order = useDashboardPreferencesStore((state) => state.order)
+  const deleteTransactionMutation = useDeleteTransaction()
   const moveWidget = useDashboardPreferencesStore((state) => state.moveWidget)
   const toggleWidget = useDashboardPreferencesStore((state) => state.toggleWidget)
   const reset = useDashboardPreferencesStore((state) => state.reset)
@@ -322,17 +325,22 @@ export function DashboardPageClient() {
         </CardHeader>
         <CardContent className="space-y-3">
           {(data?.recent_transactions ?? []).map((transaction) => (
-            <div key={transaction.id} className="flex items-center justify-between rounded-2xl border border-border/60 bg-muted/30 px-4 py-3">
-              <div>
-                <p className="font-medium">{transaction.description}</p>
-                <p className="text-xs text-muted-foreground">
-                  {(transaction.category?.name ?? t('uncategorized'))} · {transaction.transaction_date}
+            <SwipeableTransactionRow
+              key={transaction.id}
+              onDelete={() => deleteTransactionMutation.mutate(transaction.id)}
+            >
+              <div className="flex items-center justify-between rounded-2xl border border-border/60 bg-muted/30 px-4 py-3">
+                <div>
+                  <p className="font-medium">{transaction.description}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {(transaction.category?.name ?? t('uncategorized'))} · {transaction.transaction_date}
+                  </p>
+                </div>
+                <p className={transaction.is_income ? 'font-semibold text-emerald-600' : 'font-semibold'}>
+                  {formatCurrency(transaction.is_income ? transaction.amount_cents : -transaction.amount_cents)}
                 </p>
               </div>
-              <p className={transaction.is_income ? 'font-semibold text-emerald-600' : 'font-semibold'}>
-                {formatCurrency(transaction.is_income ? transaction.amount_cents : -transaction.amount_cents)}
-              </p>
-            </div>
+            </SwipeableTransactionRow>
           ))}
         </CardContent>
       </Card>

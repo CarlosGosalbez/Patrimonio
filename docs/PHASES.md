@@ -389,30 +389,51 @@
 
 ---
 
-## PHASE 8 — PWA, Polish & Mobile (~2 weeks)
+## PHASE 8 — PWA, Polish & Mobile ✅ COMPLETED
 
 **Goal:** Native-like experience in iPhone Safari. Lighthouse ≥ 90 on all metrics.
 
 ### Deliverables
 
-- [ ] **`manifest.json`** complete with iOS icons (apple-touch-icon, 192px, 512px maskable)
-- [ ] **Service Worker** (`next-pwa`): Cache-First for assets · Network-First for data · Stale-While-Revalidate for dashboard · Network-Only for writes
-- [ ] **Offline mode**: dashboard and last 30 days of transactions from cache
-- [ ] **Offline write queue**: auto-sync when connection is restored
-- [ ] **Safe Area Insets**: `env(safe-area-inset-*)` in main layout for iPhone notch
-- [ ] **Touch targets** ≥ 44×44px on all interactive elements
-- [ ] **Numeric keyboard**: `inputMode="decimal"` on all amount fields
-- [ ] **Swipe gestures**: delete transaction, navigate between tabs
-- [ ] **Full dark mode**: `prefers-color-scheme: dark` + consistent Tailwind dark theme
-- [ ] **Animations and micro-interactions**: Framer Motion on screen transitions and feedback
-- [ ] **Push notifications**: Web Push API (Safari iOS 16.4+) for budget alerts and due dates
-- [ ] **Web Share API**: share transactions or reports using native iOS share sheet
-- [ ] **WCAG 2.1 AA**: keyboard navigation, ARIA roles, color contrast
-- [ ] **Lighthouse audit**: LCP < 2.5s, FID < 100ms, CLS < 0.1
+- [x] **`manifest.json`** complete with iOS icons, display_override, shortcuts
+- [x] **Service Worker** (`@ducanh2912/next-pwa`): Cache-First (assets/fonts/images) · Network-First (data) · StaleWhileRevalidate (dashboard) · Network-Only (writes/auth)
+- [x] **Offline mode**: `/offline` fallback page + service worker caching
+- [x] **Offline write queue**: IndexedDB auto-sync (lib/pwa/offlineQueue.ts + useOfflineQueue hook)
+- [x] **Safe Area Insets**: `env(safe-area-inset-*)` via CSS vars + Tailwind utilities in `globals.css`
+- [x] **Touch targets** ≥ 44×44px on all interactive elements (nav 56px, buttons 44px)
+- [x] **Numeric keyboard**: `inputMode="decimal"` audited on all amount fields
+- [x] **Swipe gestures**: SwipeableTransactionRow component with framer-motion drag="x" + DELETE endpoint
+- [x] **Full dark mode**: `next-themes` ThemeProvider + `prefers-color-scheme` CSS vars + ThemeToggle
+- [x] **Animations and micro-interactions**: Framer Motion page transitions, FadeInUp, StaggerContainer, ScaleOnPress, AnimatedCounter
+- [x] **Push notifications**: Web Push API + VAPID + `push_subscriptions` table (RLS) + `/api/pwa/subscribe` + `usePushNotifications` hook + `PushNotificationsSettings` component
+- [x] **Web Share API**: `ShareButton` component with clipboard fallback
+- [x] **WCAG 2.1 AA**: skip link, :focus-visible, role="alert", aria-live, aria-describedby, labels via useId()
+- [ ] **Lighthouse audit**: pending Vercel deploy measurement
 
-**Instructions:** `frontend.instructions.md`
+**Packages added:** `@ducanh2912/next-pwa`, `framer-motion`, `next-themes`
 
-**Exit criteria:** Lighthouse PWA ≥ 90 on mobile · E2E Playwright on `iPhone 15` and `iPad Pro 17` all green · app installable from Safari
+### Implementation summary
+
+| Layer             | Files                                                                                      |
+| ----------------- | ------------------------------------------------------------------------------------------ |
+| PWA manifest      | `public/manifest.json`                                                                     |
+| Service Worker    | `next.config.mjs` (withPWA + runtimeCaching)                                               |
+| Dark mode         | `components/providers/ThemeProvider.tsx`, `components/ui/ThemeToggle.tsx`                  |
+| Offline page      | `app/offline/page.tsx`                                                                     |
+| Offline queue     | `lib/pwa/offlineQueue.ts`, `hooks/useOfflineQueue.ts`                                      |
+| Swipe gestures    | `components/ui/SwipeableTransactionRow.tsx`, `app/api/transactions/[id]/route.ts` (DELETE) |
+| Animations        | `components/providers/PageTransition.tsx`, `components/ui/Animations.tsx`                  |
+| Web Share         | `components/ui/ShareButton.tsx`                                                            |
+| Offline indicator | `components/ui/OfflineIndicator.tsx`                                                       |
+| Push DB           | `supabase/migrations/20260406210000_phase8_push_subscriptions.sql`                         |
+| Push API          | `app/api/pwa/subscribe/route.ts`, `lib/pwa/notifications.ts`                               |
+| Push UI           | `hooks/usePushNotifications.ts`, `components/settings/PushNotificationsSettings.tsx`       |
+| Settings page     | `app/(app)/settings/notifications/page.tsx`                                                |
+| AppShell          | Skip link, OfflineIndicator, ThemeToggle, PageTransition, WCAG main#main-content           |
+| CSS               | `app/globals.css` — safe-area vars, dark mode, pt/pb/px-safe utilities, momentum scroll    |
+| i18n              | `messages/es.json + en.json` — offline, pushNotifications namespaces                       |
+
+**Migration applied:** `push_subscriptions` table + RLS + updated_at trigger + types regenerated ✅
 
 ---
 

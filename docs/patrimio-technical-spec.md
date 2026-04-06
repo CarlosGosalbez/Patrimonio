@@ -32,7 +32,16 @@
 
 ### 1.1 Descripción
 
-**Patrimio** es una aplicación web financiera personal de nivel profesional, diseñada para que un único usuario (o familia) gestione su patrimonio completo: gastos, ingresos, compromisos futuros, presupuestos, e inversiones (acciones, ETFs, criptomonedas). La aplicación se despliega como PWA optimizada para iPhone/Safari y se construye sobre una arquitectura serverless con Supabase y Vercel.
+**Patrimio** es una aplicación web de seguimiento patrimonial personal (personal finance tracking), diseñada para que un único usuario (o familia) registre y visualice su patrimonio completo: gastos, ingresos, compromisos futuros, presupuestos, e inversiones (acciones, ETFs, criptomonedas).
+
+**⚠️ IMPORTANTE — Patrimio NO es una app de pagos ni de banca:**
+
+- **NO gestiona fondos reales** — los usuarios introducen registros manuales de transacciones ya realizadas fuera de la app
+- **NO realiza transacciones bancarias** — no conecta con APIs bancarias que muevan dinero (PSD2/Open Banking fuera de alcance)
+- **NO custodia activos** — las inversiones son registros de seguimiento, no holdings reales en custodia
+- **Datos sensibles GDPR-compliant** — aunque no se mueve dinero, los importes y categorías son datos personales protegidos bajo RGPD/LOPDGDD
+
+La aplicación se despliega como PWA optimizada para iPhone/Safari y se construye sobre una arquitectura serverless con Supabase y Vercel.
 
 ### 1.2 Principios de Diseño
 

@@ -914,5 +914,24 @@
     "gdprConfirmLabel": "I confirm I want to export all my personal data.",
     "gdprDownloadButton": "Download ZIP with my data",
     "gdprDownloaded": "Data exported successfully"
+  },
+  "offline": {
+    "title": "You're offline",
+    "description": "No internet connection. You can still view cached data.",
+    "retry": "Retry",
+    "cached": "Some data may be outdated."
+  },
+  "pushNotifications": {
+    "title": "Push notifications",
+    "description": "Receive alerts for expenses, budgets and upcoming payments directly on your device.",
+    "enable": "Enable notifications",
+    "disable": "Disable notifications",
+    "deviceLabel": "Device name",
+    "deviceLabelPlaceholder": "E.g. Carlos's iPhone",
+    "permissionDenied": "Permission denied. Enable notifications in your browser settings.",
+    "notSupported": "Push notifications are not available on this device or browser.",
+    "subscribeError": "Could not enable notifications. Please try again.",
+    "active": "Notifications active",
+    "inactive": "Notifications inactive"
   }
 }

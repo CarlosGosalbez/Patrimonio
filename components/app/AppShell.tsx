@@ -16,6 +16,9 @@ import {
 import { useTranslations } from 'next-intl'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { useNotificationsRealtime } from '@/hooks/useNotificationsRealtime'
+import { ThemeToggle } from '@/components/ui/ThemeToggle'
+import { OfflineIndicator } from '@/components/ui/OfflineIndicator'
+import { PageTransition } from '@/components/providers/PageTransition'
 import { cn } from '@/lib/utils'
 
 const navigation = [
@@ -36,6 +39,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,0.10),_transparent_26%),radial-gradient(circle_at_bottom_right,_rgba(16,185,129,0.10),_transparent_30%),hsl(var(--background))]">
+      {/* Skip to main content — WCAG 2.4.1 */}
+      <a href="#main-content" className="skip-link">
+        Saltar al contenido principal
+      </a>
+
+      <OfflineIndicator />
+
       <header className="sticky top-0 z-40 border-b border-border/70 bg-background/90 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
           <Link
@@ -51,12 +61,21 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </div>
           </Link>
 
-          <LanguageSwitcher className="hidden sm:flex" />
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <LanguageSwitcher className="hidden sm:flex" />
+          </div>
         </div>
       </header>
 
-      <main className="mx-auto min-h-[calc(100vh-73px)] max-w-6xl px-4 pb-[calc(env(safe-area-inset-bottom)+96px)] pt-6 sm:px-6 sm:pb-10">
-        {children}
+      <main
+        id="main-content"
+        className="mx-auto min-h-[calc(100vh-73px)] max-w-6xl px-4 pb-[calc(env(safe-area-inset-bottom)+96px)] pt-6 sm:px-6 sm:pb-10"
+        tabIndex={-1}
+      >
+        <PageTransition>
+          {children}
+        </PageTransition>
       </main>
 
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border/70 bg-background/95 px-2 pb-[calc(env(safe-area-inset-bottom)+8px)] pt-2 backdrop-blur">

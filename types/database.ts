@@ -681,6 +681,45 @@ export type Database = {
         }
         Relationships: []
       }
+      push_subscriptions: {
+        Row: {
+          auth_key: string
+          created_at: string
+          device_label: string | null
+          endpoint: string
+          id: string
+          is_active: boolean
+          p256dh: string
+          updated_at: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          auth_key: string
+          created_at?: string
+          device_label?: string | null
+          endpoint: string
+          id?: string
+          is_active?: boolean
+          p256dh: string
+          updated_at?: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          auth_key?: string
+          created_at?: string
+          device_label?: string | null
+          endpoint?: string
+          id?: string
+          is_active?: boolean
+          p256dh?: string
+          updated_at?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       recovery_codes: {
         Row: {
           code_hash: string

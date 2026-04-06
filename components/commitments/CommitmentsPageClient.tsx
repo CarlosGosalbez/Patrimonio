@@ -60,7 +60,10 @@ export function CommitmentsPageClient() {
 
   const currentMonth = new Date().toISOString().slice(0, 7)
 
-  const timelineData = commitmentsQuery.data?.timeline ?? []
+  const timelineData = useMemo(
+    () => commitmentsQuery.data?.timeline ?? [],
+    [commitmentsQuery.data?.timeline],
+  )
 
   const uniqueCommitments = useMemo(() => {
     const first = timelineData[0]
