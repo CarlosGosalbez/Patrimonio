@@ -349,26 +349,43 @@
 
 ---
 
-## PHASE 7 — Full Reports & Export (~1 week)
+## PHASE 7 — Full Reports & Export (~1 week) ✅ COMPLETED
 
+**Status:** ✅ Completado — 2026-01-07  
 **Goal:** User can obtain an exportable executive summary of their financial year.
 
 ### Module: M7 — Reports & Analytics (complete)
 
 #### Deliverables
 
-- [ ] **Full monthly report**: income, expenses, savings, savings rate, top categories, variations
-- [ ] **PDF export**: server-side generation with data for selected period
-- [ ] **Full Excel export**: all transactions + summary + investments for the period
-- [ ] **Period comparison**: month vs previous month, year vs previous year (side-by-side charts)
-- [ ] **Simplified IRPF fiscal report**: capital gains, dividends, withholdings (with non-advisory disclaimer)
-- [ ] **Full investment report**: year operations, realized P&L, dividends received
-- [ ] **Full data export** (GDPR): ZIP with JSON of entire account
+- [x] **Full monthly report**: income, expenses, savings, savings rate, top categories, variations
+- [x] **PDF export**: server-side generation with data for selected period (`@react-pdf/renderer`)
+- [x] **Full Excel export**: all transactions + summary + investments for the period (SheetJS, 3-sheet output)
+- [x] **Period comparison**: month vs previous month, year vs previous year (side-by-side Recharts BarChart)
+- [x] **Simplified IRPF fiscal report**: capital gains, dividends, withholdings (with non-advisory disclaimer)
+- [x] **Full investment report**: year operations, realized P&L, dividends received
+- [x] **Full data export** (GDPR): ZIP with JSON of entire account (`jszip`, 9 tables)
 
 **Skills:** `report-generator`, `transaction-formatter`  
 **Instructions:** `frontend.instructions.md`
 
-**Exit criteria:** PDF generated correctly with real data · Excel importable in Excel/Google Sheets without errors · GDPR export downloads all user data
+**Exit criteria:** ✅ PDF generated correctly with real data · ✅ Excel importable in Excel/Google Sheets without errors · ✅ GDPR export downloads all user data
+
+#### Implementation Details
+
+| Layer            | Files                                                                             |
+| ---------------- | --------------------------------------------------------------------------------- |
+| Types            | `lib/reports/types.ts`                                                            |
+| Data aggregation | `lib/reports/server.ts` (5 functions)                                             |
+| Excel export     | `lib/reports/excel.ts` (buildMonthlyExcel, buildAnnualExcel)                      |
+| PDF export       | `lib/reports/pdf.ts` (renderMonthlyReportPdf, renderFiscalReportPdf)              |
+| API routes       | `app/api/reports/{monthly,annual,comparison,pdf,excel,fiscal,gdpr}/route.ts`      |
+| Hooks            | `hooks/usePhase7Reports.ts` (4 queries + 3 download mutations)                    |
+| UI               | `components/reports/ReportsPageClient.tsx` (4-tab layout with Recharts)           |
+| Page             | `app/(app)/reports/page.tsx`                                                      |
+| Navigation       | `components/app/AppShell.tsx` — Reports link added (grid-cols-8)                  |
+| i18n             | `messages/es.json` + `messages/en.json` — `reports` namespace (50+ keys)          |
+| Tests            | `tests/unit/phase7-reports.test.ts` (12 unit tests) · `tests/e2e/reports.spec.ts` |
 
 ---
 
@@ -395,7 +412,7 @@
 
 **Instructions:** `frontend.instructions.md`
 
-**Exit criteria:** Lighthouse PWA ≥ 90 on mobile · E2E Playwright on `iPhone 14` and `iPad Pro 11` all green · app installable from Safari
+**Exit criteria:** Lighthouse PWA ≥ 90 on mobile · E2E Playwright on `iPhone 15` and `iPad Pro 17` all green · app installable from Safari
 
 ---
 
@@ -513,7 +530,7 @@
 | Phase 4 — Bank Statement Import                                   | ~2 weeks    | 🔴 High      |
 | Phase 5 — Analytics & Budgets                                     | ~2 weeks    | 🟡 Medium    |
 | Phase 6 — Investments                                             | ~3 weeks    | 🔴 Very High |
-| Phase 7 — Reports & Export                                        | ~1 week     | 🟡 Medium    |
+| Phase 7 — Reports & Export                                        | ~1 week     | ✅ Done      |
 | Phase 8 — PWA & Polish                                            | ~2 weeks    | 🟡 Medium    |
 | Phase 9 — Security & Compliance                                   | ~1 week     | 🔴 High      |
 | Phase 10 — Launch                                                 | ~1 week     | 🟢 Low       |
