@@ -78,6 +78,36 @@ const nextConfig = {
       headers: [
         { key: "X-Content-Type-Options", value: "nosniff" },
         { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+        { key: "X-Frame-Options", value: "DENY" },
+        { key: "X-DNS-Prefetch-Control", value: "on" },
+        { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
+        { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+        {
+          key: "Content-Security-Policy",
+          value: [
+            "default-src 'self'",
+            // Next.js inline scripts + Sentry
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://browser.sentry-cdn.com https://js.sentry-cdn.com",
+            // Estilos inline de Next.js + shadcn
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+            // Fuentes
+            "font-src 'self' https://fonts.gstatic.com",
+            // Supabase realtime, storage, APIs externas de mercado + Sentry tunnel
+            `connect-src 'self' ${process.env.NEXT_PUBLIC_SUPABASE_URL ?? "https://*.supabase.co"} *.sentry.io https://o*.ingest.sentry.io wss://*.supabase.co`,
+            // Imágenes
+            "img-src 'self' data: blob: https://*.supabase.co",
+            // Workers para PWA + Sentry
+            "worker-src 'self' blob:",
+            // Frames: nunca embeder
+            "frame-ancestors 'none'",
+            // Sin plugins
+            "object-src 'none'",
+            // Form actions solo a self
+            "form-action 'self'",
+            // Base URI fija
+            "base-uri 'self'",
+          ].join("; "),
+        },
       ],
     },
   ],

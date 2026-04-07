@@ -6,6 +6,7 @@ Sentry.init({
 
   environment: process.env.NODE_ENV,
 
+  // App personal de un único usuario: PII aceptable para debug.
   sendDefaultPii: true,
 
   // 100% en dev, 10% en producción

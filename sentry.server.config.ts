@@ -6,7 +6,19 @@ Sentry.init({
 
   environment: process.env.NODE_ENV,
 
+  // App personal de un único usuario: enviar PII (IP, User-Agent) es aceptable
+  // para debug. Si se convierte en SaaS multi-usuario, cambiar a false y usar
+  // beforeSend para scrubbing manual.
   sendDefaultPii: true,
+
+  // Evitar enviar datos financieros sensibles en breadcrumbs
+  beforeSend(event) {
+    // Eliminar query params que puedan contener importes
+    if (event.request?.query_string) {
+      event.request.query_string = "[Filtered]";
+    }
+    return event;
+  },
 
   // 100% en dev, 10% en producción
   tracesSampleRate: process.env.NODE_ENV === "production" ? 0.1 : 1.0,
