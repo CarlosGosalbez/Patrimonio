@@ -74,6 +74,8 @@
         ]
     },
     "mcpServers": {
-        "_comment": "MCP servers se añaden cuando se implementan. Ver mcp-servers/README.md para instrucciones."
+        "supabase": {
+            "url": "https://mcp.supabase.com/mcp?project_ref=febokmcgjatrfdfuaeyk&features=account%2Cdatabase%2Cdebugging%2Cdevelopment%2Cfunctions%2Cbranching%2Cstorage"
+        }
     }
 }

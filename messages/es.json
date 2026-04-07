@@ -1042,5 +1042,81 @@
     "searchAriaLabel": "Buscar iconos",
     "listAriaLabel": "Lista de iconos disponibles",
     "noResults": "No se encontraron iconos"
+  },
+  "preferences": {
+    "title": "Preferencias",
+    "description": "Personaliza cómo visualizas monedas, fechas y contenido.",
+    "baseCurrency": "Moneda base",
+    "baseCurrencyDescription": "Todos los importes se mostrarán en esta moneda.",
+    "locale": "Idioma",
+    "localeDescription": "Idioma de la interfaz y los contenidos.",
+    "dateFormat": "Formato de fecha",
+    "dateFormatDescription": "Cómo se muestran las fechas en todo el sitio.",
+    "decimalPlaces": "Decimales",
+    "decimalPlacesDescription": "Número de decimales en importes monetarios.",
+    "firstDayWeek": "Primer día de la semana",
+    "firstDayWeekDescription": "Día con el que empiezan los calendarios.",
+    "theme": "Tema",
+    "themeDescription": "Apariencia de la aplicación.",
+    "themeAuto": "Automático",
+    "themeLight": "Claro",
+    "themeDark": "Oscuro",
+    "firstDaySunday": "Domingo",
+    "firstDayMonday": "Lunes",
+    "saved": "Preferencias guardadas",
+    "errorSaving": "No se pudieron guardar las preferencias"
+  },
+  "profile": {
+    "pageTitle": "Mi perfil",
+    "pageDescription": "Gestiona tu información personal y configuración de cuenta.",
+    "picture": {
+      "title": "Foto de perfil",
+      "description": "Tu imagen se mostrará en la barra superior.",
+      "alt": "Avatar del usuario",
+      "uploadLabel": "Subir nueva imagen",
+      "hint": "PNG, JPEG o WebP. Máximo 2MB."
+    },
+    "personal": {
+      "title": "Información personal",
+      "description": "Estos datos son privados y no se comparten."
+    },
+    "fullName": "Nombre completo",
+    "dateOfBirth": "Fecha de nacimiento",
+    "sessions": {
+      "title": "Sesiones activas",
+      "description": "Dispositivos donde has iniciado sesión recientemente.",
+      "placeholder": "Lista de sesiones activas — implementar"
+    },
+    "saved": "Perfil actualizado",
+    "errorSaving": "No se pudo actualizar el perfil",
+    "avatarUploaded": "Avatar actualizado",
+    "avatarUploadFailed": "Error al subir el avatar"
+  },
+  "privacy": {
+    "pageTitle": "Privacidad y Datos",
+    "pageDescription": "Gestiona tu información personal y derechos bajo RGPD.",
+    "export": {
+      "title": "Exportar mis datos",
+      "description": "Obtén una copia completa de toda tu información en formato JSON.",
+      "warning": "El archivo incluye todas tus transacciones, cuentas, inversiones y configuración. Guárdalo de forma segura.",
+      "button": "Descargar mis datos",
+      "exporting": "Generando…",
+      "exportSuccess": "Datos exportados correctamente",
+      "exportError": "Error al exportar datos"
+    },
+    "deleteAccount": {
+      "title": "Eliminar mi cuenta",
+      "description": "Elimina permanentemente tu cuenta y todos los datos asociados.",
+      "warning": "Esta acción es irreversible. Se eliminarán todas tus transacciones, cuentas, inversiones y configuración. No podrás recuperar esta información.",
+      "button": "Eliminar mi cuenta",
+      "passwordLabel": "Contraseña actual",
+      "passwordRequired": "La contraseña es obligatoria",
+      "confirmLabel": "Escribe ELIMINAR para confirmar",
+      "confirmHint": "Debes escribir exactamente: ELIMINAR",
+      "confirmError": "Debes escribir ELIMINAR para confirmar",
+      "confirm": "Confirmar eliminación",
+      "success": "Cuenta eliminada correctamente",
+      "error": "Error al eliminar la cuenta"
+    }
   }
 }

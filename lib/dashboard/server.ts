@@ -19,6 +19,7 @@ const recentTransactionsSelect = `
   user_id,
   account_id,
   category_id,
+  commitment_id,
   amount_cents,
   currency,
   description,
@@ -259,6 +260,7 @@ export async function getDashboardSummary({
       ...transaction,
       account: transaction.account,
       category: transaction.category,
+      commitment_id: transaction.commitment_id,
       receipt: transaction.receipt_url
         ? {
             path: transaction.receipt_url,

@@ -12,31 +12,6 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.5"
   }
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   public: {
     Tables: {
       accounts: {
@@ -344,6 +319,36 @@ export type Database = {
           quote_currency?: string
           rate_value?: number
           updated_at?: string
+        }
+        Relationships: []
+      }
+      feedback: {
+        Row: {
+          created_at: string
+          deleted_at: string | null
+          description: string
+          id: string
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          deleted_at?: string | null
+          description: string
+          id?: string
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          deleted_at?: string | null
+          description?: string
+          id?: string
+          title?: string
+          type?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -759,6 +764,7 @@ export type Database = {
           description: string | null
           early_repayment_allowed: boolean
           end_date: string | null
+          expiration_alert_dismissed: boolean
           frequency: Database["public"]["Enums"]["frequency_type"]
           id: string
           interest_rate: number | null
@@ -789,6 +795,7 @@ export type Database = {
           description?: string | null
           early_repayment_allowed?: boolean
           end_date?: string | null
+          expiration_alert_dismissed?: boolean
           frequency: Database["public"]["Enums"]["frequency_type"]
           id?: string
           interest_rate?: number | null
@@ -819,6 +826,7 @@ export type Database = {
           description?: string | null
           early_repayment_allowed?: boolean
           end_date?: string | null
+          expiration_alert_dismissed?: boolean
           frequency?: Database["public"]["Enums"]["frequency_type"]
           id?: string
           interest_rate?: number | null
@@ -852,6 +860,56 @@ export type Database = {
           },
         ]
       }
+      transaction_correlation_rules: {
+        Row: {
+          auto_apply: boolean
+          commitment_id: string | null
+          created_at: string
+          deleted_at: string | null
+          id: string
+          is_active: boolean
+          match_tolerance_cents: number | null
+          match_type: Database["public"]["Enums"]["correlation_match_type"]
+          match_value: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          auto_apply?: boolean
+          commitment_id?: string | null
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          is_active?: boolean
+          match_tolerance_cents?: number | null
+          match_type: Database["public"]["Enums"]["correlation_match_type"]
+          match_value: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          auto_apply?: boolean
+          commitment_id?: string | null
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          is_active?: boolean
+          match_tolerance_cents?: number | null
+          match_type?: Database["public"]["Enums"]["correlation_match_type"]
+          match_value?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transaction_correlation_rules_commitment_id_fkey"
+            columns: ["commitment_id"]
+            isOneToOne: false
+            referencedRelation: "recurring_commitments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       transaction_import_batches: {
         Row: {
           account_id: string
@@ -873,6 +931,7 @@ export type Database = {
           source_range_end: string | null
           source_range_start: string | null
           status: Database["public"]["Enums"]["import_batch_status"]
+          storage_path: string | null
           unexpected_charge_count: number
           updated_at: string
           user_id: string
@@ -897,6 +956,7 @@ export type Database = {
           source_range_end?: string | null
           source_range_start?: string | null
           status?: Database["public"]["Enums"]["import_batch_status"]
+          storage_path?: string | null
           unexpected_charge_count?: number
           updated_at?: string
           user_id: string
@@ -921,6 +981,7 @@ export type Database = {
           source_range_end?: string | null
           source_range_start?: string | null
           status?: Database["public"]["Enums"]["import_batch_status"]
+          storage_path?: string | null
           unexpected_charge_count?: number
           updated_at?: string
           user_id?: string
@@ -940,6 +1001,7 @@ export type Database = {
           account_id: string
           amount_cents: number
           category_id: string | null
+          commitment_id: string | null
           created_at: string
           currency: string
           deleted_at: string | null
@@ -965,6 +1027,7 @@ export type Database = {
           account_id: string
           amount_cents: number
           category_id?: string | null
+          commitment_id?: string | null
           created_at?: string
           currency?: string
           deleted_at?: string | null
@@ -990,6 +1053,7 @@ export type Database = {
           account_id?: string
           amount_cents?: number
           category_id?: string | null
+          commitment_id?: string | null
           created_at?: string
           currency?: string
           deleted_at?: string | null
@@ -1027,6 +1091,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "transactions_commitment_id_fkey"
+            columns: ["commitment_id"]
+            isOneToOne: false
+            referencedRelation: "recurring_commitments"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "transactions_import_batch_id_fkey"
             columns: ["import_batch_id"]
             isOneToOne: false
@@ -1048,6 +1119,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_preferences: {
+        Row: {
+          base_currency: string
+          created_at: string
+          date_format: string
+          decimal_places: number
+          first_day_week: number
+          locale: string
+          theme: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          base_currency?: string
+          created_at?: string
+          date_format?: string
+          decimal_places?: number
+          first_day_week?: number
+          locale?: string
+          theme?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          base_currency?: string
+          created_at?: string
+          date_format?: string
+          decimal_places?: number
+          first_day_week?: number
+          locale?: string
+          theme?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
     }
     Views: {
@@ -1163,7 +1270,7 @@ export type Database = {
         Args: { p_user_id?: string }
         Returns: undefined
       }
-      refresh_dashboard_views: { Args: never; Returns: undefined }
+      refresh_dashboard_views: { Args: Record<PropertyKey, never>; Returns: undefined }
       refresh_investment_snapshots: {
         Args: { p_snapshot_date?: string }
         Returns: undefined
@@ -1174,7 +1281,7 @@ export type Database = {
           rolled_back_count: number
         }[]
       }
-      sync_investment_prices: { Args: never; Returns: undefined }
+      sync_investment_prices: { Args: Record<PropertyKey, never>; Returns: undefined }
     }
     Enums: {
       alert_recurrence_type:
@@ -1195,6 +1302,11 @@ export type Database = {
         | "insurance"
         | "utility"
         | "other"
+      correlation_match_type:
+        | "exact_amount"
+        | "amount_range"
+        | "concept_contains"
+        | "concept_regex"
       frequency_type:
         | "daily"
         | "weekly"
@@ -1357,9 +1469,6 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {
       alert_recurrence_type: [
@@ -1381,6 +1490,12 @@ export const Constants = {
         "insurance",
         "utility",
         "other",
+      ],
+      correlation_match_type: [
+        "exact_amount",
+        "amount_range",
+        "concept_contains",
+        "concept_regex",
       ],
       frequency_type: [
         "daily",

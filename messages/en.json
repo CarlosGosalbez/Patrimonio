@@ -1045,5 +1045,81 @@
     "searchAriaLabel": "Search icons",
     "listAriaLabel": "Available icons list",
     "noResults": "No icons found"
+  },
+  "preferences": {
+    "title": "Preferences",
+    "description": "Customize how you view currencies, dates, and content.",
+    "baseCurrency": "Base currency",
+    "baseCurrencyDescription": "All amounts will be displayed in this currency.",
+    "locale": "Language",
+    "localeDescription": "Interface and content language.",
+    "dateFormat": "Date format",
+    "dateFormatDescription": "How dates are displayed throughout the site.",
+    "decimalPlaces": "Decimal places",
+    "decimalPlacesDescription": "Number of decimal places in monetary amounts.",
+    "firstDayWeek": "First day of week",
+    "firstDayWeekDescription": "Day that starts the calendars.",
+    "theme": "Theme",
+    "themeDescription": "Application appearance.",
+    "themeAuto": "Automatic",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "firstDaySunday": "Sunday",
+    "firstDayMonday": "Monday",
+    "saved": "Preferences saved",
+    "errorSaving": "Could not save preferences"
+  },
+  "profile": {
+    "pageTitle": "My Profile",
+    "pageDescription": "Manage your personal information and account settings.",
+    "picture": {
+      "title": "Profile picture",
+      "description": "Your image will be displayed in the top bar.",
+      "alt": "User avatar",
+      "uploadLabel": "Upload new image",
+      "hint": "PNG, JPEG or WebP. Maximum 2MB."
+    },
+    "personal": {
+      "title": "Personal information",
+      "description": "This data is private and not shared."
+    },
+    "fullName": "Full name",
+    "dateOfBirth": "Date of birth",
+    "sessions": {
+      "title": "Active sessions",
+      "description": "Devices where you've recently signed in.",
+      "placeholder": "Active sessions list — to implement"
+    },
+    "saved": "Profile updated",
+    "errorSaving": "Could not update profile",
+    "avatarUploaded": "Avatar updated",
+    "avatarUploadFailed": "Error uploading avatar"
+  },
+  "privacy": {
+    "pageTitle": "Privacy & Data",
+    "pageDescription": "Manage your personal information and GDPR rights.",
+    "export": {
+      "title": "Export my data",
+      "description": "Get a complete copy of all your information in JSON format.",
+      "warning": "The file includes all your transactions, accounts, investments and settings. Store it securely.",
+      "button": "Download my data",
+      "exporting": "Generating…",
+      "exportSuccess": "Data exported successfully",
+      "exportError": "Error exporting data"
+    },
+    "deleteAccount": {
+      "title": "Delete my account",
+      "description": "Permanently delete your account and all associated data.",
+      "warning": "This action is irreversible. All your transactions, accounts, investments and settings will be deleted. You cannot recover this information.",
+      "button": "Delete my account",
+      "passwordLabel": "Current password",
+      "passwordRequired": "Password is required",
+      "confirmLabel": "Type DELETE to confirm",
+      "confirmHint": "You must type exactly: DELETE",
+      "confirmError": "You must type DELETE to confirm",
+      "confirm": "Confirm deletion",
+      "success": "Account deleted successfully",
+      "error": "Error deleting account"
+    }
   }
 }
