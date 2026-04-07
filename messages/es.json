@@ -872,7 +872,11 @@
     "security": {
       "title": "Seguridad",
       "description": "Gestiona la autenticación en dos pasos y las sesiones activas.",
-      "twoFactorSection": "Autenticación en dos pasos (2FA)"
+      "twoFactorSection": "Autenticación en dos pasos (2FA)",
+      "sessionSection": "Sesión activa",
+      "sessionDescription": "Cierra la sesión en este dispositivo. Tendrás que volver a iniciar sesión para acceder.",
+      "signOut": "Cerrar sesión",
+      "signingOut": "Cerrando sesión…"
     }
   },
   "languageSwitcher": {

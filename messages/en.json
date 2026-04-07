@@ -875,7 +875,11 @@
     "security": {
       "title": "Security",
       "description": "Manage two-factor authentication and active sessions.",
-      "twoFactorSection": "Two-factor authentication (2FA)"
+      "twoFactorSection": "Two-factor authentication (2FA)",
+      "sessionSection": "Active session",
+      "sessionDescription": "Sign out from this device. You will need to log in again to access your account.",
+      "signOut": "Sign out",
+      "signingOut": "Signing out…"
     }
   },
   "languageSwitcher": {

@@ -69,3 +69,9 @@ export async function loginAction(formData: FormData): Promise<LoginActionResult
   const destination = safeRedirectPath(parsed.data.next);
   redirect(destination);
 }
+
+export async function signOutAction(): Promise<void> {
+  const supabase = await createClient();
+  await supabase.auth.signOut();
+  redirect("/login");
+}
