@@ -39,9 +39,10 @@ export async function GET() {
   try {
     const { data, error: dbError } = await supabase
       .from("accounts")
-      .select("id,name,currency,color,icon,account_type")
+      .select(
+        "id,user_id,name,account_type,currency,initial_balance_cents,current_balance_cents,bank_name,iban,color,icon,is_default,is_hidden,created_at,updated_at,deleted_at",
+      )
       .eq("user_id", user.id)
-      .eq("is_hidden", false)
       .is("deleted_at", null)
       .order("name", { ascending: true });
 
@@ -90,7 +91,9 @@ export async function POST(request: Request) {
         current_balance_cents: parsed.data.initial_balance_cents,
         user_id: user.id,
       })
-      .select("id,name,currency,color,icon,account_type")
+      .select(
+        "id,user_id,name,account_type,currency,initial_balance_cents,current_balance_cents,bank_name,iban,color,icon,is_default,is_hidden,created_at,updated_at,deleted_at",
+      )
       .single();
 
     if (dbError) {

@@ -643,6 +643,7 @@ export type Database = {
           avatar_url: string | null
           created_at: string
           currency: string
+          date_of_birth: string | null
           deleted_at: string | null
           full_name: string | null
           id: string
@@ -658,6 +659,7 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           currency?: string
+          date_of_birth?: string | null
           deleted_at?: string | null
           full_name?: string | null
           id?: string
@@ -673,6 +675,7 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           currency?: string
+          date_of_birth?: string | null
           deleted_at?: string | null
           full_name?: string | null
           id?: string
@@ -1221,6 +1224,7 @@ export type Database = {
         }
         Returns: string
       }
+      export_user_data: { Args: { target_user_id: string }; Returns: Json }
       get_category_spending: {
         Args: { p_month: string }
         Returns: {
@@ -1270,7 +1274,7 @@ export type Database = {
         Args: { p_user_id?: string }
         Returns: undefined
       }
-      refresh_dashboard_views: { Args: Record<PropertyKey, never>; Returns: undefined }
+      refresh_dashboard_views: { Args: never; Returns: undefined }
       refresh_investment_snapshots: {
         Args: { p_snapshot_date?: string }
         Returns: undefined
@@ -1281,7 +1285,7 @@ export type Database = {
           rolled_back_count: number
         }[]
       }
-      sync_investment_prices: { Args: Record<PropertyKey, never>; Returns: undefined }
+      sync_investment_prices: { Args: never; Returns: undefined }
     }
     Enums: {
       alert_recurrence_type:

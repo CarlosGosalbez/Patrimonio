@@ -22,7 +22,7 @@ export async function GET() {
   // Fetch profile from profiles table
   const { data: profile, error: profileError } = await supabase
     .from("profiles")
-    .select("full_name, date_of_birth, avatar_url, locale, created_at")
+    .select("*")
     .eq("user_id", user.id)
     .single();
 
@@ -30,13 +30,21 @@ export async function GET() {
     return NextResponse.json({ error: profileError.message }, { status: 500 });
   }
 
+  const profileRecord = profile as {
+    full_name: string | null;
+    date_of_birth: string | null;
+    avatar_url: string | null;
+    locale: string;
+    created_at: string;
+  };
+
   const response: ProfileDisplayData = {
-    full_name: profile.full_name,
-    date_of_birth: profile.date_of_birth,
-    avatar_url: profile.avatar_url,
+    full_name: profileRecord.full_name,
+    date_of_birth: profileRecord.date_of_birth,
+    avatar_url: profileRecord.avatar_url,
     email: user.email ?? null,
-    locale: profile.locale,
-    created_at: profile.created_at,
+    locale: profileRecord.locale,
+    created_at: profileRecord.created_at,
   };
 
   return NextResponse.json(response);
@@ -78,7 +86,7 @@ export async function PATCH(req: Request) {
       avatar_url: avatar_url ?? null,
     })
     .eq("user_id", user.id)
-    .select("full_name, date_of_birth, avatar_url, locale, created_at")
+    .select("*")
     .single();
 
   if (updateError) {

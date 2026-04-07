@@ -9,7 +9,8 @@
     "confirm": "Confirm",
     "error": "Error",
     "success": "Success",
-    "copySuccess": "Copied to clipboard"
+    "copySuccess": "Copied to clipboard",
+    "processing": "Processing..."
   },
   "metadata": {
     "brandName": "Patrimio",
@@ -1121,5 +1122,54 @@
       "success": "Account deleted successfully",
       "error": "Error deleting account"
     }
+  },
+  "categories": {
+    "pageTitle": "Custom Categories",
+    "pageDescription": "Manage your income and expense categories",
+    "title": "Category Management",
+    "description": "Create, edit and delete custom categories",
+    "create": "New Category",
+    "created": "Category created",
+    "deleted": "Category deleted",
+    "nameRequired": "Name is required",
+    "createError": "Error creating category",
+    "deleteError": "Error deleting category",
+    "confirmDelete": "Delete this category?",
+    "createTitle": "Create Category",
+    "createDescription": "Add a new custom category",
+    "name": "Name",
+    "namePlaceholder": "Category name",
+    "color": "Color",
+    "selectColor": "Select color",
+    "type": "Type",
+    "expense": "Expense",
+    "income": "Income",
+    "expenses": "Expenses",
+    "incomeDescription": "Custom income categories",
+    "expensesDescription": "Custom expense categories",
+    "noCustomCategories": "You have no custom categories",
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "accounts": {
+    "pageTitle": "Accounts",
+    "pageDescription": "Manage visibility, color and icon for your accounts",
+    "title": "Account settings",
+    "description": "Control how your accounts are displayed in the app",
+    "noAccounts": "You do not have any accounts yet.",
+    "defaultAccount": "Default",
+    "hidden": "Hidden",
+    "edit": "Edit",
+    "show": "Show",
+    "hide": "Hide",
+    "shown": "Account is now visible",
+    "updated": "Account updated",
+    "updateError": "Could not update account",
+    "editTitle": "Edit account",
+    "editDescription": "Update account name, color and icon",
+    "nameLabel": "Account name",
+    "colorLabel": "Color",
+    "iconLabel": "Icon",
+    "iconHint": "You can use an emoji to visually identify the account"
   }
 }

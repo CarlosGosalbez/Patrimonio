@@ -1,5 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import type { Database } from "@/types/database";
+
+const EXPORT_USER_DATA_RPC = "export_user_data" as keyof Database["public"]["Functions"];
 
 /**
  * GET /api/privacy/export
@@ -27,7 +30,7 @@ export async function GET() {
 
   try {
     // Call SECURITY DEFINER RPC function
-    const { data, error: rpcError } = await supabase.rpc("export_user_data", {
+    const { data, error: rpcError } = await supabase.rpc(EXPORT_USER_DATA_RPC, {
       target_user_id: user.id,
     });
 

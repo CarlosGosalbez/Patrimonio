@@ -4,6 +4,7 @@ import { useState, useId } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
+import Image from "next/image";
 import { UpdateProfileSchema, type UpdateProfileInput } from "@/lib/profile/types";
 import { useProfileQuery, useUpdateProfileMutation } from "@/hooks/useProfile";
 import { uploadAvatar } from "@/lib/profile/upload";
@@ -92,9 +93,11 @@ export function ProfileForm() {
                 <CardContent className="space-y-4">
                     {avatarUrl && (
                         <div className="flex items-center gap-4">
-                            <img
+                            <Image
                                 src={avatarUrl}
                                 alt={t("picture.alt")}
+                                width={80}
+                                height={80}
                                 className="h-20 w-20 rounded-full object-cover"
                             />
                         </div>

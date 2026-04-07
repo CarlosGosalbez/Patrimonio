@@ -1,9 +1,8 @@
 'use client'
 
 import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslations } from 'next-intl'
-import { useId } from 'react'
+import { useEffect, useId } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
@@ -36,24 +35,34 @@ export function PreferencesForm() {
     const {
         register,
         handleSubmit,
+        reset,
         formState: { errors, isDirty, isSubmitting },
     } = useForm<UserPreferences>({
-        resolver: zodResolver(PreferencesSchema),
-        values: prefsQuery.data
-            ? {
-                base_currency: prefsQuery.data.base_currency as UserPreferences['base_currency'],
-                locale: prefsQuery.data.locale as UserPreferences['locale'],
-                date_format: prefsQuery.data.date_format as UserPreferences['date_format'],
-                decimal_places: prefsQuery.data.decimal_places,
-                first_day_week: prefsQuery.data.first_day_week,
-                theme: prefsQuery.data.theme as UserPreferences['theme'],
-            }
-            : DEFAULT_PREFERENCES,
+        defaultValues: DEFAULT_PREFERENCES,
     })
 
+    useEffect(() => {
+        if (!prefsQuery.data) return
+
+        reset({
+            base_currency: prefsQuery.data.base_currency as UserPreferences['base_currency'],
+            locale: prefsQuery.data.locale as UserPreferences['locale'],
+            date_format: prefsQuery.data.date_format as UserPreferences['date_format'],
+            decimal_places: prefsQuery.data.decimal_places,
+            first_day_week: prefsQuery.data.first_day_week,
+            theme: prefsQuery.data.theme as UserPreferences['theme'],
+        })
+    }, [prefsQuery.data, reset])
+
     async function onSubmit(data: UserPreferences) {
+        const parsed = PreferencesSchema.safeParse(data)
+        if (!parsed.success) {
+            toast.error(parsed.error.issues[0]?.message ?? t('errorSaving'))
+            return
+        }
+
         try {
-            await updatePrefs.mutateAsync(data)
+            await updatePrefs.mutateAsync(parsed.data)
             toast.success(t('saved'))
         } catch (error) {
             toast.error(t('errorSaving'))

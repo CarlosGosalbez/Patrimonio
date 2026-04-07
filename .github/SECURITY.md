@@ -15,6 +15,7 @@ Solo la rama `main` recibe actualizaciones de seguridad.
 Envía un reporte privado a través de [GitHub Security Advisories](https://github.com/CarlosGosalbez/Patrimio/security/advisories/new) o por email al propietario del repositorio.
 
 Incluye en el reporte:
+
 - Descripción del problema y componente afectado
 - Pasos para reproducirlo
 - Impacto potencial (datos expuestos, bypass de autenticación, etc.)

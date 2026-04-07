@@ -279,19 +279,21 @@ export function detectImportFileFormat(fileName: string): ImportFileFormat {
 
 export function detectSourceBank(headers: string[], fileName: string): SupportedBank {
   const normalizedHeaders = headers.map(normalizeHeader);
+  let bestMatch: { bank: SupportedBank; score: number } = { bank: "generic", score: 0 };
 
   for (const signature of BANK_SIGNATURES) {
     const fileNameMatch = signature.fileNamePatterns.some((pattern) => pattern.test(fileName));
     const headerMatches = signature.headerPatterns.filter((pattern) =>
       normalizedHeaders.some((header) => pattern.test(header)),
     ).length;
+    const score = (fileNameMatch ? 3 : 0) + headerMatches;
 
-    if (fileNameMatch || headerMatches >= 2) {
-      return signature.bank;
+    if (score > bestMatch.score) {
+      bestMatch = { bank: signature.bank, score };
     }
   }
 
-  return "generic";
+  return bestMatch.score >= 2 ? bestMatch.bank : "generic";
 }
 
 export function detectColumnMapping(

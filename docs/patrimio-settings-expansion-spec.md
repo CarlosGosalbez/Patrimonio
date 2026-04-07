@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD024 -->
+
 # PATRIMIO — Settings & Profile Expansion Spec
 
 **Version:** 1.0.0  
@@ -897,7 +899,7 @@ None
 
 ### Proposed menu in `/settings`
 
-```
+```text
 Settings
 ├── 🎯 Preferences       [NEW] — Language, currency, date format, theme
 ├── 👤 Profile           [NEW] — Name, photo, email, sessions

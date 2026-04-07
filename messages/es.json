@@ -9,7 +9,8 @@
     "confirm": "Confirmar",
     "error": "Error",
     "success": "Éxito",
-    "copySuccess": "Copiado al portapapeles"
+    "copySuccess": "Copiado al portapapeles",
+    "processing": "Procesando..."
   },
   "metadata": {
     "brandName": "Patrimio",
@@ -1118,5 +1119,54 @@
       "success": "Cuenta eliminada correctamente",
       "error": "Error al eliminar la cuenta"
     }
+  },
+  "categories": {
+    "pageTitle": "Categorías Personalizadas",
+    "pageDescription": "Gestiona tus categorías de ingresos y gastos",
+    "title": "Gestión de Categorías",
+    "description": "Crea, edita y elimina categorías personalizadas",
+    "create": "Nueva Categoría",
+    "created": "Categoría creada",
+    "deleted": "Categoría eliminada",
+    "nameRequired": "El nombre es obligatorio",
+    "createError": "Error al crear categoría",
+    "delete Error": "Error al eliminar categoría",
+    "confirmDelete": "¿Eliminar esta categoría?",
+    "createTitle": "Crear Categoría",
+    "createDescription": "Añade una nueva categoría personalizada",
+    "name": "Nombre",
+    "namePlaceholder": "Nombre de la categoría",
+    "color": "Color",
+    "selectColor": "Seleccionar color",
+    "type": "Tipo",
+    "expense": "Gasto",
+    "income": "Ingreso",
+    "expenses": "Gastos",
+    "incomeDescription": "Categorías de ingresos personalizadas",
+    "expensesDescription": "Categorías de gastos personalizadas",
+    "noCustomCategories": "No tienes categorías personalizadas",
+    "edit": "Editar",
+    "delete": "Eliminar"
+  },
+  "accounts": {
+    "pageTitle": "Cuentas",
+    "pageDescription": "Gestiona visibilidad, color e icono de tus cuentas",
+    "title": "Configuración de cuentas",
+    "description": "Administra cómo se muestran tus cuentas en la app",
+    "noAccounts": "No tienes cuentas registradas todavía.",
+    "defaultAccount": "Principal",
+    "hidden": "Oculta",
+    "edit": "Editar",
+    "show": "Mostrar",
+    "hide": "Ocultar",
+    "shown": "Cuenta visible",
+    "updated": "Cuenta actualizada",
+    "updateError": "No se pudo actualizar la cuenta",
+    "editTitle": "Editar cuenta",
+    "editDescription": "Actualiza nombre, color e icono de la cuenta",
+    "nameLabel": "Nombre de la cuenta",
+    "colorLabel": "Color",
+    "iconLabel": "Icono",
+    "iconHint": "Puedes usar un emoji para identificar visualmente la cuenta"
   }
 }
