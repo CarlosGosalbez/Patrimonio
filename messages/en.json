@@ -532,6 +532,24 @@
       "noAnomalies": "No relevant statistical anomalies were detected this month.",
       "noNotifications": "There are no recent automatic notifications."
     },
+    "budgetRule": {
+      "title": "50/30/20 Budget Rule",
+      "labels": {
+        "needs": "Needs",
+        "wants": "Wants",
+        "savings": "Savings"
+      },
+      "target": "Target {percent}%",
+      "status": {
+        "within": "Within target",
+        "over": "Over target",
+        "under": "Under target"
+      },
+      "actual": "Actual",
+      "ideal": "Ideal",
+      "percent": "% of income",
+      "uncategorized": "Uncategorized expenses: {amount}"
+    },
     "budgets": {
       "confirmDelete": "Delete this budget?",
       "progress": "Current consumption",

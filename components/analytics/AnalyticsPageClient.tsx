@@ -272,7 +272,7 @@ export function AnalyticsPageClient() {
                 <CardTitle>{t('charts.periodSummary')}</CardTitle>
               </CardHeader>
               <CardContent className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height="100%" minHeight={320}>
                   <BarChart data={analyticsQuery.data?.series ?? []}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="label" />
@@ -291,7 +291,7 @@ export function AnalyticsPageClient() {
               </CardHeader>
               <CardContent className="h-80">
                 {analyticsQuery.data?.net_worth_history.length ? (
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height="100%" minHeight={320}>
                     <AreaChart data={analyticsQuery.data.net_worth_history}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis
@@ -662,7 +662,7 @@ export function AnalyticsPageClient() {
                     </div>
 
                     <div className="h-40">
-                      <ResponsiveContainer width="100%" height="100%">
+                      <ResponsiveContainer width="100%" height="100%" minHeight={160}>
                         <BarChart data={budget.history}>
                           <CartesianGrid strokeDasharray="3 3" />
                           <XAxis dataKey="label" />
@@ -703,7 +703,7 @@ export function AnalyticsPageClient() {
               <CardTitle>{t('charts.categoryComparison')}</CardTitle>
             </CardHeader>
             <CardContent className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="100%" minHeight={320}>
                 <BarChart data={categoryComparisonData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" />
@@ -753,7 +753,7 @@ export function AnalyticsPageClient() {
                   </div>
 
                   <div className="h-36">
-                    <ResponsiveContainer width="100%" height="100%">
+                    <ResponsiveContainer width="100%" height="100%" minHeight={144}>
                       <RechartsLineChart data={category.monthly_series}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="label" hide />

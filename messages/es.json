@@ -530,6 +530,24 @@
       "noAnomalies": "No se han detectado anomalías estadísticas relevantes este mes.",
       "noNotifications": "No hay notificaciones automáticas recientes."
     },
+    "budgetRule": {
+      "title": "Regla presupuestaria 50/30/20",
+      "labels": {
+        "needs": "Necesidades",
+        "wants": "Deseos",
+        "savings": "Ahorros"
+      },
+      "target": "Objetivo {percent}%",
+      "status": {
+        "within": "Dentro del objetivo",
+        "over": "Por encima",
+        "under": "Por debajo"
+      },
+      "actual": "Real",
+      "ideal": "Ideal",
+      "percent": "% de ingresos",
+      "uncategorized": "Gastos sin categorizar: {amount}"
+    },
     "budgets": {
       "confirmDelete": "¿Eliminar este presupuesto?",
       "progress": "Consumo actual",
