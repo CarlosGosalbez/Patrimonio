@@ -16,40 +16,58 @@ const hashCode = (raw: string) =>
  * stores hashed versions in DB, returns plaintext once.
  */
 export async function POST(_req: NextRequest) {
-  const supabase = await createClient();
+  let supabase;
+  try {
+    supabase = await createClient();
+  } catch {
+    return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
+  }
+
   const {
     data: { user },
     error: authError,
   } = await supabase.auth.getUser();
   if (authError || !user) return new Response("Unauthorized", { status: 401 });
 
-  const admin = createAdminClient();
-
-  // Soft-delete all existing unused codes for this user
-  await admin
-    .from("recovery_codes")
-    .update({ used_at: new Date().toISOString() })
-    .eq("user_id", user.id)
-    .is("used_at", null);
-
-  // Generate 10 unique codes
-  const plaintextCodes: string[] = [];
-  const rows = [];
-
-  for (let i = 0; i < CODES_COUNT; i++) {
-    const code = generateCode();
-    plaintextCodes.push(code);
-    rows.push({
-      user_id: user.id,
-      code_hash: hashCode(code),
-    });
+  let admin;
+  try {
+    admin = createAdminClient();
+  } catch {
+    return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
   }
 
-  const { error: insertError } = await admin.from("recovery_codes").insert(rows);
+  try {
+    // Soft-delete all existing unused codes for this user
+    await admin
+      .from("recovery_codes")
+      .update({ used_at: new Date().toISOString() })
+      .eq("user_id", user.id)
+      .is("used_at", null);
 
-  if (insertError) {
-    return NextResponse.json({ error: "No se pudieron guardar los códigos." }, { status: 500 });
+    // Generate 10 unique codes
+    const plaintextCodes: string[] = [];
+    const rows = [];
+
+    for (let i = 0; i < CODES_COUNT; i++) {
+      const code = generateCode();
+      plaintextCodes.push(code);
+      rows.push({
+        user_id: user.id,
+        code_hash: hashCode(code),
+      });
+    }
+
+    const { error: insertError } = await admin.from("recovery_codes").insert(rows);
+
+    if (insertError) {
+      return NextResponse.json({ error: "No se pudieron guardar los códigos." }, { status: 500 });
+    }
+
+    return NextResponse.json({ codes: plaintextCodes });
+  } catch (routeError) {
+    return NextResponse.json(
+      { error: routeError instanceof Error ? routeError.message : "Internal server error" },
+      { status: 500 },
+    );
   }
-
-  return NextResponse.json({ codes: plaintextCodes });
 }

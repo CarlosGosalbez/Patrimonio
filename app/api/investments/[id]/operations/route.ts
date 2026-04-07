@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createInvestmentOperation } from "@/lib/investments/mutations";
 import { investmentOperationInputSchema } from "@/lib/investments/schemas";
 import { createClient } from "@/lib/supabase/server";
+import { parseJsonBody } from "@/lib/http/server";
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const supabase = await createClient();
@@ -14,10 +15,14 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const parsed = investmentOperationInputSchema.safeParse(await request.json());
+  const body = await parseJsonBody(request);
+  if (!body.ok) return body.response;
+
+  const parsed = investmentOperationInputSchema.safeParse(body.data);
 
   if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.issues }, { status: 400 });
+    const firstIssue = parsed.error.issues[0];
+    return NextResponse.json({ error: firstIssue?.message ?? "Invalid input" }, { status: 400 });
   }
 
   const { id } = await params;

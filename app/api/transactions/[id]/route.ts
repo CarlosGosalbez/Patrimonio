@@ -12,14 +12,21 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
 
   const { id } = await params;
 
-  // Soft delete by setting deleted_at
-  const { error: dbError } = await supabase
-    .from("transactions")
-    .update({ deleted_at: new Date().toISOString() })
-    .eq("id", id)
-    .eq("user_id", user.id); // RLS would block anyway, but explicit check
+  try {
+    const { error: dbError } = await supabase
+      .from("transactions")
+      .update({ deleted_at: new Date().toISOString() })
+      .eq("id", id)
+      .eq("user_id", user.id);
 
-  if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 });
+    if (dbError)
+      return NextResponse.json({ error: dbError.message || "Database error" }, { status: 500 });
 
-  return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true });
+  } catch (routeError) {
+    return NextResponse.json(
+      { error: routeError instanceof Error ? routeError.message : "Internal server error" },
+      { status: 500 },
+    );
+  }
 }

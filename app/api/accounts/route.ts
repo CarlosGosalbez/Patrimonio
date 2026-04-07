@@ -36,19 +36,26 @@ export async function GET() {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const { data, error: dbError } = await supabase
-    .from("accounts")
-    .select("id,name,currency,color,icon")
-    .eq("user_id", user.id)
-    .eq("is_hidden", false)
-    .is("deleted_at", null)
-    .order("name", { ascending: true });
+  try {
+    const { data, error: dbError } = await supabase
+      .from("accounts")
+      .select("id,name,currency,color,icon,account_type")
+      .eq("user_id", user.id)
+      .eq("is_hidden", false)
+      .is("deleted_at", null)
+      .order("name", { ascending: true });
 
-  if (dbError) {
-    return NextResponse.json({ error: dbError.message }, { status: 500 });
+    if (dbError) {
+      return NextResponse.json({ error: dbError.message || "Database error" }, { status: 500 });
+    }
+
+    return NextResponse.json({ accounts: data ?? [] });
+  } catch (routeError) {
+    return NextResponse.json(
+      { error: routeError instanceof Error ? routeError.message : "Internal server error" },
+      { status: 500 },
+    );
   }
-
-  return NextResponse.json({ accounts: data ?? [] });
 }
 
 export async function POST(request: Request) {
@@ -62,25 +69,39 @@ export async function POST(request: Request) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const parsed = CreateAccountSchema.safeParse(await request.json());
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
+
+  const parsed = CreateAccountSchema.safeParse(body);
   if (!parsed.success) {
     const firstIssue = parsed.error.issues[0];
     return NextResponse.json({ error: firstIssue?.message ?? "Invalid input" }, { status: 400 });
   }
 
-  const { data: account, error: dbError } = await supabase
-    .from("accounts")
-    .insert({
-      ...parsed.data,
-      current_balance_cents: parsed.data.initial_balance_cents,
-      user_id: user.id,
-    })
-    .select("id,name,currency,color,icon,account_type")
-    .single();
+  try {
+    const { data: account, error: dbError } = await supabase
+      .from("accounts")
+      .insert({
+        ...parsed.data,
+        current_balance_cents: parsed.data.initial_balance_cents,
+        user_id: user.id,
+      })
+      .select("id,name,currency,color,icon,account_type")
+      .single();
 
-  if (dbError) {
-    return NextResponse.json({ error: dbError.message }, { status: 500 });
+    if (dbError) {
+      return NextResponse.json({ error: dbError.message || "Database error" }, { status: 500 });
+    }
+
+    return NextResponse.json({ account }, { status: 201 });
+  } catch (routeError) {
+    return NextResponse.json(
+      { error: routeError instanceof Error ? routeError.message : "Internal server error" },
+      { status: 500 },
+    );
   }
-
-  return NextResponse.json({ account }, { status: 201 });
 }

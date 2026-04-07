@@ -4,6 +4,7 @@ import { createInvestmentPosition } from "@/lib/investments/mutations";
 import { investmentExportSchema, investmentPositionInputSchema } from "@/lib/investments/schemas";
 import { getInvestmentsOverview } from "@/lib/investments/server";
 import { createClient } from "@/lib/supabase/server";
+import { parseJsonBody } from "@/lib/http/server";
 
 export async function GET(request: NextRequest) {
   const supabase = await createClient();
@@ -53,7 +54,10 @@ export async function POST(request: NextRequest) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const parsed = investmentPositionInputSchema.safeParse(await request.json());
+  const body = await parseJsonBody(request);
+  if (!body.ok) return body.response;
+
+  const parsed = investmentPositionInputSchema.safeParse(body.data);
 
   if (!parsed.success) {
     const firstIssue = parsed.error.issues[0];
