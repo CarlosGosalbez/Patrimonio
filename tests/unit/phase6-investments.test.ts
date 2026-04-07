@@ -9,7 +9,51 @@ import {
   parseQuantityInput,
 } from "@/lib/investments/calculations";
 import type { LedgerOperationInput } from "@/lib/investments/calculations";
-import { investmentOperationCreateSchema } from "@/lib/investments/schemas";
+import {
+  investmentOperationCreateSchema,
+  investmentPositionInputSchema,
+} from "@/lib/investments/schemas";
+
+describe("investmentPositionInputSchema — account_id optional", () => {
+  const validBase = {
+    currency: "EUR",
+    investment_type: "stock",
+    name: "ACME Corp",
+    opening_date: "2026-04-07",
+    opening_price_input: "100,00",
+    opening_quantity_input: "10",
+    ticker: "ACME",
+  } as const;
+
+  it("accepts a valid UUID as account_id", () => {
+    const result = investmentPositionInputSchema.safeParse({
+      ...validBase,
+      account_id: "550e8400-e29b-41d4-a716-446655440000",
+    });
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.account_id).toBe("550e8400-e29b-41d4-a716-446655440000");
+  });
+
+  it("accepts null account_id (no linked account)", () => {
+    const result = investmentPositionInputSchema.safeParse({ ...validBase, account_id: null });
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.account_id).toBeNull();
+  });
+
+  it("accepts missing account_id (defaults to null)", () => {
+    const result = investmentPositionInputSchema.safeParse(validBase);
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.account_id).toBeNull();
+  });
+
+  it("rejects an invalid (non-UUID) account_id string", () => {
+    const result = investmentPositionInputSchema.safeParse({
+      ...validBase,
+      account_id: "not-a-uuid",
+    });
+    expect(result.success).toBe(false);
+  });
+});
 
 describe("phase 6 investment calculations", () => {
   it("parses fractional units with comma decimals", () => {

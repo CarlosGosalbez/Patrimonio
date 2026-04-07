@@ -90,22 +90,23 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'flex min-h-[56px] flex-col items-center justify-center rounded-xl px-2 text-[11px] font-medium transition',
+                  'flex min-h-[52px] flex-col items-center justify-center rounded-xl px-1 text-[10px] font-medium transition sm:min-h-[56px] sm:px-2 sm:text-[11px]',
                   isActive
                     ? 'bg-background text-foreground shadow-sm'
                     : 'text-muted-foreground hover:text-foreground',
                 )}
                 aria-current={isActive ? 'page' : undefined}
+                aria-label={t(item.key)}
               >
                 <span className="relative">
-                  <Icon className="mb-1 h-4 w-4" aria-hidden="true" />
+                  <Icon className="h-5 w-5 sm:mb-1 sm:h-4 sm:w-4" aria-hidden="true" />
                   {showBadge ? (
                     <span className="absolute -right-2 -top-1 inline-flex min-h-[18px] min-w-[18px] items-center justify-center rounded-full bg-rose-600 px-1 text-[10px] font-semibold text-white">
                       {unreadCount > 9 ? '9+' : unreadCount}
                     </span>
                   ) : null}
                 </span>
-                <span>{t(item.key)}</span>
+                <span className="hidden sm:block">{t(item.key)}</span>
               </Link>
             )
           })}

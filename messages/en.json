@@ -217,6 +217,31 @@
       "upcomingDeadlines": "Upcoming deadlines"
     }
   },
+  "accountDialog": {
+    "title": "New bank account",
+    "fields": {
+      "name": "Account name",
+      "type": "Type",
+      "currency": "Currency",
+      "bankName": "Bank (optional)",
+      "bankNamePlaceholder": "e.g. ING, BBVA, Santander…"
+    },
+    "types": {
+      "checking": "Checking account",
+      "savings": "Savings account",
+      "cash": "Cash",
+      "credit_card": "Credit card",
+      "investment": "Investment account"
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "create": "Create account",
+      "creating": "Creating…"
+    },
+    "toasts": {
+      "error": "Could not create the account"
+    }
+  },
   "appShell": {
     "subtitle": "Financial control center",
     "dashboard": "Dashboard",
@@ -224,7 +249,7 @@
     "investments": "Investments",
     "reports": "Reports",
     "imports": "Imports",
-    "commitments": "Commitments",
+    "commitments": "Payments",
     "alerts": "Alerts",
     "settings": "Settings"
   },
@@ -406,6 +431,9 @@
       "isIncome": "This is income",
       "isAutomated": "Automatic generation",
       "allowsEarlyRepayment": "Allows early repayment",
+      "toleranceDays": "Alert tolerance days",
+      "optional": "optional",
+      "noAccountsHint": "Create an account first to assign this commitment",
       "description": "Description"
     },
     "types": {
@@ -656,6 +684,8 @@
       "account": "Account",
       "selectAccount": "Select an account",
       "optionalAccount": "No linked account",
+      "optionalLabel": "optional",
+      "optionalLabel": "optional",
       "currency": "Currency",
       "market": "Exchange",
       "sector": "Sector",

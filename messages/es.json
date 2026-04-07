@@ -215,6 +215,31 @@
       "upcomingDeadlines": "Próximos vencimientos"
     }
   },
+  "accountDialog": {
+    "title": "Nueva cuenta bancaria",
+    "fields": {
+      "name": "Nombre de la cuenta",
+      "type": "Tipo",
+      "currency": "Moneda",
+      "bankName": "Banco (opcional)",
+      "bankNamePlaceholder": "Ej. ING, BBVA, Santander…"
+    },
+    "types": {
+      "checking": "Cuenta corriente",
+      "savings": "Cuenta de ahorro",
+      "cash": "Efectivo",
+      "credit_card": "Tarjeta de crédito",
+      "investment": "Cuenta de inversión"
+    },
+    "actions": {
+      "cancel": "Cancelar",
+      "create": "Crear cuenta",
+      "creating": "Creando…"
+    },
+    "toasts": {
+      "error": "No se pudo crear la cuenta"
+    }
+  },
   "appShell": {
     "subtitle": "Centro de control financiero",
     "dashboard": "Dashboard",
@@ -222,7 +247,7 @@
     "investments": "Inversiones",
     "reports": "Informes",
     "imports": "Importar",
-    "commitments": "Compromisos",
+    "commitments": "Pagos",
     "alerts": "Alertas",
     "settings": "Ajustes"
   },
@@ -404,6 +429,9 @@
       "isIncome": "Es un ingreso",
       "isAutomated": "Generación automática",
       "allowsEarlyRepayment": "Permite amortización anticipada",
+      "toleranceDays": "Días de tolerancia para alertas",
+      "optional": "opcional",
+      "noAccountsHint": "Crea una cuenta primero para poder asignar este compromiso",
       "description": "Descripción"
     },
     "types": {
@@ -654,6 +682,7 @@
       "account": "Cuenta",
       "selectAccount": "Selecciona una cuenta",
       "optionalAccount": "Sin cuenta asociada",
+      "optionalLabel": "opcional",
       "currency": "Divisa",
       "market": "Mercado",
       "sector": "Sector",
