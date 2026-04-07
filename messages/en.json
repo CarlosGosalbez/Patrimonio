@@ -371,6 +371,12 @@
         "duplicate": "Possible duplicate",
         "unexpected": "Unexpected charge",
         "ok": "No issues"
+      },
+      "pagination": {
+        "previousPage": "Previous",
+        "nextPage": "Next",
+        "page": "Page",
+        "pageOf": "Page {current} of {total}"
       }
     },
     "history": {

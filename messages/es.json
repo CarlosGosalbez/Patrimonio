@@ -369,6 +369,12 @@
         "duplicate": "Posible duplicado",
         "unexpected": "Cobro inesperado",
         "ok": "Sin incidencias"
+      },
+      "pagination": {
+        "previousPage": "Anterior",
+        "nextPage": "Siguiente",
+        "page": "Página",
+        "pageOf": "Página {current} de {total}"
       }
     },
     "history": {

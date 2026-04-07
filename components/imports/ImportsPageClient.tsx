@@ -132,11 +132,26 @@ export function ImportsPageClient() {
     }
 
     try {
+      // Filter to only valid schema fields (remove preview metadata)
+      const cleanRows = reviewRows.map((row) => ({
+        amount_cents: row.amount_cents,
+        description: row.description,
+        external_id: row.external_id,
+        is_income: row.is_income,
+        merchant_key: row.merchant_key,
+        notes: row.notes,
+        source_row_index: row.source_row_index,
+        transaction_date: row.transaction_date,
+        value_date: row.value_date,
+        category_id: row.category_id,
+        should_import: row.should_import,
+      }))
+
       const result = await confirmMutation.mutateAsync({
         account_id: accountId,
         file_checksum: fileChecksum,
         file_name: parsedFile.fileName,
-        rows: reviewRows,
+        rows: cleanRows,
         source_bank: parsedFile.sourceBank,
         source_format: parsedFile.sourceFormat,
       })
@@ -403,7 +418,11 @@ export function ImportsPageClient() {
                   flags: t('preview.columns.flags'),
                   importRow: t('preview.columns.import'),
                   income: t('preview.type.income'),
+                  nextPage: t('preview.pagination.nextPage'),
                   ok: t('preview.flags.ok'),
+                  page: t('preview.pagination.page'),
+                  pageOf: t('preview.pagination.pageOf'),
+                  previousPage: t('preview.pagination.previousPage'),
                   type: t('preview.columns.type'),
                   unexpected: t('preview.flags.unexpected'),
                 }}
