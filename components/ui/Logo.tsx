@@ -6,9 +6,9 @@ import { useTranslations } from 'next-intl'
 type LogoVariant = 'header' | 'login' | 'default'
 
 const sizes: Record<LogoVariant, { width: number; height: number; className: string }> = {
-    header: { width: 320, height: 96, className: 'h-8 w-auto' },
-    login: { width: 400, height: 120, className: 'h-16 w-auto' },
-    default: { width: 400, height: 120, className: 'h-12 w-auto' },
+    header: { width: 400, height: 120, className: 'h-12 w-auto' },
+    login: { width: 500, height: 150, className: 'h-20 w-auto' },
+    default: { width: 420, height: 126, className: 'h-14 w-auto' },
 }
 
 interface LogoProps {

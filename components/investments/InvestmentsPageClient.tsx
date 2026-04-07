@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { Area, AreaChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
-import { Download, Landmark, Plus, RefreshCcw } from 'lucide-react'
+import { Download, Plus, RefreshCcw } from 'lucide-react'
 import { useFormatter, useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { InvestmentOperationDialog } from '@/components/investments/InvestmentOperationDialog'
@@ -132,7 +132,7 @@ export function InvestmentsPageClient() {
     <div className="space-y-6">
       <section className="rounded-[28px] border border-border/70 bg-gradient-to-br from-primary/10 via-background to-secondary/80 p-6 shadow-sm">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="space-y-2"><Badge variant="secondary" className="rounded-full px-3 py-1"><Landmark className="mr-1 h-3.5 w-3.5" aria-hidden="true" />{t('badge')}</Badge><div><h1 className="text-3xl font-semibold tracking-tight">{t('title')}</h1><p className="mt-1 max-w-3xl text-sm text-muted-foreground">{t('subtitle')}</p></div></div>
+          <div><h1 className="text-3xl font-semibold tracking-tight">{t('title')}</h1><p className="mt-1 max-w-3xl text-sm text-muted-foreground">{t('subtitle')}</p></div>
           <div className="flex flex-wrap gap-2">
             <label className="sr-only" htmlFor="investments-year">{t('fields.year')}</label>
             <select id="investments-year" className="min-h-[44px] rounded-2xl border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" value={year} onChange={(event) => setYear(Number(event.target.value))}>{Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i).map((option) => <option key={option} value={option}>{option}</option>)}</select>

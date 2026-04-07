@@ -189,15 +189,9 @@ export function AnalyticsPageClient() {
     <div className="space-y-6">
       <section className="rounded-[28px] border border-border/70 bg-[linear-gradient(135deg,rgba(14,116,144,0.12),rgba(15,118,110,0.08),rgba(255,255,255,0.94))] p-6 shadow-sm">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="space-y-2">
-            <Badge variant="secondary" className="rounded-full px-3 py-1">
-              <LineChart className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
-              {t('badge')}
-            </Badge>
-            <div>
-              <h1 className="text-3xl font-semibold tracking-tight">{t('title')}</h1>
-              <p className="mt-1 max-w-3xl text-sm text-muted-foreground">{t('subtitle')}</p>
-            </div>
+          <div>
+            <h1 className="text-3xl font-semibold tracking-tight">{t('title')}</h1>
+            <p className="mt-1 max-w-3xl text-sm text-muted-foreground">{t('subtitle')}</p>
           </div>
 
           <div className="flex flex-wrap gap-2">
