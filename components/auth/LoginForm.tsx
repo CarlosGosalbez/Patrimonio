@@ -135,12 +135,13 @@ export function LoginForm() {
                     </Button>
                 </form>
 
-                <div className="mt-5 text-center text-sm text-muted-foreground">
+                {/* REGISTRO_LINK_DISABLED — para reactivar, descomentar el bloque siguiente */}
+                {/* <div className="mt-5 text-center text-sm text-muted-foreground">
                     {t('noAccount')}{' '}
                     <a href="/register" className="text-primary font-medium hover:underline focus-visible:ring-2 focus-visible:ring-ring rounded">
                         {t('signUp')}
                     </a>
-                </div>
+                </div> */}
             </CardContent>
         </Card>
     )
