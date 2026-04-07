@@ -30,12 +30,14 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useDashboardSummaryQuery } from '@/hooks/usePhaseThree'
+import { AnimatedList, AnimatedItem } from '@/components/ui/AnimatedList'
+import { useDashboardSummaryQuery, useCategoriesQuery } from '@/hooks/usePhaseThree'
 import { formatCurrency } from '@/lib/financial/formatters'
 import type { DashboardWidgetId } from '@/lib/dashboard/types'
 import { useDashboardPreferencesStore } from '@/stores/useDashboardPreferencesStore'
 import { SwipeableTransactionRow } from '@/components/ui/SwipeableTransactionRow'
 import { useDeleteTransaction } from '@/hooks/useDeleteTransaction'
+import { QuickActionButtons } from '@/components/dashboard/QuickActionButtons'
 
 const widgetLabels: Record<DashboardWidgetId, string> = {
   'active-alerts': 'activeAlerts',
@@ -96,6 +98,7 @@ function SummaryCard({
 export function DashboardPageClient() {
   const t = useTranslations('dashboard')
   const { data, isLoading } = useDashboardSummaryQuery()
+  const categoriesQuery = useCategoriesQuery()
   const hidden = useDashboardPreferencesStore((state) => state.hidden)
   const order = useDashboardPreferencesStore((state) => state.order)
   const deleteTransactionMutation = useDeleteTransaction()
@@ -106,6 +109,10 @@ export function DashboardPageClient() {
   const [draggingId, setDraggingId] = useState<DashboardWidgetId | null>(null)
 
   const visibleOrder = order.filter((widgetId) => !hidden.includes(widgetId))
+
+  const categoryMap: Record<string, string> = Object.fromEntries(
+    (categoriesQuery.data ?? []).map((c) => [c.name, c.id]),
+  )
 
   const widgets: Record<DashboardWidgetId, React.ReactNode> = {
     'monthly-balance': (
@@ -373,16 +380,22 @@ export function DashboardPageClient() {
           </div>
         </div>
 
-        <div className="mt-6 grid gap-4 md:grid-cols-3">
-          <SummaryCard amount={data?.hero.total_cents ?? 0} icon={PiggyBank} label={t('netWorth')} tone="neutral" />
-          <SummaryCard amount={data?.hero.cash_cents ?? 0} icon={ArrowUpCircle} label={t('cashPosition')} tone="income" />
-          <SummaryCard
-            amount={data?.hero.monthly_delta_cents ?? 0}
-            icon={data?.hero.monthly_delta_cents && data.hero.monthly_delta_cents < 0 ? ArrowDownCircle : ArrowUpCircle}
-            label={t('monthlyDelta')}
-            tone={data?.hero.monthly_delta_cents && data.hero.monthly_delta_cents < 0 ? 'expense' : 'income'}
-          />
-        </div>
+        <AnimatedList className="mt-6 grid gap-4 md:grid-cols-3">
+          <AnimatedItem><SummaryCard amount={data?.hero.total_cents ?? 0} icon={PiggyBank} label={t('netWorth')} tone="neutral" /></AnimatedItem>
+          <AnimatedItem><SummaryCard amount={data?.hero.cash_cents ?? 0} icon={ArrowUpCircle} label={t('cashPosition')} tone="income" /></AnimatedItem>
+          <AnimatedItem>
+            <SummaryCard
+              amount={data?.hero.monthly_delta_cents ?? 0}
+              icon={data?.hero.monthly_delta_cents && data.hero.monthly_delta_cents < 0 ? ArrowDownCircle : ArrowUpCircle}
+              label={t('monthlyDelta')}
+              tone={data?.hero.monthly_delta_cents && data.hero.monthly_delta_cents < 0 ? 'expense' : 'income'}
+            />
+          </AnimatedItem>
+        </AnimatedList>
+      </section>
+
+      <section aria-label={t('quickActions.ariaLabel')}>
+        <QuickActionButtons categoryMap={categoryMap} />
       </section>
 
       {customizeOpen ? (
@@ -409,8 +422,8 @@ export function DashboardPageClient() {
                   <GripVertical className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
                   <span className="font-medium">{t(`widgets.${widgetLabels[widgetId]}`)}</span>
                 </div>
-                <Button type="button" variant="ghost" size="icon" onClick={() => toggleWidget(widgetId)}>
-                  {hidden.includes(widgetId) ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                <Button type="button" variant="ghost" size="icon" onClick={() => toggleWidget(widgetId)} aria-label={hidden.includes(widgetId) ? t('showWidget') : t('hideWidget')} aria-pressed={hidden.includes(widgetId)}>
+                  {hidden.includes(widgetId) ? <EyeOff className="h-4 w-4" aria-hidden /> : <Eye className="h-4 w-4" aria-hidden />}
                 </Button>
               </div>
             ))}

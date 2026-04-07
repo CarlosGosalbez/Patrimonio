@@ -192,6 +192,8 @@
     "uncategorized": "Sin categoría",
     "customize": "Personalizar",
     "resetLayout": "Restablecer diseño",
+    "showWidget": "Mostrar widget",
+    "hideWidget": "Ocultar widget",
     "netWorth": "Patrimonio neto",
     "cashPosition": "Posición de caja",
     "monthlyDelta": "Variación mensual",
@@ -213,6 +215,26 @@
       "topCategories": "Top categorías",
       "upcomingCommitments": "Próximos compromisos",
       "upcomingDeadlines": "Próximos vencimientos"
+    },
+    "quickActions": {
+      "ariaLabel": "Acciones rápidas",
+      "supermarket": "Supermercado",
+      "clothing": "Ropa",
+      "transport": "Transporte",
+      "restaurant": "Restaurante",
+      "health": "Salud",
+      "leisure": "Ocio",
+      "income": "Ingreso",
+      "bizumIn": "Bizum",
+      "salary": "Nómina",
+      "amount": "Importe (€)",
+      "amountError": "Introduce un importe válido mayor que 0",
+      "account": "Cuenta",
+      "selectAccount": "Selecciona una cuenta",
+      "save": "Guardar",
+      "saving": "Guardando…",
+      "error": "No se pudo registrar la transacción",
+      "toast": "Registrado {amount} en {category}"
     }
   },
   "accountDialog": {
@@ -242,6 +264,7 @@
   },
   "appShell": {
     "subtitle": "Centro de control financiero",
+    "skipToMain": "Saltar al contenido principal",
     "dashboard": "Dashboard",
     "analytics": "Analytics",
     "investments": "Inversiones",
@@ -982,5 +1005,36 @@
     "subscribeError": "No se pudo activar las notificaciones. Inténtalo de nuevo.",
     "active": "Notificaciones activas",
     "inactive": "Notificaciones inactivas"
+  },
+  "footer": {
+    "designedBy": "Dise\u00f1ado por",
+    "designerName": "Carlos Gos\u00e1lbez",
+    "reportButton": "Reportar problema"
+  },
+  "reportProblem": {
+    "title": "Reportar problema",
+    "fields": {
+      "problemTitle": "T\u00edtulo",
+      "problemTitlePlaceholder": "Ej. La gr\u00e1fica no carga",
+      "description": "Descripci\u00f3n",
+      "descriptionPlaceholder": "Detalla el problema o sugerencia\u2026",
+      "type": "Tipo",
+      "typeBug": "Error",
+      "typeMejora": "Mejora",
+      "typeDuda": "Duda"
+    },
+    "submit": "Enviar reporte",
+    "submitting": "Enviando\u2026",
+    "successToast": "Reporte enviado. \u00a1Gracias!",
+    "errorToast": "No se pudo enviar el reporte"
+  },
+  "iconPicker": {
+    "title": "Seleccionar icono",
+    "triggerAriaLabel": "Abrir selector de iconos",
+    "placeholder": "Elige un icono",
+    "searchPlaceholder": "Buscar icono…",
+    "searchAriaLabel": "Buscar iconos",
+    "listAriaLabel": "Lista de iconos disponibles",
+    "noResults": "No se encontraron iconos"
   }
 }

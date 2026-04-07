@@ -112,25 +112,26 @@ La aplicación se despliega como PWA optimizada para iPhone/Safari y se construy
 
 ### 3.1 Frontend
 
-| Tecnología          | Versión           | Rol                                            |
-| ------------------- | ----------------- | ---------------------------------------------- |
-| **Next.js**         | 14.x (App Router) | Framework React con SSR/ISR/SSG                |
-| **React**           | 18.x              | UI library con Concurrent Features             |
-| **TypeScript**      | 5.x               | Tipado estático end-to-end                     |
-| **Tailwind CSS**    | 3.x               | Utilidades CSS, tema personalizable            |
-| **shadcn/ui**       | latest            | Componentes accesibles basados en Radix UI     |
-| **Zustand**         | 4.x               | Estado global ligero (sesión, preferencias)    |
-| **TanStack Query**  | 5.x               | Server state, cache, invalidación              |
-| **TanStack Table**  | 8.x               | Tablas con sort, filter, pagination            |
-| **Recharts**        | 2.x               | Gráficos SVG responsivos                       |
-| **Framer Motion**   | 11.x              | Animaciones de UI declarativas                 |
-| **React Hook Form** | 7.x               | Formularios performantes con validación        |
-| **Zod**             | 3.x               | Schema validation isomórfico (client + server) |
-| **SheetJS (xlsx)**  | 0.18.x            | Parser Excel/CSV en cliente (sin subir datos)  |
-| **date-fns**        | 3.x               | Manipulación de fechas, localización es/en     |
-| **Lucide React**    | latest            | Iconos SVG consistentes y ligeros              |
-| **next-pwa**        | 5.x               | Service Worker, cache estratégico, offline     |
-| **Sentry**          | 8.x               | Error tracking frontend                        |
+| Tecnología           | Versión           | Rol                                            |
+| -------------------- | ----------------- | ---------------------------------------------- |
+| **Next.js**          | 14.x (App Router) | Framework React con SSR/ISR/SSG                |
+| **React**            | 18.x              | UI library con Concurrent Features             |
+| **TypeScript**       | 5.x               | Tipado estático end-to-end                     |
+| **Tailwind CSS**     | 3.x               | Utilidades CSS, tema personalizable            |
+| **shadcn/ui**        | latest            | Componentes accesibles basados en Radix UI     |
+| **Zustand**          | 4.x               | Estado global ligero (sesión, preferencias)    |
+| **TanStack Query**   | 5.x               | Server state, cache, invalidación              |
+| **TanStack Table**   | 8.x               | Tablas con sort, filter, pagination            |
+| **TanStack Virtual** | 3.x               | Virtualización de listas largas (IconPicker)   |
+| **Recharts**         | 2.x               | Gráficos SVG responsivos                       |
+| **Framer Motion**    | 11.x              | Animaciones de UI declarativas                 |
+| **React Hook Form**  | 7.x               | Formularios performantes con validación        |
+| **Zod**              | 3.x               | Schema validation isomórfico (client + server) |
+| **SheetJS (xlsx)**   | 0.18.x            | Parser Excel/CSV en cliente (sin subir datos)  |
+| **date-fns**         | 3.x               | Manipulación de fechas, localización es/en     |
+| **Lucide React**     | latest            | Iconos SVG consistentes y ligeros              |
+| **next-pwa**         | 5.x               | Service Worker, cache estratégico, offline     |
+| **Sentry**           | 8.x               | Error tracking frontend                        |
 
 ### 3.2 Backend / Infraestructura
 
@@ -882,6 +883,46 @@ WebAuthn API (W3C, Safari iOS 14.5+) permite Face ID / Touch ID sin app nativa.
 1. Consulta `custom_alerts` donde `due_date - advance_notice_days <= TODAY` y `last_notified_at IS NULL OR last_notified_at < hoy`
 2. Consulta `recurring_commitments (income)` donde fecha esperada ha pasado más de `tolerance_days` y no existe transacción coincidente
 3. Genera notificaciones en tabla `notifications` + envía email si el canal está activado
+
+---
+
+## 7.X CORRECCIONES Y MEJORAS (2026-04)
+
+### 7.X.1 Storage e Importes (Phase 1)
+
+Bucket privado `informe` en Supabase Storage para archivos CSV de extractos bancarios. La tabla `transaction_import_batches` incluye columna `storage_path TEXT`. El helper `lib/imports/storage.ts` gestiona upload, validación de MIME y signed URLs para descarga.
+
+### 7.X.2 Correlación de Transacciones (Phase 2)
+
+Nueva tabla `transaction_correlation_rules` con ENUM `correlation_match_type` (exact_amount | amount_range | concept_contains | concept_regex). Columna `commitment_id UUID` añadida a `transactions`. Edge Function `check-commitment-expirations` (cron diario) detecta compromisos expirados. Motor en `lib/imports/correlation.ts`.
+
+### 7.X.3 Categorías y Quick Actions (Phase 3)
+
+Tres categorías del sistema: Nómina (income), Bizum recibido (income), Bizum enviado (expense). Endpoint `POST /api/transactions`. Componente `QuickActionButtons` con 9 botones y modal compacto.
+
+### 7.X.4 Dashboard Dinámico (Phase 4)
+
+Trigger `trg_transactions_sync_account_balance` mantiene `accounts.current_balance_cents` sincronizado. GRANTs de EXECUTE añadidos a `get_net_worth(UUID)` y `refresh_dashboard_views()` para el rol `authenticated`. Back-fill recalcula balances existentes al aplicar la migración.
+
+### 7.X.5 Assets y Logo (Phase 5)
+
+Componente `components/ui/Logo.tsx` con variantes `header` (h-8), `login` (h-16) y `default` (h-12). Reemplaza el icono placeholder en el header de la app y en el layout de auth.
+
+### 7.X.6 Selector de Iconos (Phase 6)
+
+`IconPickerModal`: lista virtualizada con `@tanstack/react-virtual` (6 columnas × 48 px, overscan 5), búsqueda con debounce 300 ms. `IconPicker`: lazy-loaded con `next/dynamic({ ssr: false })`, precarga al hover/focus. Hook genérico `useDebouncedValue<T>` reutilizable.
+
+### 7.X.7 Footer y Márgenes (Phase 7)
+
+Tabla `feedback` (bug | mejora | duda) con RLS. Componente `Footer` con créditos y diálogo `ReportProblemDialog`. Padding inferior del layout principal: `pb-24 md:pb-32`.
+
+### 7.X.8 Animaciones Framer Motion (Phase 8)
+
+`AnimatedList` + `AnimatedItem` para stagger fade-up de listas de tarjetas. `MotionCard` con hover lift (`whileHover={{ y: -2 }}`). Las summary cards del dashboard usan animación de entrada staggered.
+
+### 7.X.9 Accesibilidad WCAG 2.2 (Phase 9)
+
+`aria-label` + `aria-pressed` en el botón ToggleWidget del dashboard. Skip-link internacionalizado via clave `appShell.skipToMain`. Los formularios de auth ya contaban con `role="alert"`, `htmlFor` y `aria-label` completos.
 
 ---
 

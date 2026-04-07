@@ -194,6 +194,8 @@
     "uncategorized": "Uncategorized",
     "customize": "Customize",
     "resetLayout": "Reset layout",
+    "showWidget": "Show widget",
+    "hideWidget": "Hide widget",
     "netWorth": "Net worth",
     "cashPosition": "Cash position",
     "monthlyDelta": "Monthly delta",
@@ -215,6 +217,26 @@
       "topCategories": "Top categories",
       "upcomingCommitments": "Upcoming commitments",
       "upcomingDeadlines": "Upcoming deadlines"
+    },
+    "quickActions": {
+      "ariaLabel": "Quick actions",
+      "supermarket": "Supermarket",
+      "clothing": "Clothing",
+      "transport": "Transport",
+      "restaurant": "Restaurant",
+      "health": "Health",
+      "leisure": "Leisure",
+      "income": "Income",
+      "bizumIn": "Bizum",
+      "salary": "Salary",
+      "amount": "Amount (€)",
+      "amountError": "Enter a valid amount greater than 0",
+      "account": "Account",
+      "selectAccount": "Select an account",
+      "save": "Save",
+      "saving": "Saving…",
+      "error": "Could not save transaction",
+      "toast": "Saved {amount} in {category}"
     }
   },
   "accountDialog": {
@@ -244,6 +266,7 @@
   },
   "appShell": {
     "subtitle": "Financial control center",
+    "skipToMain": "Skip to main content",
     "dashboard": "Dashboard",
     "analytics": "Analytics",
     "investments": "Investments",
@@ -985,5 +1008,36 @@
     "subscribeError": "Could not enable notifications. Please try again.",
     "active": "Notifications active",
     "inactive": "Notifications inactive"
+  },
+  "footer": {
+    "designedBy": "Designed by",
+    "designerName": "Carlos Gos\u00e1lbez",
+    "reportButton": "Report a problem"
+  },
+  "reportProblem": {
+    "title": "Report a problem",
+    "fields": {
+      "problemTitle": "Title",
+      "problemTitlePlaceholder": "E.g. Chart is not loading",
+      "description": "Description",
+      "descriptionPlaceholder": "Describe the issue or suggestion\u2026",
+      "type": "Type",
+      "typeBug": "Bug",
+      "typeMejora": "Improvement",
+      "typeDuda": "Question"
+    },
+    "submit": "Submit report",
+    "submitting": "Submitting\u2026",
+    "successToast": "Report sent. Thank you!",
+    "errorToast": "Could not submit the report"
+  },
+  "iconPicker": {
+    "title": "Select icon",
+    "triggerAriaLabel": "Open icon picker",
+    "placeholder": "Choose an icon",
+    "searchPlaceholder": "Search icon…",
+    "searchAriaLabel": "Search icons",
+    "listAriaLabel": "Available icons list",
+    "noResults": "No icons found"
   }
 }

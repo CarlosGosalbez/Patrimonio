@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input'
 import { useAccountsQuery, useCategoriesQuery } from '@/hooks/usePhaseThree'
 import { useConfirmImportMutation, useImportBatchesQuery, useImportPreviewMutation, useRollbackImportMutation } from '@/hooks/usePhaseFour'
 import { detectColumnMapping, normalizeStatementRows, parseStatementFile } from '@/lib/imports/parser'
+import { uploadImportFile, validateImportFile } from '@/lib/imports/storage'
 import type { ColumnMapping, ConfirmImportRowInput, ImportPreviewRow, ParsedStatementFile } from '@/lib/imports/types'
 import { ImportMappingBoard } from '@/components/imports/ImportMappingBoard'
 import { ImportPreviewTable } from '@/components/imports/ImportPreviewTable'
@@ -35,6 +36,7 @@ export function ImportsPageClient() {
   const [parsedFile, setParsedFile] = useState<ParsedStatementFile | null>(null)
   const [mapping, setMapping] = useState<ColumnMapping>({})
   const [fileChecksum, setFileChecksum] = useState<string | null>(null)
+  const [storagePath, setStoragePath] = useState<string | null>(null)
   const [reviewRows, setReviewRows] = useState<Array<ConfirmImportRowInput & ImportPreviewRow>>([])
   const [bulkMerchantKey, setBulkMerchantKey] = useState('')
   const [bulkCategoryId, setBulkCategoryId] = useState('')
@@ -52,6 +54,12 @@ export function ImportsPageClient() {
   const previewSummary = useMemo(() => previewMutation.data?.summary ?? null, [previewMutation.data])
 
   async function handleFile(file: File) {
+    const validationError = validateImportFile(file)
+    if (validationError) {
+      toast.error(validationError)
+      return
+    }
+
     try {
       const [parsed, checksum] = await Promise.all([parseStatementFile(file), sha256Hex(file)])
       const autoMapping = detectColumnMapping(parsed.headers, parsed.rawRows, parsed.sourceBank)
@@ -60,6 +68,20 @@ export function ImportsPageClient() {
       setFileChecksum(checksum)
       setMapping(autoMapping)
       setReviewRows([])
+      setStoragePath(null)
+
+      // Upload to Storage in background — non-blocking for UX
+      const supabaseClient = (await import('@/lib/supabase/client')).createClient()
+      const { data: { user } } = await supabaseClient.auth.getUser()
+      if (user) {
+        uploadImportFile(user.id, file).then(({ storagePath: path, error }) => {
+          if (error) {
+            console.warn('[Storage] Upload failed:', error)
+          } else {
+            setStoragePath(path)
+          }
+        })
+      }
     } catch (error) {
       toast.error(error instanceof Error ? error.message : t('toasts.parseError'))
     }

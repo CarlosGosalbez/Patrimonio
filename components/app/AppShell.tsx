@@ -4,7 +4,6 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   BellRing,
-  ChartColumnIncreasing,
   LineChart,
   FileText,
   FolderCog,
@@ -19,6 +18,8 @@ import { useNotificationsRealtime } from '@/hooks/useNotificationsRealtime'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { OfflineIndicator } from '@/components/ui/OfflineIndicator'
 import { PageTransition } from '@/components/providers/PageTransition'
+import { Logo } from '@/components/ui/Logo'
+import { Footer } from '@/components/ui/Footer'
 import { cn } from '@/lib/utils'
 
 const navigation = [
@@ -41,7 +42,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,0.10),_transparent_26%),radial-gradient(circle_at_bottom_right,_rgba(16,185,129,0.10),_transparent_30%),hsl(var(--background))]">
       {/* Skip to main content — WCAG 2.4.1 */}
       <a href="#main-content" className="skip-link">
-        Saltar al contenido principal
+        {t('skipToMain')}
       </a>
 
       <OfflineIndicator />
@@ -51,14 +52,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <Link
             href="/dashboard"
             className="flex items-center gap-3 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            aria-label="Patrimio — ir al dashboard"
           >
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-emerald-500 text-white shadow-lg shadow-blue-500/20">
-              <ChartColumnIncreasing className="h-5 w-5" aria-hidden="true" />
-            </div>
-            <div>
-              <p className="text-sm font-semibold tracking-tight">Patrimio</p>
-              <p className="text-xs text-muted-foreground">{t('subtitle')}</p>
-            </div>
+            <Logo variant="header" />
           </Link>
 
           <div className="flex items-center gap-2">
@@ -70,13 +66,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       <main
         id="main-content"
-        className="mx-auto min-h-[calc(100vh-73px)] max-w-6xl px-4 pb-[calc(env(safe-area-inset-bottom)+96px)] pt-6 sm:px-6 sm:pb-10"
+        className="mx-auto min-h-[calc(100vh-73px)] max-w-6xl px-4 pb-24 pt-6 sm:px-6 md:pb-32"
         tabIndex={-1}
       >
         <PageTransition>
           {children}
         </PageTransition>
       </main>
+
+      <Footer />
 
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border/70 bg-background/95 px-2 pb-[calc(env(safe-area-inset-bottom)+8px)] pt-2 backdrop-blur">
         <div className="mx-auto grid max-w-5xl grid-cols-8 gap-1 rounded-2xl bg-muted/60 p-1">

@@ -14,8 +14,8 @@ export function useDeleteTransaction() {
       return res.json();
     },
     onSuccess: () => {
-      // Invalidate dashboard queries to refetch
-      queryClient.invalidateQueries({ queryKey: ["dashboard-summary"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard", "summary"] });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
     },
   });
 }
