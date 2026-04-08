@@ -1,8 +1,42 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
+
+// Rate limiters — only instantiated if Upstash env vars are present
+let authRatelimit: Ratelimit | null = null;
+let apiRatelimit: Ratelimit | null = null;
+
+if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
+  const redis = new Redis({
+    url: process.env.UPSTASH_REDIS_REST_URL,
+    token: process.env.UPSTASH_REDIS_REST_TOKEN,
+  });
+  // Auth endpoints: 10 req/min per IP
+  authRatelimit = new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(10, "1 m"),
+    prefix: "rl:auth",
+  });
+  // General API: 100 req/min per IP
+  apiRatelimit = new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(100, "1 m"),
+    prefix: "rl:api",
+  });
+}
+
+function getClientIp(req: NextRequest): string {
+  return (
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    req.headers.get("x-real-ip") ??
+    "anonymous"
+  );
+}
 
 const AUTH_ROUTES = ["/login", "/register", "/forgot-password", "/reset-password", "/two-factor"];
 const PUBLIC_ROUTES = ["/api/auth/callback", "/monitoring"];
+const AUTH_API_ROUTES = ["/api/auth"];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -10,6 +44,42 @@ export async function middleware(request: NextRequest) {
   // Skip public/static routes
   if (PUBLIC_ROUTES.some((r) => pathname.startsWith(r))) {
     return NextResponse.next();
+  }
+
+  const ip = getClientIp(request);
+
+  // Rate limit: auth API endpoints (10 req/min per IP)
+  if (AUTH_API_ROUTES.some((r) => pathname.startsWith(r)) && authRatelimit) {
+    const { success, limit, remaining } = await authRatelimit.limit(ip);
+    if (!success) {
+      return new NextResponse("Too Many Requests", {
+        status: 429,
+        headers: {
+          "Retry-After": "60",
+          "X-RateLimit-Limit": String(limit),
+          "X-RateLimit-Remaining": "0",
+        },
+      });
+    }
+    // Inject rate limit headers on success
+    const res = NextResponse.next();
+    res.headers.set("X-RateLimit-Limit", String(limit));
+    res.headers.set("X-RateLimit-Remaining", String(remaining));
+  }
+
+  // Rate limit: general API endpoints (100 req/min per IP)
+  if (
+    pathname.startsWith("/api/") &&
+    !AUTH_API_ROUTES.some((r) => pathname.startsWith(r)) &&
+    apiRatelimit
+  ) {
+    const { success } = await apiRatelimit.limit(ip);
+    if (!success) {
+      return new NextResponse("Too Many Requests", {
+        status: 429,
+        headers: { "Retry-After": "60" },
+      });
+    }
   }
 
   let response = NextResponse.next({ request });

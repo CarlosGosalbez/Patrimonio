@@ -10,7 +10,8 @@
     "error": "Error",
     "success": "Success",
     "copySuccess": "Copied to clipboard",
-    "processing": "Processing..."
+    "processing": "Processing...",
+    "backToApp": "Back to app"
   },
   "metadata": {
     "brandName": "Patrimonio",
@@ -1184,5 +1185,176 @@
     "colorLabel": "Color",
     "iconLabel": "Icon",
     "iconHint": "You can use an emoji to visually identify the account"
+  },
+  "transactions": {
+    "title": "Transactions",
+    "searchPlaceholder": "Search by description…",
+    "listAriaLabel": "Transactions list",
+    "totalCount": "{count} transactions",
+    "filters": {
+      "label": "Filters",
+      "resetAll": "Clear",
+      "type": "Type",
+      "all": "All",
+      "income": "Income",
+      "expense": "Expenses",
+      "account": "Account",
+      "allAccounts": "All accounts",
+      "category": "Category",
+      "allCategories": "All categories",
+      "dateFrom": "From",
+      "dateTo": "To",
+      "from": "From",
+      "to": "To",
+      "amountRange": "Amount (€)",
+      "min": "Min.",
+      "max": "Max.",
+      "minAmount": "Minimum amount",
+      "maxAmount": "Maximum amount",
+      "removeFilter": "Remove filter"
+    },
+    "fields": {
+      "amount": "Amount",
+      "description": "Description",
+      "account": "Account",
+      "category": "Category",
+      "date": "Date",
+      "notes": "Notes"
+    },
+    "actions": {
+      "new": "New transaction",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "quickEntry": {
+      "title": "Quick entry",
+      "close": "Close",
+      "type": "Movement type",
+      "expense": "Expense",
+      "income": "Income",
+      "descriptionPlaceholder": "E.g. Supermarket",
+      "selectAccount": "Select an account",
+      "noCategory": "No category",
+      "save": "Save",
+      "saving": "Saving…"
+    },
+    "form": {
+      "newTitle": "New transaction",
+      "editTitle": "Edit transaction",
+      "income": "Income",
+      "expense": "Expense",
+      "typeToggle": "Toggle movement type",
+      "selectAccount": "Select an account",
+      "noCategory": "No category",
+      "cancel": "Cancel",
+      "save": "Save changes",
+      "saving": "Saving…",
+      "create": "Create transaction"
+    },
+    "states": {
+      "loading": "Loading transactions…",
+      "loadingMore": "Loading more…",
+      "empty": "No transactions",
+      "emptyDetail": "Create your first transaction using the button below.",
+      "error": "Could not load transactions. Please try again."
+    },
+    "toasts": {
+      "created": "Transaction created",
+      "updated": "Transaction updated",
+      "deleted": "Transaction deleted",
+      "error": "The operation could not be completed"
+    }
+  },
+  "legal": {
+    "privacy": {
+      "metaTitle": "Privacy Policy — Patrimonio",
+      "title": "Privacy Policy",
+      "lastUpdated": "Last updated: April 2026",
+      "s1": {
+        "title": "1. Data controller",
+        "body": "The data controller for your personal data is the Patrimonio account holder. The application is a personal financial management tool and does not share data with third parties without explicit consent."
+      },
+      "s2": {
+        "title": "2. Data we collect",
+        "body": "We only collect data you voluntarily enter:",
+        "item1": "Identification data: email address.",
+        "item2": "Financial data: accounts, transactions, investments, and budgets you create.",
+        "item3": "Usage data: access logs and errors to improve the service (via Sentry).",
+        "item4": "Technical data: IP address and user agent for security and rate limiting."
+      },
+      "s3": {
+        "title": "3. Your rights (GDPR)",
+        "body": "Under Regulation (EU) 2016/679, you have the right to:",
+        "item1": "Access: request a copy of all your data in JSON format from Settings > Privacy.",
+        "item2": "Rectification: modify your personal data from your profile.",
+        "item3": "Erasure: delete your account and all associated data from Settings > Account.",
+        "item4": "Portability: export your data as a ZIP/JSON file.",
+        "item5": "Objection: we do not use your data for advertising profiles."
+      },
+      "s4": {
+        "title": "4. Legal basis for processing",
+        "body": "Processing is based on the user's explicit consent (Art. 6.1.a GDPR) upon registration and acceptance of these terms, and on legitimate interests in security (Art. 6.1.f GDPR) for fraud detection and rate limiting."
+      },
+      "s5": {
+        "title": "5. Service providers (processors)",
+        "body": "Your data is stored on Supabase (PostgreSQL in Europe, eu-central-1 region). Hosting infrastructure is Vercel (global CDN). Error monitoring uses Sentry, configured to exclude financial data and email addresses from reports. AI (Anthropic Claude) processes data under a Zero Data Retention agreement."
+      },
+      "s6": {
+        "title": "6. International transfers",
+        "body": "Supabase stores data in the European Union. Vercel and Sentry may process metadata (not financial data) on servers outside the EU under Standard Contractual Clauses approved by the European Commission."
+      },
+      "s7": {
+        "title": "7. Data retention",
+        "body": "Your data is retained while your account is active. Upon account deletion, all data is deleted in cascade within a maximum of 30 days."
+      },
+      "s8": {
+        "title": "8. Security",
+        "body": "All data is transmitted via TLS 1.3 and stored encrypted at rest (AES-256). Access is protected with JWT authentication, optional 2FA TOTP, and row-level security (RLS) policies in the database."
+      },
+      "s9": {
+        "title": "9. Contact",
+        "body": "To exercise your rights or resolve any privacy-related query, write to: privacy@patrimonio.app"
+      }
+    },
+    "terms": {
+      "metaTitle": "Terms of Service — Patrimonio",
+      "title": "Terms of Service",
+      "lastUpdated": "Last updated: April 2026",
+      "s1": {
+        "title": "1. Acceptance",
+        "body": "By registering and using Patrimonio, you agree to these Terms of Service. If you disagree, do not use the application."
+      },
+      "s2": {
+        "title": "2. Service description",
+        "body": "Patrimonio is a personal wealth management PWA. It allows you to track income, expenses, investments, and personal budgets. It is not a regulated financial advisory service."
+      },
+      "s3": {
+        "title": "3. Financial disclaimer",
+        "body": "IMPORTANT NOTICE: Patrimonio does not provide financial, tax, or investment advice. Information displayed (including market data, projections, and analysis) is for informational purposes only. Financial decisions are solely the user's responsibility. Consult a certified financial advisor before making investment decisions."
+      },
+      "s4": {
+        "title": "4. Acceptable use",
+        "body": "The following are prohibited:",
+        "item1": "Using the application for illegal or fraudulent activities.",
+        "item2": "Attempting to access other users' data.",
+        "item3": "Performing load tests or automated attacks against the service."
+      },
+      "s5": {
+        "title": "5. Availability",
+        "body": "Patrimonio is provided \"as is\". We do not guarantee 100% uptime. We may interrupt the service for maintenance with prior notice when possible."
+      },
+      "s6": {
+        "title": "6. Code ownership",
+        "body": "Patrimonio's source code is available under the MIT license. Data entered by the user is the exclusive property of the user."
+      },
+      "s7": {
+        "title": "7. Modifications",
+        "body": "We reserve the right to modify these terms. Significant changes will be notified by email at least 15 days in advance."
+      },
+      "s8": {
+        "title": "8. Governing law",
+        "body": "These terms are governed by Spanish law. For any dispute, both parties submit to the courts and tribunals of Madrid."
+      }
+    }
   }
 }
