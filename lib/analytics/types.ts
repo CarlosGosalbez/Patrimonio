@@ -1,124 +1,124 @@
-import type { Database } from '@/types/database'
+import type { Database } from "@/types/database";
 
-export type AnalyticsPeriod = 'week' | 'month' | 'quarter' | 'year'
+export type AnalyticsPeriod = "week" | "month" | "quarter" | "year";
 
 export interface AnalyticsRange {
-  end: string
-  label: string
-  start: string
+  end: string;
+  label: string;
+  start: string;
 }
 
 export interface AnalyticsSeriesPoint {
-  expense_cents: number
-  income_cents: number
-  label: string
-  net_cents: number
-  period_end: string
-  period_start: string
+  expense_cents: number;
+  income_cents: number;
+  label: string;
+  net_cents: number;
+  period_end: string;
+  period_start: string;
 }
 
 export interface AnalyticsTotals {
-  expense_cents: number
-  income_cents: number
-  net_cents: number
-  savings_rate_percent: number | null
-  transaction_count: number
+  expense_cents: number;
+  income_cents: number;
+  net_cents: number;
+  savings_rate_percent: number | null;
+  transaction_count: number;
 }
 
 export interface Budget503020Bucket {
-  actual_cents: number
-  ideal_cents: number
-  percent_of_income: number | null
-  status: 'over' | 'under' | 'within'
-  target_percent: number
-  variance_cents: number
+  actual_cents: number;
+  ideal_cents: number;
+  percent_of_income: number | null;
+  status: "over" | "under" | "within";
+  target_percent: number;
+  variance_cents: number;
 }
 
 export interface Budget503020Summary {
-  income_cents: number
-  needs: Budget503020Bucket
-  savings: Budget503020Bucket
-  uncategorized_expense_cents: number
-  wants: Budget503020Bucket
+  income_cents: number;
+  needs: Budget503020Bucket;
+  savings: Budget503020Bucket;
+  uncategorized_expense_cents: number;
+  wants: Budget503020Bucket;
 }
 
 export interface NetWorthHistoryPoint {
-  snapshot_date: string
-  total_invested_cents: number
-  total_value_cents: number
-  unrealized_pl_cents: number
+  snapshot_date: string;
+  total_invested_cents: number;
+  total_value_cents: number;
+  unrealized_pl_cents: number;
 }
 
 export interface CategoryTrendPoint {
-  label: string
-  month: string
-  total_cents: number
+  label: string;
+  month: string;
+  total_cents: number;
 }
 
 export interface CategoryTrendRow {
-  category_color: string | null
-  category_id: string
-  category_name: string
-  current_period_cents: number
-  delta_percent: number | null
-  is_growing: boolean
-  monthly_series: CategoryTrendPoint[]
-  previous_period_cents: number
+  category_color: string | null;
+  category_id: string;
+  category_name: string;
+  current_period_cents: number;
+  delta_percent: number | null;
+  is_growing: boolean;
+  monthly_series: CategoryTrendPoint[];
+  previous_period_cents: number;
 }
 
 export interface MonthlyTrendCard {
-  average_3m_cents: number
-  category_color: string | null
-  category_id: string
-  category_name: string
-  current_month_cents: number
-  delta_percent: number | null
+  average_3m_cents: number;
+  category_color: string | null;
+  category_id: string;
+  category_name: string;
+  current_month_cents: number;
+  delta_percent: number | null;
 }
 
 export interface SpendingAnomaly {
-  category_color: string | null
-  category_id: string
-  category_name: string
-  current_month_cents: number
-  historical_mean_cents: number
-  historical_stddev_cents: number
-  percent_above_mean: number
-  severity: 'warning' | 'critical'
-  z_score: number
+  category_color: string | null;
+  category_id: string;
+  category_name: string;
+  current_month_cents: number;
+  historical_mean_cents: number;
+  historical_stddev_cents: number;
+  percent_above_mean: number;
+  severity: "warning" | "critical";
+  z_score: number;
 }
 
 export interface AnalyticsNotification {
-  created_at: string
-  id: string
-  message: string
-  severity: Database['public']['Enums']['alert_severity']
-  target_id: string | null
-  target_type: string | null
-  title: string
-  type: Database['public']['Enums']['notification_type']
+  created_at: string;
+  id: string;
+  message: string;
+  severity: Database["public"]["Enums"]["alert_severity"];
+  target_id: string | null;
+  target_type: string | null;
+  title: string;
+  type: Database["public"]["Enums"]["notification_type"];
 }
 
 export interface AnalyticsTopCategoryWidgetItem {
-  amount_cents: number
-  budget_limit_cents: number | null
-  budget_status: 'approaching' | 'exceeded' | 'none' | 'ok' | 'warning'
-  category_color: string | null
-  category_id: string | null
-  category_name: string
-  over_budget: boolean
-  transaction_count: number
+  amount_cents: number;
+  budget_limit_cents: number | null;
+  budget_status: "approaching" | "exceeded" | "none" | "ok" | "warning";
+  category_color: string | null;
+  category_id: string | null;
+  category_name: string;
+  over_budget: boolean;
+  transaction_count: number;
 }
 
 export interface AnalyticsSummaryResponse {
-  anomalies: SpendingAnomaly[]
-  budget_rule_503020: Budget503020Summary
-  category_trends: CategoryTrendRow[]
-  monthly_trend_cards: MonthlyTrendCard[]
-  net_worth_history: NetWorthHistoryPoint[]
-  notifications: AnalyticsNotification[]
-  period: AnalyticsPeriod
-  range: AnalyticsRange
-  series: AnalyticsSeriesPoint[]
-  top_categories_widget: AnalyticsTopCategoryWidgetItem[]
-  totals: AnalyticsTotals
+  anomalies: SpendingAnomaly[];
+  budget_rule_503020: Budget503020Summary;
+  category_trends: CategoryTrendRow[];
+  monthly_trend_cards: MonthlyTrendCard[];
+  net_worth_history: NetWorthHistoryPoint[];
+  notifications: AnalyticsNotification[];
+  period: AnalyticsPeriod;
+  range: AnalyticsRange;
+  series: AnalyticsSeriesPoint[];
+  top_categories_widget: AnalyticsTopCategoryWidgetItem[];
+  totals: AnalyticsTotals;
 }

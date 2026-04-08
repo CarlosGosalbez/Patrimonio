@@ -701,10 +701,10 @@ function SortableCategory({ category, onEdit, onDelete }) {
     <div
       ref={setNodeRef}
       style={style}
-      className="bg-card flex items-center gap-3 rounded-2xl border p-4"
+      className="flex items-center gap-3 rounded-2xl border bg-card p-4"
     >
       <button {...attributes} {...listeners} className="cursor-grab">
-        <GripVertical className="text-muted-foreground h-5 w-5" />
+        <GripVertical className="h-5 w-5 text-muted-foreground" />
       </button>
 
       <div

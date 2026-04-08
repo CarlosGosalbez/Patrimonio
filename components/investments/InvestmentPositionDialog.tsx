@@ -1,58 +1,59 @@
-'use client'
+"use client";
 
-import { useDeferredValue, useEffect, useId, useState } from 'react'
-import { Plus, Search } from 'lucide-react'
-import { useTranslations } from 'next-intl'
-import { AccountDialog } from '@/components/app/AccountDialog'
-import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { useTickerSearchQuery } from '@/hooks/usePhaseSix'
-import { centsToDec } from '@/lib/financial/formatters'
-import type { InvestmentListItem } from '@/lib/investments/types'
+import { useDeferredValue, useEffect, useId, useState } from "react";
+import { Plus, Search } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { AccountDialog } from "@/components/app/AccountDialog";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useTickerSearchQuery } from "@/hooks/usePhaseSix";
+import { centsToDec } from "@/lib/financial/formatters";
+import type { InvestmentListItem } from "@/lib/investments/types";
 
 interface InvestmentPositionDialogProps {
-  accounts: Array<{ currency: string; id: string; name: string }>
-  onOpenChange: (open: boolean) => void
-  onSubmit: (payload: Record<string, unknown>, id?: string) => Promise<void>
-  open: boolean
-  position: InvestmentListItem | null
+  accounts: Array<{ currency: string; id: string; name: string }>;
+  onOpenChange: (open: boolean) => void;
+  onSubmit: (payload: Record<string, unknown>, id?: string) => Promise<void>;
+  open: boolean;
+  position: InvestmentListItem | null;
 }
 
 function formatMoneyInput(value: number | null | undefined) {
-  if (typeof value !== 'number' || !Number.isFinite(value)) {
-    return ''
+  if (typeof value !== "number" || !Number.isFinite(value)) {
+    return "";
   }
 
-  return centsToDec(value).toFixed(2).replace('.', ',')
+  return centsToDec(value).toFixed(2).replace(".", ",");
 }
 
 function buildInitialState(position: InvestmentListItem | null) {
   return {
-    account_id: position?.account_id ?? position?.account?.id ?? '',
-    annual_dividend_per_share_input: formatMoneyInput(position?.annual_dividend_per_share_cents) || '0',
-    currency: position?.currency ?? 'EUR',
+    account_id: position?.account_id ?? position?.account?.id ?? "",
+    annual_dividend_per_share_input:
+      formatMoneyInput(position?.annual_dividend_per_share_cents) || "0",
+    currency: position?.currency ?? "EUR",
     daily_price_alert_threshold_percent:
       position?.daily_price_alert_threshold_percent == null
-        ? ''
+        ? ""
         : String(position.daily_price_alert_threshold_percent),
-    dividend_frequency: position?.dividend_frequency ?? 'annual',
-    investment_type: position?.investment_type ?? 'stock',
-    market: position?.market ?? '',
-    name: position?.name ?? '',
-    next_dividend_date: position?.next_dividend_date ?? '',
-    notes: position?.notes ?? '',
+    dividend_frequency: position?.dividend_frequency ?? "annual",
+    investment_type: position?.investment_type ?? "stock",
+    market: position?.market ?? "",
+    name: position?.name ?? "",
+    next_dividend_date: position?.next_dividend_date ?? "",
+    notes: position?.notes ?? "",
     opening_date: new Date().toISOString().slice(0, 10),
-    opening_price_input: '',
-    opening_quantity_input: '',
-    sector: position?.sector ?? '',
-    ticker: position?.ticker ?? '',
-  }
+    opening_price_input: "",
+    opening_quantity_input: "",
+    sector: position?.sector ?? "",
+    ticker: position?.ticker ?? "",
+  };
 }
 
-type PositionFormState = ReturnType<typeof buildInitialState>
+type PositionFormState = ReturnType<typeof buildInitialState>;
 
 export function InvestmentPositionDialog({
   accounts: accountsProp,
@@ -61,27 +62,27 @@ export function InvestmentPositionDialog({
   open,
   position,
 }: InvestmentPositionDialogProps) {
-  const t = useTranslations('investments')
-  const tAccount = useTranslations('accountDialog')
-  const uid = useId()
-  const [state, setState] = useState<PositionFormState>(() => buildInitialState(position))
-  const [searchTerm, setSearchTerm] = useState(position?.ticker ?? position?.name ?? '')
-  const [accounts, setAccounts] = useState(accountsProp)
-  const [accountDialogOpen, setAccountDialogOpen] = useState(false)
-  const deferredSearch = useDeferredValue(searchTerm)
-  const searchQuery = useTickerSearchQuery(deferredSearch)
+  const t = useTranslations("investments");
+  const tAccount = useTranslations("accountDialog");
+  const uid = useId();
+  const [state, setState] = useState<PositionFormState>(() => buildInitialState(position));
+  const [searchTerm, setSearchTerm] = useState(position?.ticker ?? position?.name ?? "");
+  const [accounts, setAccounts] = useState(accountsProp);
+  const [accountDialogOpen, setAccountDialogOpen] = useState(false);
+  const deferredSearch = useDeferredValue(searchTerm);
+  const searchQuery = useTickerSearchQuery(deferredSearch);
 
   useEffect(() => {
-    setState(buildInitialState(position))
-    setSearchTerm(position?.ticker ?? position?.name ?? '')
-  }, [position])
+    setState(buildInitialState(position));
+    setSearchTerm(position?.ticker ?? position?.name ?? "");
+  }, [position]);
 
   useEffect(() => {
-    setAccounts(accountsProp)
-  }, [accountsProp])
+    setAccounts(accountsProp);
+  }, [accountsProp]);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault()
+    event.preventDefault();
 
     await onSubmit(
       {
@@ -92,14 +93,14 @@ export function InvestmentPositionDialog({
         sector: state.sector || null,
       },
       position?.id,
-    )
+    );
   }
 
   function applySearchResult(result: {
-    currency: string
-    exchange: string | null
-    name: string
-    ticker: string
+    currency: string;
+    exchange: string | null;
+    name: string;
+    ticker: string;
   }) {
     setState((current) => ({
       ...current,
@@ -107,11 +108,11 @@ export function InvestmentPositionDialog({
       market: result.exchange ?? current.market,
       name: result.name,
       ticker: result.ticker,
-    }))
-    setSearchTerm(`${result.ticker} · ${result.name}`)
+    }));
+    setSearchTerm(`${result.ticker} · ${result.name}`);
   }
 
-  const actionLabel = position ? t('dialogs.position.save') : t('dialogs.position.create')
+  const actionLabel = position ? t("dialogs.position.save") : t("dialogs.position.create");
 
   return (
     <>
@@ -119,7 +120,7 @@ export function InvestmentPositionDialog({
         <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-3xl">
           <DialogHeader>
             <DialogTitle>
-              {position ? t('dialogs.position.editTitle') : t('dialogs.position.newTitle')}
+              {position ? t("dialogs.position.editTitle") : t("dialogs.position.newTitle")}
             </DialogTitle>
           </DialogHeader>
 
@@ -127,7 +128,7 @@ export function InvestmentPositionDialog({
             {!position ? (
               <section className="space-y-3 rounded-3xl border border-border/60 bg-muted/20 p-4">
                 <div className="space-y-2">
-                  <Label htmlFor={`${uid}-search`}>{t('fields.search')}</Label>
+                  <Label htmlFor={`${uid}-search`}>{t("fields.search")}</Label>
                   <div className="relative">
                     <Search
                       aria-hidden="true"
@@ -141,11 +142,11 @@ export function InvestmentPositionDialog({
                       onChange={(event) => setSearchTerm(event.target.value)}
                     />
                   </div>
-                  <p className="text-xs text-muted-foreground">{t('fields.searchHint')}</p>
+                  <p className="text-xs text-muted-foreground">{t("fields.searchHint")}</p>
                 </div>
 
                 {searchQuery.isFetching ? (
-                  <p className="text-xs text-muted-foreground">{t('dialogs.position.searching')}</p>
+                  <p className="text-xs text-muted-foreground">{t("dialogs.position.searching")}</p>
                 ) : null}
 
                 {searchQuery.data?.length ? (
@@ -173,7 +174,7 @@ export function InvestmentPositionDialog({
 
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor={`${uid}-ticker`}>{t('fields.ticker')}</Label>
+                <Label htmlFor={`${uid}-ticker`}>{t("fields.ticker")}</Label>
                 <Input
                   className="min-h-[44px]"
                   id={`${uid}-ticker`}
@@ -189,7 +190,7 @@ export function InvestmentPositionDialog({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor={`${uid}-name`}>{t('fields.name')}</Label>
+                <Label htmlFor={`${uid}-name`}>{t("fields.name")}</Label>
                 <Input
                   className="min-h-[44px]"
                   id={`${uid}-name`}
@@ -202,7 +203,7 @@ export function InvestmentPositionDialog({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor={`${uid}-type`}>{t('fields.type')}</Label>
+                <Label htmlFor={`${uid}-type`}>{t("fields.type")}</Label>
                 <select
                   id={`${uid}-type`}
                   className="flex min-h-[44px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
@@ -210,11 +211,11 @@ export function InvestmentPositionDialog({
                   onChange={(event) =>
                     setState((current) => ({
                       ...current,
-                      investment_type: event.target.value as PositionFormState['investment_type'],
+                      investment_type: event.target.value as PositionFormState["investment_type"],
                     }))
                   }
                 >
-                  {['stock', 'etf', 'fund', 'crypto', 'deposit', 'bond', 'reit', 'other'].map(
+                  {["stock", "etf", "fund", "crypto", "deposit", "bond", "reit", "other"].map(
                     (value) => (
                       <option key={value} value={value}>
                         {t(`types.${value}`)}
@@ -227,8 +228,10 @@ export function InvestmentPositionDialog({
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor={`${uid}-account`}>
-                    {t('fields.account')}
-                    <span className="ml-1 text-xs text-muted-foreground">({t('fields.optionalLabel')})</span>
+                    {t("fields.account")}
+                    <span className="ml-1 text-xs text-muted-foreground">
+                      ({t("fields.optionalLabel")})
+                    </span>
                   </Label>
                   {accounts.length === 0 ? (
                     <button
@@ -237,7 +240,7 @@ export function InvestmentPositionDialog({
                       onClick={() => setAccountDialogOpen(true)}
                     >
                       <Plus className="h-3 w-3" aria-hidden="true" />
-                      {tAccount('actions.create')}
+                      {tAccount("actions.create")}
                     </button>
                   ) : null}
                 </div>
@@ -249,7 +252,7 @@ export function InvestmentPositionDialog({
                     setState((current) => ({ ...current, account_id: event.target.value }))
                   }
                 >
-                  <option value="">{t('fields.selectAccount')}</option>
+                  <option value="">{t("fields.selectAccount")}</option>
                   {accounts.map((account) => (
                     <option key={account.id} value={account.id}>
                       {account.name}
@@ -259,7 +262,7 @@ export function InvestmentPositionDialog({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor={`${uid}-currency`}>{t('fields.currency')}</Label>
+                <Label htmlFor={`${uid}-currency`}>{t("fields.currency")}</Label>
                 <Input
                   className="min-h-[44px]"
                   id={`${uid}-currency`}
@@ -276,7 +279,7 @@ export function InvestmentPositionDialog({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor={`${uid}-market`}>{t('fields.market')}</Label>
+                <Label htmlFor={`${uid}-market`}>{t("fields.market")}</Label>
                 <Input
                   className="min-h-[44px]"
                   id={`${uid}-market`}
@@ -288,7 +291,7 @@ export function InvestmentPositionDialog({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor={`${uid}-sector`}>{t('fields.sector')}</Label>
+                <Label htmlFor={`${uid}-sector`}>{t("fields.sector")}</Label>
                 <Input
                   className="min-h-[44px]"
                   id={`${uid}-sector`}
@@ -300,12 +303,12 @@ export function InvestmentPositionDialog({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor={`${uid}-threshold`}>{t('fields.alertThreshold')}</Label>
+                <Label htmlFor={`${uid}-threshold`}>{t("fields.alertThreshold")}</Label>
                 <Input
                   className="min-h-[44px]"
                   id={`${uid}-threshold`}
                   inputMode="decimal"
-                  placeholder={t('fields.alertThresholdPlaceholder')}
+                  placeholder={t("fields.alertThresholdPlaceholder")}
                   value={state.daily_price_alert_threshold_percent}
                   onChange={(event) =>
                     setState((current) => ({
@@ -320,7 +323,7 @@ export function InvestmentPositionDialog({
             {!position ? (
               <section className="grid gap-4 rounded-3xl border border-border/60 bg-muted/20 p-4 md:grid-cols-3">
                 <div className="space-y-2">
-                  <Label htmlFor={`${uid}-opening-quantity`}>{t('fields.initialQuantity')}</Label>
+                  <Label htmlFor={`${uid}-opening-quantity`}>{t("fields.initialQuantity")}</Label>
                   <Input
                     className="min-h-[44px]"
                     id={`${uid}-opening-quantity`}
@@ -337,7 +340,7 @@ export function InvestmentPositionDialog({
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor={`${uid}-opening-price`}>{t('fields.initialPrice')}</Label>
+                  <Label htmlFor={`${uid}-opening-price`}>{t("fields.initialPrice")}</Label>
                   <Input
                     className="min-h-[44px]"
                     id={`${uid}-opening-price`}
@@ -354,7 +357,7 @@ export function InvestmentPositionDialog({
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor={`${uid}-opening-date`}>{t('fields.openingDate')}</Label>
+                  <Label htmlFor={`${uid}-opening-date`}>{t("fields.openingDate")}</Label>
                   <Input
                     className="min-h-[44px]"
                     id={`${uid}-opening-date`}
@@ -374,7 +377,7 @@ export function InvestmentPositionDialog({
 
             <div className="grid gap-4 md:grid-cols-3">
               <div className="space-y-2">
-                <Label htmlFor={`${uid}-annual-dividend`}>{t('fields.annualDividend')}</Label>
+                <Label htmlFor={`${uid}-annual-dividend`}>{t("fields.annualDividend")}</Label>
                 <Input
                   className="min-h-[44px]"
                   id={`${uid}-annual-dividend`}
@@ -390,7 +393,7 @@ export function InvestmentPositionDialog({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor={`${uid}-next-dividend`}>{t('fields.nextDividendDate')}</Label>
+                <Label htmlFor={`${uid}-next-dividend`}>{t("fields.nextDividendDate")}</Label>
                 <Input
                   className="min-h-[44px]"
                   id={`${uid}-next-dividend`}
@@ -406,7 +409,7 @@ export function InvestmentPositionDialog({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor={`${uid}-frequency`}>{t('fields.dividendFrequency')}</Label>
+                <Label htmlFor={`${uid}-frequency`}>{t("fields.dividendFrequency")}</Label>
                 <select
                   id={`${uid}-frequency`}
                   className="flex min-h-[44px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
@@ -414,11 +417,12 @@ export function InvestmentPositionDialog({
                   onChange={(event) =>
                     setState((current) => ({
                       ...current,
-                      dividend_frequency: event.target.value as PositionFormState['dividend_frequency'],
+                      dividend_frequency: event.target
+                        .value as PositionFormState["dividend_frequency"],
                     }))
                   }
                 >
-                  {['monthly', 'quarterly', 'semiannual', 'annual'].map((value) => (
+                  {["monthly", "quarterly", "semiannual", "annual"].map((value) => (
                     <option key={value} value={value}>
                       {t(`frequencies.${value}`)}
                     </option>
@@ -428,7 +432,7 @@ export function InvestmentPositionDialog({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor={`${uid}-notes`}>{t('fields.notes')}</Label>
+              <Label htmlFor={`${uid}-notes`}>{t("fields.notes")}</Label>
               <Textarea
                 id={`${uid}-notes`}
                 value={state.notes}
@@ -445,7 +449,7 @@ export function InvestmentPositionDialog({
                 className="min-h-[44px]"
                 onClick={() => onOpenChange(false)}
               >
-                {t('actions.cancel')}
+                {t("actions.cancel")}
               </Button>
               <Button type="submit" className="min-h-[44px]">
                 {actionLabel}
@@ -459,10 +463,10 @@ export function InvestmentPositionDialog({
         open={accountDialogOpen}
         onOpenChange={setAccountDialogOpen}
         onCreated={(account) => {
-          setAccounts((current) => [...current, { ...account, currency: account.currency }])
-          setState((current) => ({ ...current, account_id: account.id }))
+          setAccounts((current) => [...current, { ...account, currency: account.currency }]);
+          setState((current) => ({ ...current, account_id: account.id }));
         }}
       />
     </>
-  )
+  );
 }

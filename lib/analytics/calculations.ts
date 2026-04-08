@@ -46,7 +46,10 @@ function roundOneDecimal(value: number) {
 }
 
 function classify503020Category(categoryName: string) {
-  const normalized = categoryName.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
+  const normalized = categoryName
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase();
 
   if (
     /(hipoteca|alquiler|suministros|comunidad|supermercado|gasolina|transporte|seguro|sanidad|farmacia|educacion|impuestos)/.test(
@@ -311,18 +314,18 @@ export function buildBudget503020Summary({
   }
 
   function buildBucket(actualCents: number, targetPercent: number, mode: "max" | "min") {
-    const idealCents = Math.round(incomeCents * (targetPercent / 100))
-    const varianceCents = actualCents - idealCents
+    const idealCents = Math.round(incomeCents * (targetPercent / 100));
+    const varianceCents = actualCents - idealCents;
     const status =
       incomeCents <= 0
-        ? ('within' as const)
-        : mode === 'max'
+        ? ("within" as const)
+        : mode === "max"
           ? actualCents > idealCents
-            ? ('over' as const)
-            : ('within' as const)
+            ? ("over" as const)
+            : ("within" as const)
           : actualCents < idealCents
-            ? ('under' as const)
-            : ('within' as const)
+            ? ("under" as const)
+            : ("within" as const);
 
     return {
       actual_cents: actualCents,

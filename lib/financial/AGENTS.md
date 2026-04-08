@@ -9,28 +9,28 @@
 const amountCents = decToCents(parseFloat(userInput)); // 850.75 → 85075
 
 // ALMACENAMIENTO (DB)
-amount_cents: INTEGER  // 85075
+amount_cents: INTEGER; // 85075
 
 // PRESENTACIÓN al usuario
 formatCurrency(amount_cents, currency); // 85075 → "850,75 €"
 
 // NUNCA en cálculos intermedios
 const total = itemA.amount_cents + itemB.amount_cents; // ✅ suma entera
-const avg = total / count;                              // ✅ división entera
-const pct = (partial * 100) / total;                    // ✅ porcentaje entero
+const avg = total / count; // ✅ división entera
+const pct = (partial * 100) / total; // ✅ porcentaje entero
 ```
 
 ## Funciones disponibles (usar siempre, no reimplementar)
 
 ```typescript
 import {
-  formatCurrency,    // (cents: number, currency: string) → "850,75 €"
-  formatCents,       // (cents: number) → "850,75" (sin símbolo)
-  decToCents,        // (euros: number) → centavos INTEGER
-  centsToDec,        // (cents: number) → decimal (solo para display, no para cálculos)
-  formatDate,        // (date: string | Date) → "5 abr 2026" (locale es-ES)
-  formatDateShort,   // (date: string | Date) → "05/04/26"
-  formatPercent,     // (ratio: number) → "+12,5 %" con signo
+  formatCurrency, // (cents: number, currency: string) → "850,75 €"
+  formatCents, // (cents: number) → "850,75" (sin símbolo)
+  decToCents, // (euros: number) → centavos INTEGER
+  centsToDec, // (cents: number) → decimal (solo para display, no para cálculos)
+  formatDate, // (date: string | Date) → "5 abr 2026" (locale es-ES)
+  formatDateShort, // (date: string | Date) → "05/04/26"
+  formatPercent, // (ratio: number) → "+12,5 %" con signo
 } from "@/lib/financial/formatters";
 ```
 

@@ -119,7 +119,7 @@ export function TransactionForm() {
       <div className="space-y-1">
         <label htmlFor={descId} className="text-sm font-medium">
           {t("description.label")}
-          <span aria-hidden="true" className="text-destructive ml-1">
+          <span aria-hidden="true" className="ml-1 text-destructive">
             *
           </span>
           <span className="sr-only"> (required)</span>
@@ -130,11 +130,11 @@ export function TransactionForm() {
           aria-required
           aria-invalid={!!errors.description}
           aria-describedby={errors.description ? errId : undefined}
-          className="focus-visible:ring-primary focus-visible:ring-2"
+          className="focus-visible:ring-2 focus-visible:ring-primary"
           {...register("description")}
         />
         {errors.description && (
-          <p id={errId} role="alert" className="text-destructive flex items-center gap-1 text-xs">
+          <p id={errId} role="alert" className="flex items-center gap-1 text-xs text-destructive">
             <AlertCircle className="h-3 w-3" aria-hidden="true" />
             {errors.description.message}
           </p>

@@ -126,10 +126,7 @@ export async function exportReportToPDF(
 ### Excel (CSV for simple reports)
 
 ```typescript
-export function exportTransactionsToCSV(
-  transactions: Transaction[],
-  locale = "es-ES",
-): string;
+export function exportTransactionsToCSV(transactions: Transaction[], locale = "es-ES"): string;
 // Columns: Fecha, Descripción, Categoría, Cuenta, Importe, Tipo
 // Dates in dd/MM/yyyy, amounts with comma decimal separator (es-ES)
 ```

@@ -1,81 +1,68 @@
 {
-    "$schema": "https://json.schemastore.org/claude-code-settings.json",
-    "agent": "project-orchestrator",
-    "permissions": {
-        "defaultMode": "acceptEdits",
-        "allow": [
-            "Bash(npm run dev)",
-            "Bash(npm run build)",
-            "Bash(npm run type-check)",
-            "Bash(npm run test *)",
-            "Bash(npm run test:watch)",
-            "Bash(npm run test:e2e *)",
-            "Bash(npm run lint)",
-            "Bash(npm run lint:fix)",
-            "Bash(npm run format)",
-            "Bash(npx supabase start)",
-            "Bash(npx supabase stop)",
-            "Bash(npx supabase status)",
-            "Bash(npx supabase db diff *)",
-            "Bash(npx supabase db push)",
-            "Bash(npx supabase gen types typescript *)",
-            "Bash(git status)",
-            "Bash(git diff *)",
-            "Bash(git log *)",
-            "Bash(git add *)",
-            "Bash(git commit *)",
-            "Bash(git branch *)",
-            "Bash(git checkout *)",
-            "Bash(npx tsc --noEmit)"
-        ],
-        "ask": [
-            "Bash(git push *)",
-            "Bash(git reset *)",
-            "Bash(npx supabase db reset *)"
-        ],
-        "deny": [
-            "Read(./.env)",
-            "Read(./.env.*)",
-            "Read(./.env.local)",
-            "Read(./secrets/**)",
-            "Bash(rm -rf *)",
-            "Bash(curl *)",
-            "Bash(wget *)"
-        ],
-        "additionalDirectories": [
-            "../docs"
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "agent": "project-orchestrator",
+  "permissions": {
+    "defaultMode": "acceptEdits",
+    "allow": [
+      "Bash(npm run dev)",
+      "Bash(npm run build)",
+      "Bash(npm run type-check)",
+      "Bash(npm run test *)",
+      "Bash(npm run test:watch)",
+      "Bash(npm run test:e2e *)",
+      "Bash(npm run lint)",
+      "Bash(npm run lint:fix)",
+      "Bash(npm run format)",
+      "Bash(npx supabase start)",
+      "Bash(npx supabase stop)",
+      "Bash(npx supabase status)",
+      "Bash(npx supabase db diff *)",
+      "Bash(npx supabase db push)",
+      "Bash(npx supabase gen types typescript *)",
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git branch *)",
+      "Bash(git checkout *)",
+      "Bash(npx tsc --noEmit)"
+    ],
+    "ask": ["Bash(git push *)", "Bash(git reset *)", "Bash(npx supabase db reset *)"],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./.env.local)",
+      "Read(./secrets/**)",
+      "Bash(rm -rf *)",
+      "Bash(curl *)",
+      "Bash(wget *)"
+    ],
+    "additionalDirectories": ["../docs"]
+  },
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
+    "CLAUDE_CODE_EFFORT_LEVEL": "medium"
+  },
+  "worktree": {
+    "sparsePaths": ["app", "components", "lib", "supabase", "types", "tests"]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx tsc --noEmit --skipLibCheck 2>&1 | head -20"
+          }
         ]
-    },
-    "env": {
-        "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
-        "CLAUDE_CODE_EFFORT_LEVEL": "medium"
-    },
-    "worktree": {
-        "sparsePaths": [
-            "app",
-            "components",
-            "lib",
-            "supabase",
-            "types",
-            "tests"
-        ]
-    },
-    "hooks": {
-        "PostToolUse": [
-            {
-                "matcher": "Edit|Write",
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "npx tsc --noEmit --skipLibCheck 2>&1 | head -20"
-                    }
-                ]
-            }
-        ]
-    },
-    "mcpServers": {
-        "supabase": {
-            "url": "https://mcp.supabase.com/mcp?project_ref=febokmcgjatrfdfuaeyk&features=account%2Cdatabase%2Cdebugging%2Cdevelopment%2Cfunctions%2Cbranching%2Cstorage"
-        }
+      }
+    ]
+  },
+  "mcpServers": {
+    "supabase": {
+      "url": "https://mcp.supabase.com/mcp?project_ref=febokmcgjatrfdfuaeyk&features=account%2Cdatabase%2Cdebugging%2Cdevelopment%2Cfunctions%2Cbranching%2Cstorage"
     }
+  }
 }

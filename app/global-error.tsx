@@ -28,17 +28,12 @@ export default function GlobalError({
           padding: "1rem",
         }}
       >
-        <h1 style={{ fontSize: "1.5rem", fontWeight: 700 }}>
-          Algo ha ido mal
-        </h1>
+        <h1 style={{ fontSize: "1.5rem", fontWeight: 700 }}>Algo ha ido mal</h1>
         <p style={{ color: "#6b7280", textAlign: "center", maxWidth: "400px" }}>
-          Se ha producido un error inesperado. El equipo ha sido notificado
-          automáticamente.
+          Se ha producido un error inesperado. El equipo ha sido notificado automáticamente.
         </p>
         {error.digest && (
-          <p style={{ fontSize: "0.75rem", color: "#9ca3af" }}>
-            Referencia: {error.digest}
-          </p>
+          <p style={{ fontSize: "0.75rem", color: "#9ca3af" }}>Referencia: {error.digest}</p>
         )}
         <button
           onClick={reset}
@@ -58,4 +53,3 @@ export default function GlobalError({
     </html>
   );
 }
-

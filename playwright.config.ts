@@ -27,7 +27,7 @@ export default defineConfig({
     },
   ],
   webServer: process.env.PLAYWRIGHT_TEST_BASE_URL
-    ? undefined  // En CI, usar el server ya desplegado
+    ? undefined // En CI, usar el server ya desplegado
     : {
         command: "npm run dev",
         url: "http://localhost:3000",

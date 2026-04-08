@@ -1,9 +1,5 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
-import {
-  addFrequency,
-  getDueDatesUntil,
-  type CommitmentFrequency,
-} from "../_shared/date-utils.ts";
+import { addFrequency, getDueDatesUntil, type CommitmentFrequency } from "../_shared/date-utils.ts";
 
 interface RecurringCommitmentRow {
   account_id: string;
@@ -67,11 +63,7 @@ Deno.serve(async (request) => {
   let processedCommitments = 0;
 
   for (const commitment of rows) {
-    const dueDates = getDueDatesUntil(
-      commitment.next_due_date,
-      commitment.frequency,
-      runDate,
-    );
+    const dueDates = getDueDatesUntil(commitment.next_due_date, commitment.frequency, runDate);
 
     if (!dueDates.length) {
       continue;
@@ -89,9 +81,7 @@ Deno.serve(async (request) => {
       return Response.json({ error: existingError.message }, { status: 500 });
     }
 
-    const existingDates = new Set(
-      (existingRows ?? []).map((row) => row.transaction_date),
-    );
+    const existingDates = new Set((existingRows ?? []).map((row) => row.transaction_date));
 
     const inserts = dueDates
       .filter((dueDate) => !existingDates.has(dueDate))

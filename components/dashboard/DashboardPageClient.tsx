@@ -1,7 +1,7 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import Link from 'next/link'
+import { useState } from "react";
+import Link from "next/link";
 import {
   AlertTriangle,
   ArrowDownCircle,
@@ -13,8 +13,8 @@ import {
   PiggyBank,
   Settings2,
   Sparkles,
-} from 'lucide-react'
-import { useTranslations } from 'next-intl'
+} from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
   Bar,
   BarChart,
@@ -26,40 +26,40 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from 'recharts'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { AnimatedList, AnimatedItem } from '@/components/ui/AnimatedList'
-import { useDashboardSummaryQuery, useCategoriesQuery } from '@/hooks/usePhaseThree'
-import { formatCurrency } from '@/lib/financial/formatters'
-import type { DashboardWidgetId } from '@/lib/dashboard/types'
-import { useDashboardPreferencesStore } from '@/stores/useDashboardPreferencesStore'
-import { SwipeableTransactionRow } from '@/components/ui/SwipeableTransactionRow'
-import { useDeleteTransaction } from '@/hooks/useDeleteTransaction'
-import { QuickActionButtons } from '@/components/dashboard/QuickActionButtons'
+} from "recharts";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AnimatedList, AnimatedItem } from "@/components/ui/AnimatedList";
+import { useDashboardSummaryQuery, useCategoriesQuery } from "@/hooks/usePhaseThree";
+import { formatCurrency } from "@/lib/financial/formatters";
+import type { DashboardWidgetId } from "@/lib/dashboard/types";
+import { useDashboardPreferencesStore } from "@/stores/useDashboardPreferencesStore";
+import { SwipeableTransactionRow } from "@/components/ui/SwipeableTransactionRow";
+import { useDeleteTransaction } from "@/hooks/useDeleteTransaction";
+import { QuickActionButtons } from "@/components/dashboard/QuickActionButtons";
 
 const widgetLabels: Record<DashboardWidgetId, string> = {
-  'active-alerts': 'activeAlerts',
-  'monthly-balance': 'monthBalance',
-  portfolio: 'portfolio',
-  'projected-flow': 'projectedFlow',
-  'recent-transactions': 'recentTransactions',
-  'top-categories': 'topCategories',
-  'upcoming-commitments': 'upcomingCommitments',
-  'upcoming-deadlines': 'upcomingDeadlines',
-}
+  "active-alerts": "activeAlerts",
+  "monthly-balance": "monthBalance",
+  portfolio: "portfolio",
+  "projected-flow": "projectedFlow",
+  "recent-transactions": "recentTransactions",
+  "top-categories": "topCategories",
+  "upcoming-commitments": "upcomingCommitments",
+  "upcoming-deadlines": "upcomingDeadlines",
+};
 
 function formatTooltipValue(value: unknown) {
-  if (typeof value === 'number') {
-    return formatCurrency(value)
+  if (typeof value === "number") {
+    return formatCurrency(value);
   }
 
   if (Array.isArray(value)) {
-    return value.join(', ')
+    return value.join(", ");
   }
 
-  return String(value ?? '')
+  return String(value ?? "");
 }
 
 function SummaryCard({
@@ -68,13 +68,13 @@ function SummaryCard({
   label,
   tone,
 }: {
-  amount: number
-  icon: typeof ArrowUpCircle
-  label: string
-  tone: 'income' | 'expense' | 'neutral'
+  amount: number;
+  icon: typeof ArrowUpCircle;
+  label: string;
+  tone: "income" | "expense" | "neutral";
 }) {
   const accent =
-    tone === 'income' ? 'text-emerald-600' : tone === 'expense' ? 'text-rose-600' : 'text-blue-600'
+    tone === "income" ? "text-emerald-600" : tone === "expense" ? "text-rose-600" : "text-blue-600";
 
   return (
     <Card className="border-border/70 bg-card/90 shadow-sm">
@@ -92,61 +92,63 @@ function SummaryCard({
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 export function DashboardPageClient() {
-  const t = useTranslations('dashboard')
-  const { data, isLoading } = useDashboardSummaryQuery()
-  const categoriesQuery = useCategoriesQuery()
-  const hidden = useDashboardPreferencesStore((state) => state.hidden)
-  const order = useDashboardPreferencesStore((state) => state.order)
-  const deleteTransactionMutation = useDeleteTransaction()
-  const moveWidget = useDashboardPreferencesStore((state) => state.moveWidget)
-  const toggleWidget = useDashboardPreferencesStore((state) => state.toggleWidget)
-  const reset = useDashboardPreferencesStore((state) => state.reset)
-  const [customizeOpen, setCustomizeOpen] = useState(false)
-  const [draggingId, setDraggingId] = useState<DashboardWidgetId | null>(null)
+  const t = useTranslations("dashboard");
+  const { data, isLoading } = useDashboardSummaryQuery();
+  const categoriesQuery = useCategoriesQuery();
+  const hidden = useDashboardPreferencesStore((state) => state.hidden);
+  const order = useDashboardPreferencesStore((state) => state.order);
+  const deleteTransactionMutation = useDeleteTransaction();
+  const moveWidget = useDashboardPreferencesStore((state) => state.moveWidget);
+  const toggleWidget = useDashboardPreferencesStore((state) => state.toggleWidget);
+  const reset = useDashboardPreferencesStore((state) => state.reset);
+  const [customizeOpen, setCustomizeOpen] = useState(false);
+  const [draggingId, setDraggingId] = useState<DashboardWidgetId | null>(null);
 
-  const visibleOrder = order.filter((widgetId) => !hidden.includes(widgetId))
+  const visibleOrder = order.filter((widgetId) => !hidden.includes(widgetId));
 
   const categoryMap: Record<string, string> = Object.fromEntries(
     (categoriesQuery.data ?? []).map((c) => [c.name, c.id]),
-  )
+  );
 
   const widgets: Record<DashboardWidgetId, React.ReactNode> = {
-    'monthly-balance': (
+    "monthly-balance": (
       <div className="grid gap-4 md:grid-cols-3">
         <SummaryCard
           amount={data?.monthly_balance.balance_cents ?? 0}
           icon={PiggyBank}
-          label={t('monthBalance')}
+          label={t("monthBalance")}
           tone="neutral"
         />
         <SummaryCard
           amount={data?.monthly_balance.income_cents ?? 0}
           icon={ArrowUpCircle}
-          label={t('monthIncome')}
+          label={t("monthIncome")}
           tone="income"
         />
         <SummaryCard
           amount={-(data?.monthly_balance.expense_cents ?? 0)}
           icon={ArrowDownCircle}
-          label={t('monthExpense')}
+          label={t("monthExpense")}
           tone="expense"
         />
       </div>
     ),
-    'projected-flow': (
+    "projected-flow": (
       <Card className="border-border/70">
         <CardHeader>
-          <CardTitle>{t('projectedFlow')}</CardTitle>
+          <CardTitle>{t("projectedFlow")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-3 sm:grid-cols-3">
             {(data?.projected_flow.buckets ?? []).map((bucket) => (
               <div key={bucket.label} className="rounded-2xl bg-muted/40 p-4">
-                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{bucket.label}</p>
+                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                  {bucket.label}
+                </p>
                 <p className="mt-2 text-xl font-semibold">{formatCurrency(bucket.net_cents)}</p>
               </div>
             ))}
@@ -162,7 +164,7 @@ export function DashboardPageClient() {
                   {(data?.projected_flow.points ?? []).map((point) => (
                     <Cell
                       key={point.month_date}
-                      fill={point.net_cents >= 0 ? 'hsl(142 72% 45%)' : 'hsl(0 84% 60%)'}
+                      fill={point.net_cents >= 0 ? "hsl(142 72% 45%)" : "hsl(0 84% 60%)"}
                     />
                   ))}
                 </Bar>
@@ -172,10 +174,10 @@ export function DashboardPageClient() {
         </CardContent>
       </Card>
     ),
-    'top-categories': (
+    "top-categories": (
       <Card className="border-border/70">
         <CardHeader>
-          <CardTitle>{t('topCategories')}</CardTitle>
+          <CardTitle>{t("topCategories")}</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-6 md:grid-cols-[220px,1fr]">
           <div className="h-56">
@@ -192,7 +194,10 @@ export function DashboardPageClient() {
                   {(data?.top_categories ?? []).map((category, index) => (
                     <Cell
                       key={category.category_id ?? index}
-                      fill={category.color ?? ['#2563eb', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'][index % 5]}
+                      fill={
+                        category.color ??
+                        ["#2563eb", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"][index % 5]
+                      }
                     />
                   ))}
                 </Pie>
@@ -202,16 +207,19 @@ export function DashboardPageClient() {
           </div>
           <div className="space-y-3">
             {(data?.top_categories ?? []).map((category) => (
-              <div key={category.category_id ?? category.name} className="flex items-center justify-between rounded-2xl bg-muted/40 px-4 py-3">
+              <div
+                key={category.category_id ?? category.name}
+                className="flex items-center justify-between rounded-2xl bg-muted/40 px-4 py-3"
+              >
                 <div className="flex items-center gap-3">
                   <span
                     className="h-3 w-3 rounded-full"
-                    style={{ backgroundColor: category.color ?? '#2563eb' }}
+                    style={{ backgroundColor: category.color ?? "#2563eb" }}
                   />
                   <div>
                     <p className="font-medium">{category.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {category.transaction_count} {t('movements')}
+                      {category.transaction_count} {t("movements")}
                     </p>
                   </div>
                 </div>
@@ -222,46 +230,60 @@ export function DashboardPageClient() {
         </CardContent>
       </Card>
     ),
-    'upcoming-commitments': (
+    "upcoming-commitments": (
       <Card className="border-border/70">
         <CardHeader className="flex flex-row items-center justify-between space-y-0">
-          <CardTitle>{t('upcomingCommitments')}</CardTitle>
+          <CardTitle>{t("upcomingCommitments")}</CardTitle>
           <Button asChild variant="outline" className="rounded-2xl">
-            <Link href="/commitments">{t('openCommitments')}</Link>
+            <Link href="/commitments">{t("openCommitments")}</Link>
           </Button>
         </CardHeader>
         <CardContent className="space-y-3">
           {(data?.upcoming_commitments ?? []).map((commitment) => (
-            <div key={commitment.id} className="flex items-center justify-between rounded-2xl border border-border/60 bg-muted/30 px-4 py-3">
+            <div
+              key={commitment.id}
+              className="flex items-center justify-between rounded-2xl border border-border/60 bg-muted/30 px-4 py-3"
+            >
               <div>
                 <p className="font-medium">{commitment.name}</p>
                 <p className="text-xs text-muted-foreground">{commitment.next_due_date}</p>
               </div>
-              <p className={commitment.is_income ? 'font-semibold text-emerald-600' : 'font-semibold'}>
-                {formatCurrency(commitment.is_income ? commitment.amount_cents : -commitment.amount_cents)}
+              <p
+                className={
+                  commitment.is_income ? "font-semibold text-emerald-600" : "font-semibold"
+                }
+              >
+                {formatCurrency(
+                  commitment.is_income ? commitment.amount_cents : -commitment.amount_cents,
+                )}
               </p>
             </div>
           ))}
         </CardContent>
       </Card>
     ),
-    'upcoming-deadlines': (
+    "upcoming-deadlines": (
       <Card className="border-border/70">
         <CardHeader className="flex flex-row items-center justify-between space-y-0">
-          <CardTitle>{t('upcomingDeadlines')}</CardTitle>
+          <CardTitle>{t("upcomingDeadlines")}</CardTitle>
           <Button asChild variant="outline" className="rounded-2xl">
-            <Link href="/alerts">{t('openAlerts')}</Link>
+            <Link href="/alerts">{t("openAlerts")}</Link>
           </Button>
         </CardHeader>
         <CardContent className="space-y-3">
           {(data?.upcoming_deadlines ?? []).map((alert) => (
-            <div key={alert.id} className="flex items-center justify-between rounded-2xl border border-border/60 bg-muted/30 px-4 py-3">
+            <div
+              key={alert.id}
+              className="flex items-center justify-between rounded-2xl border border-border/60 bg-muted/30 px-4 py-3"
+            >
               <div>
                 <p className="font-medium">{alert.name}</p>
                 <p className="text-xs text-muted-foreground">{alert.next_due_date}</p>
               </div>
               <p className="font-semibold">
-                {alert.expected_amount_cents !== null ? formatCurrency(alert.expected_amount_cents) : ''}
+                {alert.expected_amount_cents !== null
+                  ? formatCurrency(alert.expected_amount_cents)
+                  : ""}
               </p>
             </div>
           ))}
@@ -271,27 +293,31 @@ export function DashboardPageClient() {
     portfolio: (
       <Card className="border-border/70">
         <CardHeader>
-          <CardTitle>{t('portfolio')}</CardTitle>
+          <CardTitle>{t("portfolio")}</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-3 sm:grid-cols-2">
           <div className="rounded-2xl bg-muted/40 p-4">
-            <p className="text-sm text-muted-foreground">{t('portfolioValue')}</p>
+            <p className="text-sm text-muted-foreground">{t("portfolioValue")}</p>
             <p className="mt-2 text-2xl font-semibold">
               {formatCurrency(data?.portfolio_summary.total_value_cents ?? 0)}
             </p>
           </div>
           <div className="rounded-2xl bg-muted/40 p-4">
-            <p className="text-sm text-muted-foreground">{t('dayPnL')}</p>
-            <p className="mt-2 text-2xl font-semibold">{formatCurrency(data?.portfolio_summary.day_pnl_cents ?? 0)}</p>
+            <p className="text-sm text-muted-foreground">{t("dayPnL")}</p>
+            <p className="mt-2 text-2xl font-semibold">
+              {formatCurrency(data?.portfolio_summary.day_pnl_cents ?? 0)}
+            </p>
           </div>
         </CardContent>
       </Card>
     ),
-    'active-alerts': (
+    "active-alerts": (
       <Card className="border-border/70">
         <CardHeader className="flex flex-row items-center justify-between space-y-0">
-          <CardTitle>{t('activeAlerts')}</CardTitle>
-          <Badge variant="secondary" className="rounded-full">{data?.active_alerts.total ?? 0}</Badge>
+          <CardTitle>{t("activeAlerts")}</CardTitle>
+          <Badge variant="secondary" className="rounded-full">
+            {data?.active_alerts.total ?? 0}
+          </Badge>
         </CardHeader>
         <CardContent className="space-y-3">
           {(data?.active_alerts.items ?? []).map((alert) => (
@@ -303,11 +329,11 @@ export function DashboardPageClient() {
               <div className="flex items-start gap-3">
                 <AlertTriangle
                   className={
-                    alert.severity === 'critical'
-                      ? 'mt-0.5 h-4 w-4 text-rose-600'
-                      : alert.severity === 'warning'
-                        ? 'mt-0.5 h-4 w-4 text-amber-500'
-                        : 'mt-0.5 h-4 w-4 text-blue-600'
+                    alert.severity === "critical"
+                      ? "mt-0.5 h-4 w-4 text-rose-600"
+                      : alert.severity === "warning"
+                        ? "mt-0.5 h-4 w-4 text-amber-500"
+                        : "mt-0.5 h-4 w-4 text-blue-600"
                   }
                 />
                 <div>
@@ -315,19 +341,21 @@ export function DashboardPageClient() {
                   <p className="text-xs text-muted-foreground">{alert.detail}</p>
                 </div>
               </div>
-              <p className="text-sm font-semibold">{alert.amount_cents !== null ? formatCurrency(alert.amount_cents) : ''}</p>
+              <p className="text-sm font-semibold">
+                {alert.amount_cents !== null ? formatCurrency(alert.amount_cents) : ""}
+              </p>
             </Link>
           ))}
         </CardContent>
       </Card>
     ),
-    'recent-transactions': (
+    "recent-transactions": (
       <Card className="border-border/70">
         <CardHeader className="flex flex-row items-center justify-between space-y-0">
-          <CardTitle>{t('recentTransactions')}</CardTitle>
+          <CardTitle>{t("recentTransactions")}</CardTitle>
           <Badge variant="secondary" className="rounded-full">
             <Sparkles className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
-            {t('liveBadge')}
+            {t("liveBadge")}
           </Badge>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -340,11 +368,18 @@ export function DashboardPageClient() {
                 <div>
                   <p className="font-medium">{transaction.description}</p>
                   <p className="text-xs text-muted-foreground">
-                    {(transaction.category?.name ?? t('uncategorized'))} · {transaction.transaction_date}
+                    {transaction.category?.name ?? t("uncategorized")} ·{" "}
+                    {transaction.transaction_date}
                   </p>
                 </div>
-                <p className={transaction.is_income ? 'font-semibold text-emerald-600' : 'font-semibold'}>
-                  {formatCurrency(transaction.is_income ? transaction.amount_cents : -transaction.amount_cents)}
+                <p
+                  className={
+                    transaction.is_income ? "font-semibold text-emerald-600" : "font-semibold"
+                  }
+                >
+                  {formatCurrency(
+                    transaction.is_income ? transaction.amount_cents : -transaction.amount_cents,
+                  )}
                 </p>
               </div>
             </SwipeableTransactionRow>
@@ -352,7 +387,7 @@ export function DashboardPageClient() {
         </CardContent>
       </Card>
     ),
-  }
+  };
 
   return (
     <div className="space-y-6">
@@ -361,48 +396,77 @@ export function DashboardPageClient() {
           <div className="space-y-2">
             <Badge variant="secondary" className="rounded-full px-3 py-1">
               <LayoutDashboard className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
-              {t('liveBadge')}
+              {t("liveBadge")}
             </Badge>
             <div>
-              <h1 className="text-3xl font-semibold tracking-tight">{t('title')}</h1>
-              <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{t('subtitle')}</p>
+              <h1 className="text-3xl font-semibold tracking-tight">{t("title")}</h1>
+              <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{t("subtitle")}</p>
             </div>
           </div>
 
           <div className="flex flex-wrap gap-2">
-            <Button type="button" variant="outline" className="rounded-2xl" onClick={() => setCustomizeOpen((open) => !open)}>
+            <Button
+              type="button"
+              variant="outline"
+              className="rounded-2xl"
+              onClick={() => setCustomizeOpen((open) => !open)}
+            >
               <Settings2 className="mr-2 h-4 w-4" aria-hidden="true" />
-              {t('customize')}
+              {t("customize")}
             </Button>
             <Button asChild size="lg" className="min-h-[48px] rounded-2xl">
-              <Link href="/commitments">{t('openCommitments')}</Link>
+              <Link href="/commitments">{t("openCommitments")}</Link>
             </Button>
           </div>
         </div>
 
         <AnimatedList className="mt-6 grid gap-4 md:grid-cols-3">
-          <AnimatedItem><SummaryCard amount={data?.hero.total_cents ?? 0} icon={PiggyBank} label={t('netWorth')} tone="neutral" /></AnimatedItem>
-          <AnimatedItem><SummaryCard amount={data?.hero.cash_cents ?? 0} icon={ArrowUpCircle} label={t('cashPosition')} tone="income" /></AnimatedItem>
+          <AnimatedItem>
+            <SummaryCard
+              amount={data?.hero.total_cents ?? 0}
+              icon={PiggyBank}
+              label={t("netWorth")}
+              tone="neutral"
+            />
+          </AnimatedItem>
+          <AnimatedItem>
+            <SummaryCard
+              amount={data?.hero.cash_cents ?? 0}
+              icon={ArrowUpCircle}
+              label={t("cashPosition")}
+              tone="income"
+            />
+          </AnimatedItem>
           <AnimatedItem>
             <SummaryCard
               amount={data?.hero.monthly_delta_cents ?? 0}
-              icon={data?.hero.monthly_delta_cents && data.hero.monthly_delta_cents < 0 ? ArrowDownCircle : ArrowUpCircle}
-              label={t('monthlyDelta')}
-              tone={data?.hero.monthly_delta_cents && data.hero.monthly_delta_cents < 0 ? 'expense' : 'income'}
+              icon={
+                data?.hero.monthly_delta_cents && data.hero.monthly_delta_cents < 0
+                  ? ArrowDownCircle
+                  : ArrowUpCircle
+              }
+              label={t("monthlyDelta")}
+              tone={
+                data?.hero.monthly_delta_cents && data.hero.monthly_delta_cents < 0
+                  ? "expense"
+                  : "income"
+              }
             />
           </AnimatedItem>
         </AnimatedList>
       </section>
 
-      <section aria-label={t('quickActions.ariaLabel')}>
+      <section aria-label={t("quickActions.ariaLabel")}>
         <QuickActionButtons categoryMap={categoryMap} />
       </section>
 
       {customizeOpen ? (
         <Card className="border-border/70">
           <CardHeader className="flex flex-row items-center justify-between space-y-0">
-            <CardTitle>{t('customize')}</CardTitle>
-            <Button type="button" variant="outline" onClick={() => reset()}>{t('resetLayout')}</Button>
+            <CardTitle>{t("customize")}</CardTitle>
+            <Button type="button" variant="outline" onClick={() => reset()}>
+              {t("resetLayout")}
+            </Button>
           </CardHeader>
           <CardContent className="space-y-2">
             {order.map((widgetId, index) => (
@@ -413,7 +477,7 @@ export function DashboardPageClient() {
                 onDragOver={(event) => event.preventDefault()}
                 onDrop={() => {
                   if (draggingId) {
-                    moveWidget(draggingId, index)
+                    moveWidget(draggingId, index);
                   }
                 }}
                 className="flex items-center justify-between rounded-2xl border border-border/60 px-4 py-3"
@@ -422,8 +486,19 @@ export function DashboardPageClient() {
                   <GripVertical className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
                   <span className="font-medium">{t(`widgets.${widgetLabels[widgetId]}`)}</span>
                 </div>
-                <Button type="button" variant="ghost" size="icon" onClick={() => toggleWidget(widgetId)} aria-label={hidden.includes(widgetId) ? t('showWidget') : t('hideWidget')} aria-pressed={hidden.includes(widgetId)}>
-                  {hidden.includes(widgetId) ? <EyeOff className="h-4 w-4" aria-hidden /> : <Eye className="h-4 w-4" aria-hidden />}
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => toggleWidget(widgetId)}
+                  aria-label={hidden.includes(widgetId) ? t("showWidget") : t("hideWidget")}
+                  aria-pressed={hidden.includes(widgetId)}
+                >
+                  {hidden.includes(widgetId) ? (
+                    <EyeOff className="h-4 w-4" aria-hidden />
+                  ) : (
+                    <Eye className="h-4 w-4" aria-hidden />
+                  )}
                 </Button>
               </div>
             ))}
@@ -441,5 +516,5 @@ export function DashboardPageClient() {
         visibleOrder.map((widgetId) => <div key={widgetId}>{widgets[widgetId]}</div>)
       )}
     </div>
-  )
+  );
 }

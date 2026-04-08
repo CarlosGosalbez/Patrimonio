@@ -1,44 +1,54 @@
-import { z } from 'zod'
-import { dateString, moneyInput, optionalNullableString, safeName, safeString } from '@/lib/validation/safe-zod'
+import { z } from "zod";
+import {
+  dateString,
+  moneyInput,
+  optionalNullableString,
+  safeName,
+  safeString,
+} from "@/lib/validation/safe-zod";
 
-const uuid = z.string().uuid()
-const isoCurrency = z.string().trim().length(3).transform((value) => value.toUpperCase())
-const integerLike = z.coerce.number().int().min(0)
+const uuid = z.string().uuid();
+const isoCurrency = z
+  .string()
+  .trim()
+  .length(3)
+  .transform((value) => value.toUpperCase());
+const integerLike = z.coerce.number().int().min(0);
 const optionalRateInput = z
   .union([z.string().trim(), z.null(), z.undefined()])
   .transform((value) => {
     if (!value) {
-      return null
+      return null;
     }
 
     if (!/^\d{1,3}([.,]\d{1,3})?$/.test(value)) {
-      throw new Error('Invalid interest rate')
+      throw new Error("Invalid interest rate");
     }
 
-    return Number.parseFloat(value.replace(',', '.'))
-  })
+    return Number.parseFloat(value.replace(",", "."));
+  });
 
 export const commitmentTypeSchema = z.enum([
-  'mortgage',
-  'rent_income',
-  'rent_expense',
-  'subscription',
-  'tax',
-  'insurance',
-  'utility',
-  'other',
-])
+  "mortgage",
+  "rent_income",
+  "rent_expense",
+  "subscription",
+  "tax",
+  "insurance",
+  "utility",
+  "other",
+]);
 
 export const commitmentFrequencySchema = z.enum([
-  'daily',
-  'weekly',
-  'biweekly',
-  'monthly',
-  'bimonthly',
-  'quarterly',
-  'semiannual',
-  'annual',
-])
+  "daily",
+  "weekly",
+  "biweekly",
+  "monthly",
+  "bimonthly",
+  "quarterly",
+  "semiannual",
+  "annual",
+]);
 
 export const commitmentInputSchema = z
   .object({
@@ -46,23 +56,25 @@ export const commitmentInputSchema = z
     advance_notice_days: integerLike.optional().default(7),
     allows_early_repayment: z.boolean().optional().default(false),
     amount_input: moneyInput,
-    cancelled_at: z.union([dateString, z.literal(''), z.null(), z.undefined()]).transform((value) => {
-      if (!value) {
-        return null
-      }
+    cancelled_at: z
+      .union([dateString, z.literal(""), z.null(), z.undefined()])
+      .transform((value) => {
+        if (!value) {
+          return null;
+        }
 
-      return value
-    }),
+        return value;
+      }),
     category_id: z.union([uuid, z.null()]).optional().default(null),
     commitment_type: commitmentTypeSchema,
-    currency: isoCurrency.optional().default('EUR'),
+    currency: isoCurrency.optional().default("EUR"),
     description: optionalNullableString(safeString(2000)),
-    end_date: z.union([dateString, z.literal(''), z.null(), z.undefined()]).transform((value) => {
+    end_date: z.union([dateString, z.literal(""), z.null(), z.undefined()]).transform((value) => {
       if (!value) {
-        return null
+        return null;
       }
 
-      return value
+      return value;
     }),
     frequency: commitmentFrequencySchema,
     interest_rate_input: optionalRateInput,
@@ -79,7 +91,7 @@ export const commitmentInputSchema = z
     start_date: dateString,
     tolerance_days: integerLike.optional().default(3),
   })
-  .strict()
+  .strict();
 
 export const commitmentPatchSchema = z
   .object({
@@ -87,24 +99,30 @@ export const commitmentPatchSchema = z
     advance_notice_days: integerLike.optional(),
     allows_early_repayment: z.boolean().optional(),
     amount_input: moneyInput.optional(),
-    cancelled_at: z.union([dateString, z.literal(''), z.null(), z.undefined()]).optional().transform((value) => {
-      if (value === undefined || value === '' || value === null) {
-        return null
-      }
+    cancelled_at: z
+      .union([dateString, z.literal(""), z.null(), z.undefined()])
+      .optional()
+      .transform((value) => {
+        if (value === undefined || value === "" || value === null) {
+          return null;
+        }
 
-      return value
-    }),
+        return value;
+      }),
     category_id: z.union([uuid, z.null()]).optional(),
     commitment_type: commitmentTypeSchema.optional(),
     currency: isoCurrency.optional(),
     description: optionalNullableString(safeString(2000)).optional(),
-    end_date: z.union([dateString, z.literal(''), z.null(), z.undefined()]).optional().transform((value) => {
-      if (value === undefined || value === '' || value === null) {
-        return null
-      }
+    end_date: z
+      .union([dateString, z.literal(""), z.null(), z.undefined()])
+      .optional()
+      .transform((value) => {
+        if (value === undefined || value === "" || value === null) {
+          return null;
+        }
 
-      return value
-    }),
+        return value;
+      }),
     frequency: commitmentFrequencySchema.optional(),
     interest_rate_input: optionalRateInput.optional(),
     is_active: z.boolean().optional(),
@@ -123,5 +141,5 @@ export const commitmentPatchSchema = z
   })
   .strict()
   .refine((value) => Object.keys(value).length > 0, {
-    message: 'At least one field is required',
-  })
+    message: "At least one field is required",
+  });

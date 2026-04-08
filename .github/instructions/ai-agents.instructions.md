@@ -192,7 +192,6 @@ financiero regulado. Consult a un profesional antes de tomar decisiones de inver
 // Append to every Investment Research response
 ```
 
-
 ## abortSignal — Cancelación de streaming
 
 Siempre pasar `abortSignal: req.signal` a `streamText` para cancelar cuando el cliente desconecta:
@@ -213,16 +212,16 @@ return result.toDataStreamResponse();
 
 ```typescript
 // hooks/use-agent-chat.ts
-import { useChat } from 'ai/react';
+import { useChat } from "ai/react";
 
-export function useAgentChat(agent: 'insights' | 'budget-optimizer' | 'investment-research') {
+export function useAgentChat(agent: "insights" | "budget-optimizer" | "investment-research") {
   return useChat({
     api: `/api/ai/${agent}`,
     maxSteps: 8,
     onError: (error) => {
       // Handle AbortError silently (user navigation)
-      if (error.name === 'AbortError') return;
-      console.error('Agent error:', error);
+      if (error.name === "AbortError") return;
+      console.error("Agent error:", error);
     },
   });
 }

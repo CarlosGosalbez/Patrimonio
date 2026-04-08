@@ -1,11 +1,6 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { Resend } from "npm:resend@4.6.0";
-import {
-  addDateDays,
-  isMonday,
-  parseDate,
-  toDateString,
-} from "../_shared/date-utils.ts";
+import { addDateDays, isMonday, parseDate, toDateString } from "../_shared/date-utils.ts";
 
 interface CustomAlertRow {
   advance_notice_days: number;
@@ -130,9 +125,7 @@ function monthStart(dateValue: string) {
 
 function monthEnd(dateValue: string) {
   const date = parseDate(monthStart(dateValue));
-  const lastDay = new Date(
-    Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1, 0),
-  ).getUTCDate();
+  const lastDay = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1, 0)).getUTCDate();
 
   return `${dateValue.slice(0, 7)}-${String(lastDay).padStart(2, "0")}`;
 }
@@ -151,8 +144,7 @@ function standardDeviation(values: number[]) {
   }
 
   const mean = values.reduce((sum, value) => sum + value, 0) / values.length;
-  const variance =
-    values.reduce((sum, value) => sum + (value - mean) ** 2, 0) / values.length;
+  const variance = values.reduce((sum, value) => sum + (value - mean) ** 2, 0) / values.length;
 
   return Math.sqrt(variance);
 }
@@ -298,9 +290,7 @@ async function createBudgetAndAnomalyNotifications(runDate: string) {
   const monthlyRows = (monthlySpending ?? []) as CategoryMonthlyRow[];
   const categoryIds = [
     ...new Set(
-      monthlyRows
-        .map((row) => row.category_id)
-        .filter((row): row is string => Boolean(row)),
+      monthlyRows.map((row) => row.category_id).filter((row): row is string => Boolean(row)),
     ),
   ];
   const categoryMap = new Map<string, CategoryRow>();
@@ -419,8 +409,7 @@ async function createInvestmentPriceAlerts(runDate: string) {
     }
 
     const roundedChange = Math.round(changePercent * 10) / 10;
-    const severity =
-      Math.abs(changePercent) >= threshold * 1.5 ? "critical" : "warning";
+    const severity = Math.abs(changePercent) >= threshold * 1.5 ? "critical" : "warning";
 
     await upsertNotification({
       eventKey: `investment-alert:${position.id}:${runDate}`,
@@ -536,9 +525,7 @@ async function sendWeeklyDigest(profile: ProfileRow, runDate: string) {
       <p>Tienes ${activeAlerts.length} alertas próximas y ${activeNotifications.length} notificaciones activas.</p>
       <ul>
         ${activeAlerts
-          .map(
-            (alert) => `<li><strong>${alert.name}</strong> · vence el ${alert.due_date}</li>`,
-          )
+          .map((alert) => `<li><strong>${alert.name}</strong> · vence el ${alert.due_date}</li>`)
           .join("")}
       </ul>
       <ul>
@@ -688,13 +675,10 @@ Deno.serve(async (request) => {
   const usersWithCommitments = [...new Set(commitmentRows.map((row) => row.user_id))];
 
   for (const userId of usersWithCommitments) {
-    const { data: projection, error: projectionError } = await supabase.rpc(
-      "project_cash_flow",
-      {
-        p_months: 12,
-        p_user_id: userId,
-      },
-    );
+    const { data: projection, error: projectionError } = await supabase.rpc("project_cash_flow", {
+      p_months: 12,
+      p_user_id: userId,
+    });
 
     if (projectionError) {
       return Response.json({ error: projectionError.message }, { status: 500 });

@@ -13,7 +13,10 @@
 ```typescript
 // PASO 1: Auth del JWT — SIEMPRE PRIMERO, antes de cualquier lógica
 const supabase = createServerClient();
-const { data: { user }, error } = await supabase.auth.getUser();
+const {
+  data: { user },
+  error,
+} = await supabase.auth.getUser();
 if (error || !user) return new Response("Unauthorized", { status: 401 });
 
 // PASO 2: Validar input con Zod .strict()

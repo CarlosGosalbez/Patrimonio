@@ -1,25 +1,25 @@
-import { redirect } from 'next/navigation'
-import { getTranslations } from 'next-intl/server'
-import { InvestmentsPageClient } from '@/components/investments/InvestmentsPageClient'
-import { createClient } from '@/lib/supabase/server'
+import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
+import { InvestmentsPageClient } from "@/components/investments/InvestmentsPageClient";
+import { createClient } from "@/lib/supabase/server";
 
 export async function generateMetadata() {
-  const t = await getTranslations('investments')
+  const t = await getTranslations("investments");
 
   return {
-    title: `${t('title')} — Patrimio`,
-  }
+    title: `${t("title")} — Patrimio`,
+  };
 }
 
 export default async function InvestmentsPage() {
-  const supabase = await createClient()
+  const supabase = await createClient();
   const {
     data: { user },
-  } = await supabase.auth.getUser()
+  } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect('/login')
+    redirect("/login");
   }
 
-  return <InvestmentsPageClient />
+  return <InvestmentsPageClient />;
 }

@@ -34,8 +34,7 @@ import type { Transaction, TransactionFilters } from "@/types/financial";
 // Query keys factory — co-locate with the hook
 export const transactionKeys = {
   all: ["transactions"] as const,
-  list: (filters: TransactionFilters) =>
-    ["transactions", "list", filters] as const,
+  list: (filters: TransactionFilters) => ["transactions", "list", filters] as const,
   detail: (id: string) => ["transactions", "detail", id] as const,
 };
 

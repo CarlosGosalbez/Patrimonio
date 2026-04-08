@@ -1,26 +1,26 @@
-'use client'
+"use client";
 
-import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
-import type { DashboardWidgetId } from '@/lib/dashboard/types'
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import type { DashboardWidgetId } from "@/lib/dashboard/types";
 
 const defaultOrder: DashboardWidgetId[] = [
-  'monthly-balance',
-  'projected-flow',
-  'top-categories',
-  'upcoming-commitments',
-  'upcoming-deadlines',
-  'portfolio',
-  'active-alerts',
-  'recent-transactions',
-]
+  "monthly-balance",
+  "projected-flow",
+  "top-categories",
+  "upcoming-commitments",
+  "upcoming-deadlines",
+  "portfolio",
+  "active-alerts",
+  "recent-transactions",
+];
 
 interface DashboardPreferencesState {
-  hidden: DashboardWidgetId[]
-  order: DashboardWidgetId[]
-  moveWidget: (widgetId: DashboardWidgetId, targetIndex: number) => void
-  reset: () => void
-  toggleWidget: (widgetId: DashboardWidgetId) => void
+  hidden: DashboardWidgetId[];
+  order: DashboardWidgetId[];
+  moveWidget: (widgetId: DashboardWidgetId, targetIndex: number) => void;
+  reset: () => void;
+  toggleWidget: (widgetId: DashboardWidgetId) => void;
 }
 
 export const useDashboardPreferencesStore = create<DashboardPreferencesState>()(
@@ -30,17 +30,17 @@ export const useDashboardPreferencesStore = create<DashboardPreferencesState>()(
       order: defaultOrder,
       moveWidget: (widgetId, targetIndex) =>
         set((state) => {
-          const next = [...state.order]
-          const currentIndex = next.indexOf(widgetId)
+          const next = [...state.order];
+          const currentIndex = next.indexOf(widgetId);
 
           if (currentIndex === -1 || currentIndex === targetIndex) {
-            return state
+            return state;
           }
 
-          next.splice(currentIndex, 1)
-          next.splice(targetIndex, 0, widgetId)
+          next.splice(currentIndex, 1);
+          next.splice(targetIndex, 0, widgetId);
 
-          return { order: next }
+          return { order: next };
         }),
       reset: () => ({
         hidden: [],
@@ -54,11 +54,11 @@ export const useDashboardPreferencesStore = create<DashboardPreferencesState>()(
         })),
     }),
     {
-      name: 'patrimio-dashboard-layout',
+      name: "patrimio-dashboard-layout",
       partialize: (state) => ({
         hidden: state.hidden,
         order: state.order,
       }),
     },
   ),
-)
+);

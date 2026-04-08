@@ -68,8 +68,7 @@ function calculateWeightedAvgPrice(
 ): number {
   const totalShares = currentShares + newShares;
   return Math.round(
-    (currentShares * currentAvgPriceCents + newShares * newPriceCents) /
-      totalShares,
+    (currentShares * currentAvgPriceCents + newShares * newPriceCents) / totalShares,
   );
 }
 ```

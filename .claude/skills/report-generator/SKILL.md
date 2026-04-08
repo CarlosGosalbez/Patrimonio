@@ -80,9 +80,7 @@ interface InvestmentReportData {
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 
-export async function generateMonthlyPDF(
-  data: MonthlySummaryData,
-): Promise<Blob> {
+export async function generateMonthlyPDF(data: MonthlySummaryData): Promise<Blob> {
   const doc = new jsPDF({ format: "a4", unit: "mm" });
   // Page 1: Summary + net worth bar
   // Page 2: Category breakdown table

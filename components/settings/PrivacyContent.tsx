@@ -10,44 +10,39 @@ import { DeleteAccountDialog } from "@/components/settings/DeleteAccountDialog";
 import { AppVersionCard } from "@/components/settings/AppVersionCard";
 
 export function PrivacyContent() {
-    const t = useTranslations("privacy");
-    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const t = useTranslations("privacy");
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
-    return (
-        <div className="space-y-6">
-            <div>
-                <h1 className="text-3xl font-bold">{t("pageTitle")}</h1>
-                <p className="mt-2 text-muted-foreground">{t("pageDescription")}</p>
-            </div>
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold">{t("pageTitle")}</h1>
+        <p className="mt-2 text-muted-foreground">{t("pageDescription")}</p>
+      </div>
 
-            <DataExportCard />
+      <DataExportCard />
 
-            <Card className="border-destructive/50">
-                <CardHeader>
-                    <CardTitle className="text-destructive">{t("deleteAccount.title")}</CardTitle>
-                    <CardDescription>{t("deleteAccount.description")}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <p className="mb-4 text-sm text-muted-foreground">
-                        {t("deleteAccount.warning")}
-                    </p>
-                    <Button
-                        variant="destructive"
-                        onClick={() => setShowDeleteDialog(true)}
-                        className="w-full sm:w-auto"
-                    >
-                        <Trash2 className="mr-2 h-4 w-4" aria-hidden="true" />
-                        {t("deleteAccount.button")}
-                    </Button>
-                </CardContent>
-            </Card>
+      <Card className="border-destructive/50">
+        <CardHeader>
+          <CardTitle className="text-destructive">{t("deleteAccount.title")}</CardTitle>
+          <CardDescription>{t("deleteAccount.description")}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="mb-4 text-sm text-muted-foreground">{t("deleteAccount.warning")}</p>
+          <Button
+            variant="destructive"
+            onClick={() => setShowDeleteDialog(true)}
+            className="w-full sm:w-auto"
+          >
+            <Trash2 className="mr-2 h-4 w-4" aria-hidden="true" />
+            {t("deleteAccount.button")}
+          </Button>
+        </CardContent>
+      </Card>
 
-            <DeleteAccountDialog
-                open={showDeleteDialog}
-                onOpenChange={setShowDeleteDialog}
-            />
+      <DeleteAccountDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog} />
 
-            <AppVersionCard />
-        </div>
-    );
+      <AppVersionCard />
+    </div>
+  );
 }

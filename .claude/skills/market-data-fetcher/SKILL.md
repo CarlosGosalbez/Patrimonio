@@ -44,9 +44,7 @@ interface MarketPrice {
 
 ```typescript
 // lib/market/fetcher.ts
-export async function getMarketPrice(
-  ticker: string,
-): Promise<MarketPrice | null> {
+export async function getMarketPrice(ticker: string): Promise<MarketPrice | null> {
   // 1. Try Yahoo Finance (no API key, rate limit: ~100/min)
   try {
     const price = await fetchFromYahoo(ticker);

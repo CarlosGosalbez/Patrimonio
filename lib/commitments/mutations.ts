@@ -1,26 +1,26 @@
-import type { SupabaseClient } from '@supabase/supabase-js'
-import { parseCurrencyInput } from '@/lib/financial/formatters'
-import type { Database } from '@/types/database'
-import type { commitmentInputSchema, commitmentPatchSchema } from '@/lib/commitments/schemas'
-import type { z } from 'zod'
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { parseCurrencyInput } from "@/lib/financial/formatters";
+import type { Database } from "@/types/database";
+import type { commitmentInputSchema, commitmentPatchSchema } from "@/lib/commitments/schemas";
+import type { z } from "zod";
 
-type ServerClient = SupabaseClient<Database>
-type CommitmentInput = z.infer<typeof commitmentInputSchema>
-type CommitmentPatch = z.infer<typeof commitmentPatchSchema>
+type ServerClient = SupabaseClient<Database>;
+type CommitmentInput = z.infer<typeof commitmentInputSchema>;
+type CommitmentPatch = z.infer<typeof commitmentPatchSchema>;
 
 export async function createCommitment({
   input,
   supabase,
   userId,
 }: {
-  input: CommitmentInput
-  supabase: ServerClient
-  userId: string
+  input: CommitmentInput;
+  supabase: ServerClient;
+  userId: string;
 }) {
-  const amount_cents = parseCurrencyInput(input.amount_input)
+  const amount_cents = parseCurrencyInput(input.amount_input);
 
   const { data, error } = await supabase
-    .from('recurring_commitments')
+    .from("recurring_commitments")
     .insert({
       account_id: input.account_id,
       advance_notice_days: input.advance_notice_days,
@@ -46,14 +46,14 @@ export async function createCommitment({
       tolerance_days: input.tolerance_days,
       user_id: userId,
     })
-    .select('*')
-    .single()
+    .select("*")
+    .single();
 
   if (error || !data) {
-    throw new Error(error?.message ?? 'Failed to create commitment')
+    throw new Error(error?.message ?? "Failed to create commitment");
   }
 
-  return data
+  return data;
 }
 
 export async function updateCommitment({
@@ -62,12 +62,12 @@ export async function updateCommitment({
   supabase,
   userId,
 }: {
-  id: string
-  input: CommitmentPatch
-  supabase: ServerClient
-  userId: string
+  id: string;
+  input: CommitmentPatch;
+  supabase: ServerClient;
+  userId: string;
 }) {
-  const payload: Database['public']['Tables']['recurring_commitments']['Update'] = {
+  const payload: Database["public"]["Tables"]["recurring_commitments"]["Update"] = {
     account_id: input.account_id,
     advance_notice_days: input.advance_notice_days,
     allows_early_repayment: input.allows_early_repayment,
@@ -89,25 +89,25 @@ export async function updateCommitment({
     service_name: input.service_name,
     start_date: input.start_date,
     tolerance_days: input.tolerance_days,
-  }
+  };
 
   if (input.amount_input) {
-    payload.amount_cents = parseCurrencyInput(input.amount_input)
+    payload.amount_cents = parseCurrencyInput(input.amount_input);
   }
 
   const { data, error } = await supabase
-    .from('recurring_commitments')
+    .from("recurring_commitments")
     .update(payload)
-    .eq('id', id)
-    .eq('user_id', userId)
-    .select('*')
-    .single()
+    .eq("id", id)
+    .eq("user_id", userId)
+    .select("*")
+    .single();
 
   if (error || !data) {
-    throw new Error(error?.message ?? 'Failed to update commitment')
+    throw new Error(error?.message ?? "Failed to update commitment");
   }
 
-  return data
+  return data;
 }
 
 export async function softDeleteCommitment({
@@ -115,20 +115,20 @@ export async function softDeleteCommitment({
   supabase,
   userId,
 }: {
-  id: string
-  supabase: ServerClient
-  userId: string
+  id: string;
+  supabase: ServerClient;
+  userId: string;
 }) {
   const { error } = await supabase
-    .from('recurring_commitments')
+    .from("recurring_commitments")
     .update({
       deleted_at: new Date().toISOString(),
       is_active: false,
     })
-    .eq('id', id)
-    .eq('user_id', userId)
+    .eq("id", id)
+    .eq("user_id", userId);
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error(error.message);
   }
 }

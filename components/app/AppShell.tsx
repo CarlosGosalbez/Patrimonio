@@ -1,7 +1,7 @@
-'use client'
+"use client";
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   BellRing,
   LineChart,
@@ -11,38 +11,38 @@ import {
   LayoutDashboard,
   Landmark,
   WalletCards,
-} from 'lucide-react'
-import { useTranslations } from 'next-intl'
-import { LanguageSwitcher } from '@/components/LanguageSwitcher'
-import { useNotificationsRealtime } from '@/hooks/useNotificationsRealtime'
-import { ThemeToggle } from '@/components/ui/ThemeToggle'
-import { OfflineIndicator } from '@/components/ui/OfflineIndicator'
-import { PageTransition } from '@/components/providers/PageTransition'
-import { Logo } from '@/components/ui/Logo'
-import { Footer } from '@/components/ui/Footer'
-import { cn } from '@/lib/utils'
+} from "lucide-react";
+import { useTranslations } from "next-intl";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useNotificationsRealtime } from "@/hooks/useNotificationsRealtime";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { OfflineIndicator } from "@/components/ui/OfflineIndicator";
+import { PageTransition } from "@/components/providers/PageTransition";
+import { Logo } from "@/components/ui/Logo";
+import { Footer } from "@/components/ui/Footer";
+import { cn } from "@/lib/utils";
 
 const navigation = [
-  { href: '/dashboard', icon: LayoutDashboard, key: 'dashboard' },
-  { href: '/investments', icon: Landmark, key: 'investments' },
-  { href: '/analytics', icon: LineChart, key: 'analytics' },
-  { href: '/reports', icon: FileText, key: 'reports' },
-  { href: '/imports', icon: Import, key: 'imports' },
-  { href: '/commitments', icon: WalletCards, key: 'commitments' },
-  { href: '/alerts', icon: BellRing, key: 'alerts' },
-  { href: '/settings/security', icon: FolderCog, key: 'settings' },
-] as const
+  { href: "/dashboard", icon: LayoutDashboard, key: "dashboard" },
+  { href: "/investments", icon: Landmark, key: "investments" },
+  { href: "/analytics", icon: LineChart, key: "analytics" },
+  { href: "/reports", icon: FileText, key: "reports" },
+  { href: "/imports", icon: Import, key: "imports" },
+  { href: "/commitments", icon: WalletCards, key: "commitments" },
+  { href: "/alerts", icon: BellRing, key: "alerts" },
+  { href: "/settings/security", icon: FolderCog, key: "settings" },
+] as const;
 
 export function AppShell({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname()
-  const t = useTranslations('appShell')
-  const { unreadCount } = useNotificationsRealtime()
+  const pathname = usePathname();
+  const t = useTranslations("appShell");
+  const { unreadCount } = useNotificationsRealtime();
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,0.10),_transparent_26%),radial-gradient(circle_at_bottom_right,_rgba(16,185,129,0.10),_transparent_30%),hsl(var(--background))]">
       {/* Skip to main content — WCAG 2.4.1 */}
       <a href="#main-content" className="skip-link">
-        {t('skipToMain')}
+        {t("skipToMain")}
       </a>
 
       <OfflineIndicator />
@@ -69,9 +69,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         className="mx-auto min-h-[calc(100vh-73px)] max-w-6xl px-4 pb-24 pt-6 sm:px-6 md:pb-32"
         tabIndex={-1}
       >
-        <PageTransition>
-          {children}
-        </PageTransition>
+        <PageTransition>{children}</PageTransition>
       </main>
 
       <Footer />
@@ -79,37 +77,37 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border/70 bg-background/95 px-2 pb-[calc(env(safe-area-inset-bottom)+8px)] pt-2 backdrop-blur">
         <div className="mx-auto grid max-w-5xl grid-cols-8 gap-1 rounded-2xl bg-muted/60 p-1">
           {navigation.map((item) => {
-            const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`)
-            const Icon = item.icon
-            const showBadge = item.key === 'alerts' && unreadCount > 0
+            const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+            const Icon = item.icon;
+            const showBadge = item.key === "alerts" && unreadCount > 0;
 
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'flex min-h-[52px] flex-col items-center justify-center rounded-xl px-1 text-[10px] font-medium transition sm:min-h-[56px] sm:px-2 sm:text-[11px]',
+                  "flex min-h-[52px] flex-col items-center justify-center rounded-xl px-1 text-[10px] font-medium transition sm:min-h-[56px] sm:px-2 sm:text-[11px]",
                   isActive
-                    ? 'bg-background text-foreground shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground',
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground",
                 )}
-                aria-current={isActive ? 'page' : undefined}
+                aria-current={isActive ? "page" : undefined}
                 aria-label={t(item.key)}
               >
                 <span className="relative">
                   <Icon className="h-5 w-5 sm:mb-1 sm:h-4 sm:w-4" aria-hidden="true" />
                   {showBadge ? (
                     <span className="absolute -right-2 -top-1 inline-flex min-h-[18px] min-w-[18px] items-center justify-center rounded-full bg-rose-600 px-1 text-[10px] font-semibold text-white">
-                      {unreadCount > 9 ? '9+' : unreadCount}
+                      {unreadCount > 9 ? "9+" : unreadCount}
                     </span>
                   ) : null}
                 </span>
                 <span className="hidden sm:block">{t(item.key)}</span>
               </Link>
-            )
+            );
           })}
         </div>
       </nav>
     </div>
-  )
+  );
 }

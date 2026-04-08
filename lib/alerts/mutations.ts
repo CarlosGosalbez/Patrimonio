@@ -1,29 +1,33 @@
-import type { SupabaseClient } from '@supabase/supabase-js'
-import { parseCurrencyInput } from '@/lib/financial/formatters'
-import type { Database } from '@/types/database'
-import type { alertPreferencesSchema, customAlertInputSchema, customAlertPatchSchema } from '@/lib/alerts/schemas'
-import type { z } from 'zod'
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { parseCurrencyInput } from "@/lib/financial/formatters";
+import type { Database } from "@/types/database";
+import type {
+  alertPreferencesSchema,
+  customAlertInputSchema,
+  customAlertPatchSchema,
+} from "@/lib/alerts/schemas";
+import type { z } from "zod";
 
-type ServerClient = SupabaseClient<Database>
-type CustomAlertInput = z.infer<typeof customAlertInputSchema>
-type CustomAlertPatch = z.infer<typeof customAlertPatchSchema>
-type AlertsPreferencesInput = z.infer<typeof alertPreferencesSchema>
+type ServerClient = SupabaseClient<Database>;
+type CustomAlertInput = z.infer<typeof customAlertInputSchema>;
+type CustomAlertPatch = z.infer<typeof customAlertPatchSchema>;
+type AlertsPreferencesInput = z.infer<typeof alertPreferencesSchema>;
 
 export async function createCustomAlert({
   input,
   supabase,
   userId,
 }: {
-  input: CustomAlertInput
-  supabase: ServerClient
-  userId: string
+  input: CustomAlertInput;
+  supabase: ServerClient;
+  userId: string;
 }) {
   const expected_amount_cents = input.expected_amount_input
     ? parseCurrencyInput(input.expected_amount_input)
-    : null
+    : null;
 
   const { data, error } = await supabase
-    .from('custom_alerts')
+    .from("custom_alerts")
     .insert({
       advance_notice_days: input.advance_notice_days,
       auto_deactivate: input.auto_deactivate,
@@ -38,14 +42,14 @@ export async function createCustomAlert({
       recurrence: input.recurrence,
       user_id: userId,
     })
-    .select('id')
-    .single()
+    .select("id")
+    .single();
 
   if (error || !data) {
-    throw new Error(error?.message ?? 'Failed to create alert')
+    throw new Error(error?.message ?? "Failed to create alert");
   }
 
-  return data.id
+  return data.id;
 }
 
 export async function updateCustomAlert({
@@ -54,12 +58,12 @@ export async function updateCustomAlert({
   supabase,
   userId,
 }: {
-  id: string
-  input: CustomAlertPatch
-  supabase: ServerClient
-  userId: string
+  id: string;
+  input: CustomAlertPatch;
+  supabase: ServerClient;
+  userId: string;
 }) {
-  const payload: Database['public']['Tables']['custom_alerts']['Update'] = {
+  const payload: Database["public"]["Tables"]["custom_alerts"]["Update"] = {
     advance_notice_days: input.advance_notice_days,
     auto_deactivate: input.auto_deactivate,
     category_id: input.category_id,
@@ -70,22 +74,22 @@ export async function updateCustomAlert({
     is_active: input.is_active,
     name: input.name,
     recurrence: input.recurrence,
-  }
+  };
 
   if (input.expected_amount_input !== undefined) {
     payload.expected_amount_cents = input.expected_amount_input
       ? parseCurrencyInput(input.expected_amount_input)
-      : null
+      : null;
   }
 
   const { error } = await supabase
-    .from('custom_alerts')
+    .from("custom_alerts")
     .update(payload)
-    .eq('id', id)
-    .eq('user_id', userId)
+    .eq("id", id)
+    .eq("user_id", userId);
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error(error.message);
   }
 }
 
@@ -94,21 +98,21 @@ export async function softDeleteCustomAlert({
   supabase,
   userId,
 }: {
-  id: string
-  supabase: ServerClient
-  userId: string
+  id: string;
+  supabase: ServerClient;
+  userId: string;
 }) {
   const { error } = await supabase
-    .from('custom_alerts')
+    .from("custom_alerts")
     .update({
       deleted_at: new Date().toISOString(),
       is_active: false,
     })
-    .eq('id', id)
-    .eq('user_id', userId)
+    .eq("id", id)
+    .eq("user_id", userId);
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error(error.message);
   }
 }
 
@@ -117,25 +121,25 @@ export async function upsertAlertsPreferences({
   supabase,
   userId,
 }: {
-  input: AlertsPreferencesInput
-  supabase: ServerClient
-  userId: string
+  input: AlertsPreferencesInput;
+  supabase: ServerClient;
+  userId: string;
 }) {
-  const { error } = await supabase.from('profiles').upsert(
+  const { error } = await supabase.from("profiles").upsert(
     {
       user_id: userId,
       weekly_alert_digest_enabled: input.weekly_alert_digest_enabled,
     },
     {
-      onConflict: 'user_id',
+      onConflict: "user_id",
     },
-  )
+  );
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error(error.message);
   }
 
   return {
     weekly_alert_digest_enabled: input.weekly_alert_digest_enabled,
-  }
+  };
 }

@@ -28,12 +28,8 @@ interface MarketPrice {
   source: "yahoo" | "alphavantage" | "fmp" | "cache";
 }
 
-export async function getMarketPrice(
-  ticker: string,
-): Promise<MarketPrice | null>;
-export async function getMarketPrices(
-  tickers: string[],
-): Promise<Map<string, MarketPrice>>;
+export async function getMarketPrice(ticker: string): Promise<MarketPrice | null>;
+export async function getMarketPrices(tickers: string[]): Promise<Map<string, MarketPrice>>;
 ```
 
 ## Cache Strategy

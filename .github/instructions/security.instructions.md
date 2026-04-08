@@ -359,10 +359,10 @@ export function AccessibleField({ name, label, error, description, required }: F
 
   return (
     <div className="space-y-1">
-      <label htmlFor={id} className="text-foreground text-sm font-medium">
+      <label htmlFor={id} className="text-sm font-medium text-foreground">
         {label}
         {required && (
-          <span aria-hidden="true" className="text-destructive ml-1">
+          <span aria-hidden="true" className="ml-1 text-destructive">
             *
           </span>
         )}
@@ -370,7 +370,7 @@ export function AccessibleField({ name, label, error, description, required }: F
       </label>
 
       {description && (
-        <p id={descId} className="text-muted-foreground text-xs">
+        <p id={descId} className="text-xs text-muted-foreground">
           {description}
         </p>
       )}
@@ -385,7 +385,7 @@ export function AccessibleField({ name, label, error, description, required }: F
       />
 
       {error && (
-        <p id={errId} role="alert" className="text-destructive text-xs">
+        <p id={errId} role="alert" className="text-xs text-destructive">
           {error}
         </p>
       )}

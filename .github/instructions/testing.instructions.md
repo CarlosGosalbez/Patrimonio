@@ -63,9 +63,7 @@ describe("CreateTransactionSchema", () => {
   });
 
   it("rejects negative amounts", () => {
-    expect(() =>
-      CreateTransactionSchema.parse({ amount_cents: -100 }),
-    ).toThrow();
+    expect(() => CreateTransactionSchema.parse({ amount_cents: -100 })).toThrow();
   });
 });
 ```
@@ -228,17 +226,16 @@ Place test fixture files in `tests/fixtures/`:
 
 Use a dedicated test Supabase project for E2E (never run against production).
 
-
 ## Mock de Supabase en tests unitarios
 
 ```typescript
 // tests/utils/supabase-mock.ts
-import { vi } from 'vitest';
+import { vi } from "vitest";
 
 export const mockSupabase = {
   auth: {
     getUser: vi.fn().mockResolvedValue({
-      data: { user: { id: 'test-user-id' } },
+      data: { user: { id: "test-user-id" } },
       error: null,
     }),
   },
@@ -248,19 +245,19 @@ export const mockSupabase = {
   single: vi.fn().mockResolvedValue({ data: null, error: null }),
 };
 
-vi.mock('@/lib/supabase/server', () => ({
+vi.mock("@/lib/supabase/server", () => ({
   createServerClient: () => mockSupabase,
 }));
 ```
 
 ## Matriz de dispositivos para Playwright
 
-| Proyecto | Dispositivo | Resolución | Prioridad |
-|---|---|---|---|
-| `mobile` | iPhone 14 | 390×844 | Alta — entrada primaria |
-| `tablet` | iPad Pro 11 | 834×1194 | Media |
-| `desktop` | Desktop Chrome | 1280×800 | Alta |
-| `safari-desktop` | Desktop Safari | 1280×800 | Media |
+| Proyecto         | Dispositivo    | Resolución | Prioridad               |
+| ---------------- | -------------- | ---------- | ----------------------- |
+| `mobile`         | iPhone 14      | 390×844    | Alta — entrada primaria |
+| `tablet`         | iPad Pro 11    | 834×1194   | Media                   |
+| `desktop`        | Desktop Chrome | 1280×800   | Alta                    |
+| `safari-desktop` | Desktop Safari | 1280×800   | Media                   |
 
 ```typescript
 // playwright.config.ts

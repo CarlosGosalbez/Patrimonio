@@ -1,9 +1,9 @@
-'use client'
+"use client";
 
-import { useMemo, useState } from 'react'
-import { Download, LineChart, PiggyBank, Siren, Target } from 'lucide-react'
-import { toast } from 'sonner'
-import { useTranslations } from 'next-intl'
+import { useMemo, useState } from "react";
+import { Download, LineChart, PiggyBank, Siren, Target } from "lucide-react";
+import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import {
   Area,
   AreaChart,
@@ -16,64 +16,60 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from 'recharts'
-import { BudgetDialog } from '@/components/analytics/BudgetDialog'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { useCategoriesQuery } from '@/hooks/usePhaseThree'
+} from "recharts";
+import { BudgetDialog } from "@/components/analytics/BudgetDialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useCategoriesQuery } from "@/hooks/usePhaseThree";
 import {
   useAnalyticsSummaryQuery,
   useBudgetsOverviewQuery,
   useCreateBudgetMutation,
   useDeleteBudgetMutation,
   useUpdateBudgetMutation,
-} from '@/hooks/usePhaseFive'
-import type { AnalyticsPeriod } from '@/lib/analytics/types'
-import { formatCurrency, formatCurrencyCompact, formatPercentChange } from '@/lib/financial/formatters'
+} from "@/hooks/usePhaseFive";
+import type { AnalyticsPeriod } from "@/lib/analytics/types";
+import {
+  formatCurrency,
+  formatCurrencyCompact,
+  formatPercentChange,
+} from "@/lib/financial/formatters";
 
 function formatTooltipCurrency(value: unknown) {
-  if (typeof value !== 'number') {
-    return String(value ?? '')
+  if (typeof value !== "number") {
+    return String(value ?? "");
   }
 
-  return formatCurrency(value)
+  return formatCurrency(value);
 }
 
-function getBudgetTone(status: 'approaching' | 'exceeded' | 'ok' | 'warning') {
+function getBudgetTone(status: "approaching" | "exceeded" | "ok" | "warning") {
   switch (status) {
-    case 'exceeded':
-      return 'bg-rose-500'
-    case 'warning':
-      return 'bg-amber-500'
-    case 'approaching':
-      return 'bg-orange-400'
-    case 'ok':
-      return 'bg-emerald-500'
+    case "exceeded":
+      return "bg-rose-500";
+    case "warning":
+      return "bg-amber-500";
+    case "approaching":
+      return "bg-orange-400";
+    case "ok":
+      return "bg-emerald-500";
   }
 }
 
-function getBudgetRuleTone(status: 'over' | 'under' | 'within') {
+function getBudgetRuleTone(status: "over" | "under" | "within") {
   switch (status) {
-    case 'over':
-      return 'bg-rose-100 text-rose-700'
-    case 'under':
-      return 'bg-amber-100 text-amber-700'
-    case 'within':
-      return 'bg-emerald-100 text-emerald-700'
+    case "over":
+      return "bg-rose-100 text-rose-700";
+    case "under":
+      return "bg-amber-100 text-amber-700";
+    case "within":
+      return "bg-emerald-100 text-emerald-700";
   }
 }
 
-function MetricCard({
-  detail,
-  label,
-  value,
-}: {
-  detail?: string
-  label: string
-  value: string
-}) {
+function MetricCard({ detail, label, value }: { detail?: string; label: string; value: string }) {
   return (
     <Card className="border-border/70 bg-card/90 shadow-sm">
       <CardContent className="p-5">
@@ -82,15 +78,15 @@ function MetricCard({
         {detail ? <p className="mt-2 text-xs text-muted-foreground">{detail}</p> : null}
       </CardContent>
     </Card>
-  )
+  );
 }
 
 function ProgressBar({
   progress,
   status,
 }: {
-  progress: number
-  status: 'approaching' | 'exceeded' | 'ok' | 'warning'
+  progress: number;
+  status: "approaching" | "exceeded" | "ok" | "warning";
 }) {
   return (
     <div className="space-y-2">
@@ -101,87 +97,87 @@ function ProgressBar({
         />
       </div>
     </div>
-  )
+  );
 }
 
 export function AnalyticsPageClient() {
-  const t = useTranslations('analytics')
-  const [period, setPeriod] = useState<AnalyticsPeriod>('month')
-  const [openBudgetDialog, setOpenBudgetDialog] = useState(false)
-  const [editingBudgetId, setEditingBudgetId] = useState<string | null>(null)
-  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
-  const analyticsQuery = useAnalyticsSummaryQuery(period)
-  const budgetsQuery = useBudgetsOverviewQuery()
-  const categoriesQuery = useCategoriesQuery('expense')
-  const createBudgetMutation = useCreateBudgetMutation()
-  const updateBudgetMutation = useUpdateBudgetMutation()
-  const deleteBudgetMutation = useDeleteBudgetMutation()
+  const t = useTranslations("analytics");
+  const [period, setPeriod] = useState<AnalyticsPeriod>("month");
+  const [openBudgetDialog, setOpenBudgetDialog] = useState(false);
+  const [editingBudgetId, setEditingBudgetId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const analyticsQuery = useAnalyticsSummaryQuery(period);
+  const budgetsQuery = useBudgetsOverviewQuery();
+  const categoriesQuery = useCategoriesQuery("expense");
+  const createBudgetMutation = useCreateBudgetMutation();
+  const updateBudgetMutation = useUpdateBudgetMutation();
+  const deleteBudgetMutation = useDeleteBudgetMutation();
 
-  const budgets = budgetsQuery.data?.budgets ?? []
-  const selectedBudget = budgets.find((budget) => budget.id === editingBudgetId) ?? null
+  const budgets = budgetsQuery.data?.budgets ?? [];
+  const selectedBudget = budgets.find((budget) => budget.id === editingBudgetId) ?? null;
 
   const categoryComparisonData = useMemo(() => {
     return (analyticsQuery.data?.category_trends ?? []).map((category) => ({
       current: category.current_period_cents,
       name: category.category_name,
       previous: category.previous_period_cents,
-    }))
-  }, [analyticsQuery.data?.category_trends])
+    }));
+  }, [analyticsQuery.data?.category_trends]);
 
   async function handleBudgetSubmit(payload: Record<string, unknown>, id?: string) {
     try {
       if (id) {
-        await updateBudgetMutation.mutateAsync({ id, payload })
-        toast.success(t('budgets.toasts.updated'))
+        await updateBudgetMutation.mutateAsync({ id, payload });
+        toast.success(t("budgets.toasts.updated"));
       } else {
-        await createBudgetMutation.mutateAsync(payload)
-        toast.success(t('budgets.toasts.created'))
+        await createBudgetMutation.mutateAsync(payload);
+        toast.success(t("budgets.toasts.created"));
       }
 
-      setOpenBudgetDialog(false)
-      setEditingBudgetId(null)
+      setOpenBudgetDialog(false);
+      setEditingBudgetId(null);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : t('budgets.toasts.error'))
+      toast.error(error instanceof Error ? error.message : t("budgets.toasts.error"));
     }
   }
 
   async function handleDeleteBudget(id: string) {
-    setConfirmDeleteId(id)
+    setConfirmDeleteId(id);
   }
 
   async function handleConfirmDelete() {
-    if (!confirmDeleteId) return
+    if (!confirmDeleteId) return;
 
     try {
-      await deleteBudgetMutation.mutateAsync(confirmDeleteId)
-      toast.success(t('budgets.toasts.deleted'))
+      await deleteBudgetMutation.mutateAsync(confirmDeleteId);
+      toast.success(t("budgets.toasts.deleted"));
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : t('budgets.toasts.error'))
+      toast.error(error instanceof Error ? error.message : t("budgets.toasts.error"));
     } finally {
-      setConfirmDeleteId(null)
+      setConfirmDeleteId(null);
     }
   }
 
   async function handleExportCsv() {
     try {
-      const response = await fetch(`/api/analytics/export?period=${period}`)
+      const response = await fetch(`/api/analytics/export?period=${period}`);
 
       if (!response.ok) {
-        throw new Error(t('toasts.exportError'))
+        throw new Error(t("toasts.exportError"));
       }
 
-      const blob = await response.blob()
-      const url = window.URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = url
-      link.download = `patrimonio-${period}.csv`
-      document.body.appendChild(link)
-      link.click()
-      link.remove()
-      window.URL.revokeObjectURL(url)
-      toast.success(t('toasts.exported'))
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `patrimonio-${period}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      toast.success(t("toasts.exported"));
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : t('toasts.exportError'))
+      toast.error(error instanceof Error ? error.message : t("toasts.exportError"));
     }
   }
 
@@ -190,38 +186,43 @@ export function AnalyticsPageClient() {
       <section className="rounded-[28px] border border-border/70 bg-[linear-gradient(135deg,rgba(14,116,144,0.12),rgba(15,118,110,0.08),rgba(255,255,255,0.94))] p-6 shadow-sm">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h1 className="text-3xl font-semibold tracking-tight">{t('title')}</h1>
-            <p className="mt-1 max-w-3xl text-sm text-muted-foreground">{t('subtitle')}</p>
+            <h1 className="text-3xl font-semibold tracking-tight">{t("title")}</h1>
+            <p className="mt-1 max-w-3xl text-sm text-muted-foreground">{t("subtitle")}</p>
           </div>
 
           <div className="flex flex-wrap gap-2">
             <div className="grid grid-cols-4 gap-2 rounded-2xl bg-muted/50 p-1">
-              {(['week', 'month', 'quarter', 'year'] as AnalyticsPeriod[]).map((item) => (
+              {(["week", "month", "quarter", "year"] as AnalyticsPeriod[]).map((item) => (
                 <Button
                   key={item}
                   size="sm"
                   type="button"
-                  variant={period === item ? 'default' : 'ghost'}
+                  variant={period === item ? "default" : "ghost"}
                   onClick={() => setPeriod(item)}
                 >
                   {t(`periods.${item}`)}
                 </Button>
               ))}
             </div>
-            <Button type="button" variant="outline" className="rounded-2xl" onClick={handleExportCsv}>
+            <Button
+              type="button"
+              variant="outline"
+              className="rounded-2xl"
+              onClick={handleExportCsv}
+            >
               <Download className="mr-2 h-4 w-4" aria-hidden="true" />
-              {t('actions.export')}
+              {t("actions.export")}
             </Button>
             <Button
               type="button"
               className="rounded-2xl"
               onClick={() => {
-                setEditingBudgetId(null)
-                setOpenBudgetDialog(true)
+                setEditingBudgetId(null);
+                setOpenBudgetDialog(true);
               }}
             >
               <Target className="mr-2 h-4 w-4" aria-hidden="true" />
-              {t('actions.newBudget')}
+              {t("actions.newBudget")}
             </Button>
           </div>
         </div>
@@ -229,32 +230,32 @@ export function AnalyticsPageClient() {
 
       <Tabs defaultValue="overview" className="space-y-6">
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="overview">{t('tabs.overview')}</TabsTrigger>
-          <TabsTrigger value="budgets">{t('tabs.budgets')}</TabsTrigger>
-          <TabsTrigger value="categories">{t('tabs.categories')}</TabsTrigger>
+          <TabsTrigger value="overview">{t("tabs.overview")}</TabsTrigger>
+          <TabsTrigger value="budgets">{t("tabs.budgets")}</TabsTrigger>
+          <TabsTrigger value="categories">{t("tabs.categories")}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             <MetricCard
-              label={t('metrics.income')}
+              label={t("metrics.income")}
               value={formatCurrency(analyticsQuery.data?.totals.income_cents ?? 0)}
             />
             <MetricCard
-              label={t('metrics.expenses')}
+              label={t("metrics.expenses")}
               value={formatCurrency(-(analyticsQuery.data?.totals.expense_cents ?? 0))}
             />
             <MetricCard
               detail={analyticsQuery.data?.range.label}
-              label={t('metrics.net')}
+              label={t("metrics.net")}
               value={formatCurrency(analyticsQuery.data?.totals.net_cents ?? 0)}
             />
             <MetricCard
               detail={String(analyticsQuery.data?.totals.transaction_count ?? 0)}
-              label={t('metrics.savingsRate')}
+              label={t("metrics.savingsRate")}
               value={
                 analyticsQuery.data?.totals.savings_rate_percent == null
-                  ? t('metrics.notAvailable')
+                  ? t("metrics.notAvailable")
                   : formatPercentChange(analyticsQuery.data?.totals.savings_rate_percent ?? 0)
               }
             />
@@ -263,7 +264,7 @@ export function AnalyticsPageClient() {
           <div className="grid gap-4 xl:grid-cols-[1.5fr,1fr]">
             <Card className="border-border/70">
               <CardHeader>
-                <CardTitle>{t('charts.periodSummary')}</CardTitle>
+                <CardTitle>{t("charts.periodSummary")}</CardTitle>
               </CardHeader>
               <CardContent className="h-80">
                 <ResponsiveContainer width="100%" height="100%" minHeight={320}>
@@ -281,17 +282,14 @@ export function AnalyticsPageClient() {
 
             <Card className="border-border/70">
               <CardHeader>
-                <CardTitle>{t('charts.netWorth')}</CardTitle>
+                <CardTitle>{t("charts.netWorth")}</CardTitle>
               </CardHeader>
               <CardContent className="h-80">
                 {analyticsQuery.data?.net_worth_history.length ? (
                   <ResponsiveContainer width="100%" height="100%" minHeight={320}>
                     <AreaChart data={analyticsQuery.data.net_worth_history}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis
-                        dataKey="snapshot_date"
-                        tickFormatter={(value) => value.slice(2, 7)}
-                      />
+                      <XAxis dataKey="snapshot_date" tickFormatter={(value) => value.slice(2, 7)} />
                       <YAxis tickFormatter={(value) => formatCurrencyCompact(value)} />
                       <Tooltip formatter={formatTooltipCurrency} />
                       <Area
@@ -304,7 +302,7 @@ export function AnalyticsPageClient() {
                   </ResponsiveContainer>
                 ) : (
                   <div className="flex h-full items-center justify-center rounded-3xl bg-muted/40 text-sm text-muted-foreground">
-                    {t('states.noSnapshots')}
+                    {t("states.noSnapshots")}
                   </div>
                 )}
               </CardContent>
@@ -314,14 +312,14 @@ export function AnalyticsPageClient() {
           <div className="grid gap-4 xl:grid-cols-[1.1fr,0.9fr]">
             <Card className="border-border/70">
               <CardHeader>
-                <CardTitle>{t('budgetRule.title')}</CardTitle>
+                <CardTitle>{t("budgetRule.title")}</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-3">
                 {(
                   [
-                    ['needs', analyticsQuery.data?.budget_rule_503020.needs],
-                    ['wants', analyticsQuery.data?.budget_rule_503020.wants],
-                    ['savings', analyticsQuery.data?.budget_rule_503020.savings],
+                    ["needs", analyticsQuery.data?.budget_rule_503020.needs],
+                    ["wants", analyticsQuery.data?.budget_rule_503020.wants],
+                    ["savings", analyticsQuery.data?.budget_rule_503020.savings],
                   ] as const
                 ).map(([key, bucket]) => (
                   <div
@@ -332,34 +330,34 @@ export function AnalyticsPageClient() {
                       <div>
                         <p className="font-medium">{t(`budgetRule.labels.${key}`)}</p>
                         <p className="text-xs text-muted-foreground">
-                          {t('budgetRule.target', {
+                          {t("budgetRule.target", {
                             percent: bucket?.target_percent ?? 0,
                           })}
                         </p>
                       </div>
-                      <Badge className={getBudgetRuleTone(bucket?.status ?? 'within')}>
-                        {t(`budgetRule.status.${bucket?.status ?? 'within'}`)}
+                      <Badge className={getBudgetRuleTone(bucket?.status ?? "within")}>
+                        {t(`budgetRule.status.${bucket?.status ?? "within"}`)}
                       </Badge>
                     </div>
 
                     <div className="mt-3 grid gap-3 sm:grid-cols-3">
                       <div>
-                        <p className="text-xs text-muted-foreground">{t('budgetRule.actual')}</p>
+                        <p className="text-xs text-muted-foreground">{t("budgetRule.actual")}</p>
                         <p className="mt-1 font-semibold">
                           {formatCurrency(bucket?.actual_cents ?? 0)}
                         </p>
                       </div>
                       <div>
-                        <p className="text-xs text-muted-foreground">{t('budgetRule.ideal')}</p>
+                        <p className="text-xs text-muted-foreground">{t("budgetRule.ideal")}</p>
                         <p className="mt-1 font-semibold">
                           {formatCurrency(bucket?.ideal_cents ?? 0)}
                         </p>
                       </div>
                       <div>
-                        <p className="text-xs text-muted-foreground">{t('budgetRule.percent')}</p>
+                        <p className="text-xs text-muted-foreground">{t("budgetRule.percent")}</p>
                         <p className="mt-1 font-semibold">
                           {bucket?.percent_of_income == null
-                            ? t('metrics.notAvailable')
+                            ? t("metrics.notAvailable")
                             : formatPercentChange(bucket.percent_of_income)}
                         </p>
                       </div>
@@ -368,7 +366,7 @@ export function AnalyticsPageClient() {
                 ))}
 
                 <p className="text-xs text-muted-foreground">
-                  {t('budgetRule.uncategorized', {
+                  {t("budgetRule.uncategorized", {
                     amount: formatCurrency(
                       analyticsQuery.data?.budget_rule_503020.uncategorized_expense_cents ?? 0,
                     ),
@@ -379,7 +377,7 @@ export function AnalyticsPageClient() {
 
             <Card className="border-border/70">
               <CardHeader>
-                <CardTitle>{t('topCategoriesWidget.title')}</CardTitle>
+                <CardTitle>{t("topCategoriesWidget.title")}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 {(analyticsQuery.data?.top_categories_widget ?? []).map((category) => (
@@ -391,12 +389,12 @@ export function AnalyticsPageClient() {
                       <div className="flex items-center gap-3">
                         <span
                           className="h-3 w-3 rounded-full"
-                          style={{ backgroundColor: category.category_color ?? '#0f766e' }}
+                          style={{ backgroundColor: category.category_color ?? "#0f766e" }}
                         />
                         <div>
                           <p className="font-medium">{category.category_name}</p>
                           <p className="text-xs text-muted-foreground">
-                            {category.transaction_count} {t('topCategoriesWidget.movements')}
+                            {category.transaction_count} {t("topCategoriesWidget.movements")}
                           </p>
                         </div>
                       </div>
@@ -405,21 +403,21 @@ export function AnalyticsPageClient() {
                     <div className="mt-3 flex flex-wrap items-center gap-2">
                       <Badge
                         variant={
-                          category.budget_status === 'exceeded'
-                            ? 'destructive'
-                            : category.budget_status === 'warning'
-                              ? 'secondary'
-                              : 'outline'
+                          category.budget_status === "exceeded"
+                            ? "destructive"
+                            : category.budget_status === "warning"
+                              ? "secondary"
+                              : "outline"
                         }
                       >
                         {t(`topCategoriesWidget.status.${category.budget_status}`)}
                       </Badge>
                       {category.over_budget ? (
-                        <Badge variant="destructive">{t('topCategoriesWidget.overBudget')}</Badge>
+                        <Badge variant="destructive">{t("topCategoriesWidget.overBudget")}</Badge>
                       ) : null}
                       {category.budget_limit_cents ? (
                         <p className="text-xs text-muted-foreground">
-                          {t('topCategoriesWidget.limit', {
+                          {t("topCategoriesWidget.limit", {
                             amount: formatCurrency(category.budget_limit_cents),
                           })}
                         </p>
@@ -434,7 +432,7 @@ export function AnalyticsPageClient() {
           <div className="grid gap-4 xl:grid-cols-[1fr,1fr]">
             <Card className="border-border/70">
               <CardHeader>
-                <CardTitle>{t('cards.monthlyTrends')}</CardTitle>
+                <CardTitle>{t("cards.monthlyTrends")}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 {(analyticsQuery.data?.monthly_trend_cards ?? []).map((card) => (
@@ -446,12 +444,12 @@ export function AnalyticsPageClient() {
                       <div className="flex items-center gap-3">
                         <span
                           className="h-3 w-3 rounded-full"
-                          style={{ backgroundColor: card.category_color ?? '#0f766e' }}
+                          style={{ backgroundColor: card.category_color ?? "#0f766e" }}
                         />
                         <div>
                           <p className="font-medium">{card.category_name}</p>
                           <p className="text-xs text-muted-foreground">
-                            {t('cards.avgThreeMonths', {
+                            {t("cards.avgThreeMonths", {
                               amount: formatCurrency(card.average_3m_cents),
                             })}
                           </p>
@@ -461,7 +459,7 @@ export function AnalyticsPageClient() {
                         <p className="font-semibold">{formatCurrency(card.current_month_cents)}</p>
                         <p className="text-xs text-muted-foreground">
                           {card.delta_percent === null
-                            ? t('metrics.notAvailable')
+                            ? t("metrics.notAvailable")
                             : formatPercentChange(card.delta_percent)}
                         </p>
                       </div>
@@ -473,7 +471,7 @@ export function AnalyticsPageClient() {
 
             <Card className="border-border/70">
               <CardHeader>
-                <CardTitle>{t('cards.anomalies')}</CardTitle>
+                <CardTitle>{t("cards.anomalies")}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 {(analyticsQuery.data?.anomalies ?? []).length ? (
@@ -486,15 +484,15 @@ export function AnalyticsPageClient() {
                         <div className="flex items-start gap-3">
                           <Siren
                             className={
-                              anomaly.severity === 'critical'
-                                ? 'mt-0.5 h-4 w-4 text-rose-600'
-                                : 'mt-0.5 h-4 w-4 text-amber-500'
+                              anomaly.severity === "critical"
+                                ? "mt-0.5 h-4 w-4 text-rose-600"
+                                : "mt-0.5 h-4 w-4 text-amber-500"
                             }
                           />
                           <div>
                             <p className="font-medium">{anomaly.category_name}</p>
                             <p className="text-xs text-muted-foreground">
-                              {t('anomalies.detail', {
+                              {t("anomalies.detail", {
                                 mean: formatCurrency(anomaly.historical_mean_cents),
                                 percent: formatPercentChange(anomaly.percent_above_mean),
                               })}
@@ -507,7 +505,7 @@ export function AnalyticsPageClient() {
                   ))
                 ) : (
                   <div className="rounded-2xl bg-muted/40 px-4 py-6 text-sm text-muted-foreground">
-                    {t('states.noAnomalies')}
+                    {t("states.noAnomalies")}
                   </div>
                 )}
               </CardContent>
@@ -516,7 +514,7 @@ export function AnalyticsPageClient() {
 
           <Card className="border-border/70">
             <CardHeader>
-              <CardTitle>{t('cards.notifications')}</CardTitle>
+              <CardTitle>{t("cards.notifications")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {(analyticsQuery.data?.notifications ?? []).length ? (
@@ -534,7 +532,7 @@ export function AnalyticsPageClient() {
                 ))
               ) : (
                 <div className="rounded-2xl bg-muted/40 px-4 py-6 text-sm text-muted-foreground">
-                  {t('states.noNotifications')}
+                  {t("states.noNotifications")}
                 </div>
               )}
             </CardContent>
@@ -544,19 +542,19 @@ export function AnalyticsPageClient() {
         <TabsContent value="budgets" className="space-y-6">
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             <MetricCard
-              label={t('budgets.metrics.totalLimit')}
+              label={t("budgets.metrics.totalLimit")}
               value={formatCurrency(budgetsQuery.data?.summary.total_limit_cents ?? 0)}
             />
             <MetricCard
-              label={t('budgets.metrics.totalSpent')}
+              label={t("budgets.metrics.totalSpent")}
               value={formatCurrency(-(budgetsQuery.data?.summary.total_spent_cents ?? 0))}
             />
             <MetricCard
-              label={t('budgets.metrics.available')}
+              label={t("budgets.metrics.available")}
               value={formatCurrency(budgetsQuery.data?.summary.total_available_cents ?? 0)}
             />
             <MetricCard
-              label={t('budgets.metrics.exceeded')}
+              label={t("budgets.metrics.exceeded")}
               value={String(budgetsQuery.data?.summary.exceeded_count ?? 0)}
             />
           </div>
@@ -572,7 +570,8 @@ export function AnalyticsPageClient() {
                         <Badge variant="secondary">{t(`budgets.status.${budget.status}`)}</Badge>
                       </div>
                       <p className="text-sm text-muted-foreground">
-                        {t(`budgets.periods.${budget.period}`)} · {t('budgets.thresholdLabel', { percent: budget.alert_threshold })}
+                        {t(`budgets.periods.${budget.period}`)} ·{" "}
+                        {t("budgets.thresholdLabel", { percent: budget.alert_threshold })}
                       </p>
                     </div>
                     <div className="flex gap-2">
@@ -581,11 +580,11 @@ export function AnalyticsPageClient() {
                         type="button"
                         variant="outline"
                         onClick={() => {
-                          setEditingBudgetId(budget.id)
-                          setOpenBudgetDialog(true)
+                          setEditingBudgetId(budget.id);
+                          setOpenBudgetDialog(true);
                         }}
                       >
-                        {t('actions.edit')}
+                        {t("actions.edit")}
                       </Button>
                       {confirmDeleteId === budget.id ? (
                         <div className="flex gap-1">
@@ -596,7 +595,7 @@ export function AnalyticsPageClient() {
                             disabled={deleteBudgetMutation.isPending}
                             onClick={handleConfirmDelete}
                           >
-                            {t('actions.confirmDelete')}
+                            {t("actions.confirmDelete")}
                           </Button>
                           <Button
                             size="sm"
@@ -604,7 +603,7 @@ export function AnalyticsPageClient() {
                             variant="ghost"
                             onClick={() => setConfirmDeleteId(null)}
                           >
-                            {t('actions.cancel')}
+                            {t("actions.cancel")}
                           </Button>
                         </div>
                       ) : (
@@ -614,7 +613,7 @@ export function AnalyticsPageClient() {
                           variant="outline"
                           onClick={() => handleDeleteBudget(budget.id)}
                         >
-                          {t('actions.delete')}
+                          {t("actions.delete")}
                         </Button>
                       )}
                     </div>
@@ -623,7 +622,7 @@ export function AnalyticsPageClient() {
                     <div className="grid gap-3 sm:grid-cols-3">
                       <div className="rounded-2xl bg-muted/40 p-4">
                         <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
-                          {t('budgets.metrics.spent')}
+                          {t("budgets.metrics.spent")}
                         </p>
                         <p className="mt-2 text-lg font-semibold">
                           {formatCurrency(-budget.spent_cents)}
@@ -631,7 +630,7 @@ export function AnalyticsPageClient() {
                       </div>
                       <div className="rounded-2xl bg-muted/40 p-4">
                         <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
-                          {t('budgets.metrics.limit')}
+                          {t("budgets.metrics.limit")}
                         </p>
                         <p className="mt-2 text-lg font-semibold">
                           {formatCurrency(budget.limit_cents)}
@@ -639,7 +638,7 @@ export function AnalyticsPageClient() {
                       </div>
                       <div className="rounded-2xl bg-muted/40 p-4">
                         <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
-                          {t('budgets.metrics.availableCategory')}
+                          {t("budgets.metrics.availableCategory")}
                         </p>
                         <p className="mt-2 text-lg font-semibold">
                           {formatCurrency(budget.available_cents)}
@@ -649,7 +648,7 @@ export function AnalyticsPageClient() {
 
                     <div>
                       <div className="mb-2 flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">{t('budgets.progress')}</span>
+                        <span className="text-muted-foreground">{t("budgets.progress")}</span>
                         <span className="font-medium">{budget.progress_percent}%</span>
                       </div>
                       <ProgressBar progress={budget.progress_percent} status={budget.status} />
@@ -662,17 +661,21 @@ export function AnalyticsPageClient() {
                           <XAxis dataKey="label" />
                           <YAxis hide />
                           <Tooltip formatter={formatTooltipCurrency} />
-                          <Bar dataKey="spent_cents" fill="hsl(195 85% 40%)" radius={[8, 8, 0, 0]} />
+                          <Bar
+                            dataKey="spent_cents"
+                            fill="hsl(195 85% 40%)"
+                            radius={[8, 8, 0, 0]}
+                          />
                         </BarChart>
                       </ResponsiveContainer>
                     </div>
 
                     <p className="text-sm text-muted-foreground">
                       {budget.comparison_delta_percent === null
-                        ? t('metrics.notAvailable')
-                        : t('budgets.comparison', {
-                          change: formatPercentChange(budget.comparison_delta_percent),
-                        })}
+                        ? t("metrics.notAvailable")
+                        : t("budgets.comparison", {
+                            change: formatPercentChange(budget.comparison_delta_percent),
+                          })}
                     </p>
                   </CardContent>
                 </Card>
@@ -683,8 +686,8 @@ export function AnalyticsPageClient() {
               <CardContent className="flex min-h-[220px] flex-col items-center justify-center gap-3 text-center">
                 <PiggyBank className="h-10 w-10 text-muted-foreground" aria-hidden="true" />
                 <div>
-                  <p className="font-medium">{t('budgets.empty.title')}</p>
-                  <p className="text-sm text-muted-foreground">{t('budgets.empty.subtitle')}</p>
+                  <p className="font-medium">{t("budgets.empty.title")}</p>
+                  <p className="text-sm text-muted-foreground">{t("budgets.empty.subtitle")}</p>
                 </div>
               </CardContent>
             </Card>
@@ -694,7 +697,7 @@ export function AnalyticsPageClient() {
         <TabsContent value="categories" className="space-y-6">
           <Card className="border-border/70">
             <CardHeader>
-              <CardTitle>{t('charts.categoryComparison')}</CardTitle>
+              <CardTitle>{t("charts.categoryComparison")}</CardTitle>
             </CardHeader>
             <CardContent className="h-80">
               <ResponsiveContainer width="100%" height="100%" minHeight={320}>
@@ -718,19 +721,19 @@ export function AnalyticsPageClient() {
                     <CardTitle className="text-lg">{category.category_name}</CardTitle>
                     <p className="text-sm text-muted-foreground">
                       {category.delta_percent === null
-                        ? t('metrics.notAvailable')
+                        ? t("metrics.notAvailable")
                         : formatPercentChange(category.delta_percent)}
                     </p>
                   </div>
                   <Badge variant="secondary">
-                    {category.is_growing ? t('categories.growing') : t('categories.stable')}
+                    {category.is_growing ? t("categories.growing") : t("categories.stable")}
                   </Badge>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div className="rounded-2xl bg-muted/40 p-4">
                       <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
-                        {t('categories.currentPeriod')}
+                        {t("categories.currentPeriod")}
                       </p>
                       <p className="mt-2 text-lg font-semibold">
                         {formatCurrency(-category.current_period_cents)}
@@ -738,7 +741,7 @@ export function AnalyticsPageClient() {
                     </div>
                     <div className="rounded-2xl bg-muted/40 p-4">
                       <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
-                        {t('categories.previousPeriod')}
+                        {t("categories.previousPeriod")}
                       </p>
                       <p className="mt-2 text-lg font-semibold">
                         {formatCurrency(-category.previous_period_cents)}
@@ -756,7 +759,7 @@ export function AnalyticsPageClient() {
                         <Line
                           dataKey="total_cents"
                           dot={false}
-                          stroke={category.category_color ?? 'hsl(195 85% 40%)'}
+                          stroke={category.category_color ?? "hsl(195 85% 40%)"}
                           strokeWidth={2}
                           type="monotone"
                         />
@@ -781,5 +784,5 @@ export function AnalyticsPageClient() {
         open={openBudgetDialog}
       />
     </div>
-  )
+  );
 }

@@ -1,33 +1,33 @@
-'use client'
+"use client";
 
-import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 export type DashboardWidgetId =
-  | 'monthly-balance'
-  | 'projected-flow'
-  | 'top-categories'
-  | 'upcoming-commitments'
-  | 'portfolio'
-  | 'active-alerts'
-  | 'recent-transactions'
+  | "monthly-balance"
+  | "projected-flow"
+  | "top-categories"
+  | "upcoming-commitments"
+  | "portfolio"
+  | "active-alerts"
+  | "recent-transactions";
 
 export const dashboardWidgetIds: DashboardWidgetId[] = [
-  'monthly-balance',
-  'projected-flow',
-  'top-categories',
-  'upcoming-commitments',
-  'portfolio',
-  'active-alerts',
-  'recent-transactions',
-]
+  "monthly-balance",
+  "projected-flow",
+  "top-categories",
+  "upcoming-commitments",
+  "portfolio",
+  "active-alerts",
+  "recent-transactions",
+];
 
 interface DashboardLayoutState {
-  hidden: DashboardWidgetId[]
-  moveWidget: (activeId: DashboardWidgetId, targetId: DashboardWidgetId) => void
-  order: DashboardWidgetId[]
-  reset: () => void
-  toggleHidden: (widgetId: DashboardWidgetId) => void
+  hidden: DashboardWidgetId[];
+  moveWidget: (activeId: DashboardWidgetId, targetId: DashboardWidgetId) => void;
+  order: DashboardWidgetId[];
+  reset: () => void;
+  toggleHidden: (widgetId: DashboardWidgetId) => void;
 }
 
 function reorder(
@@ -35,17 +35,17 @@ function reorder(
   activeId: DashboardWidgetId,
   targetId: DashboardWidgetId,
 ) {
-  const next = [...order]
-  const activeIndex = next.indexOf(activeId)
-  const targetIndex = next.indexOf(targetId)
+  const next = [...order];
+  const activeIndex = next.indexOf(activeId);
+  const targetIndex = next.indexOf(targetId);
 
   if (activeIndex === -1 || targetIndex === -1 || activeIndex === targetIndex) {
-    return next
+    return next;
   }
 
-  next.splice(activeIndex, 1)
-  next.splice(targetIndex, 0, activeId)
-  return next
+  next.splice(activeIndex, 1);
+  next.splice(targetIndex, 0, activeId);
+  return next;
 }
 
 export const useDashboardLayoutStore = create<DashboardLayoutState>()(
@@ -70,11 +70,11 @@ export const useDashboardLayoutStore = create<DashboardLayoutState>()(
         })),
     }),
     {
-      name: 'patrimio-dashboard-layout',
+      name: "patrimio-dashboard-layout",
       partialize: (state) => ({
         hidden: state.hidden,
         order: state.order,
       }),
     },
   ),
-)
+);

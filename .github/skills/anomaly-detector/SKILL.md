@@ -98,8 +98,6 @@ interface BudgetAlert {
   daysRemainingInMonth: number;
 }
 
-export async function detectBudgetAlerts(
-  userId: string,
-): Promise<BudgetAlert[]>;
+export async function detectBudgetAlerts(userId: string): Promise<BudgetAlert[]>;
 // Returns alerts sorted by severity, only for active budgets
 ```

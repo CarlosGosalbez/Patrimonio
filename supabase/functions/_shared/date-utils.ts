@@ -32,9 +32,7 @@ function addMonths(date: Date, months: number) {
   next.setUTCDate(1);
   next.setUTCMonth(next.getUTCMonth() + months);
 
-  const lastDay = new Date(
-    Date.UTC(next.getUTCFullYear(), next.getUTCMonth() + 1, 0),
-  ).getUTCDate();
+  const lastDay = new Date(Date.UTC(next.getUTCFullYear(), next.getUTCMonth() + 1, 0)).getUTCDate();
 
   next.setUTCDate(Math.min(day, lastDay));
   return next;

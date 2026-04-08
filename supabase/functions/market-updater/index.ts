@@ -65,8 +65,7 @@ async function fetchFromYahoo(ticker: string): Promise<MarketCacheUpsert | null>
   return {
     asset_type: "stock",
     change_cents: Math.round(change * 100),
-    change_percent:
-      previousClose !== 0 ? Number((((change / previousClose) * 100)).toFixed(4)) : 0,
+    change_percent: previousClose !== 0 ? Number(((change / previousClose) * 100).toFixed(4)) : 0,
     currency: String(meta.currency ?? "USD").toUpperCase(),
     data_source: "yahoo",
     price_cents: Math.round(price * 100),
@@ -129,7 +128,8 @@ async function fetchFromFmp(ticker: string, apiKey: string): Promise<MarketCache
   return {
     asset_type: "stock",
     change_cents: quote.change != null ? Math.round(Number(quote.change) * 100) : null,
-    change_percent: quote.changesPercentage != null ? Number(Number(quote.changesPercentage).toFixed(4)) : null,
+    change_percent:
+      quote.changesPercentage != null ? Number(Number(quote.changesPercentage).toFixed(4)) : null,
     currency: "USD",
     data_source: "fmp",
     price_cents: Math.round(Number(quote.price) * 100),
@@ -282,8 +282,13 @@ Deno.serve(async (request) => {
 
   const { data: cachedRows, error: cachedRowsError } = await supabase
     .from("market_cache")
-    .select("ticker,name,asset_type,price_cents,currency,change_cents,change_percent,volume,market,data_source,updated_at")
-    .in("ticker", tickers.map((ticker) => ticker.ticker));
+    .select(
+      "ticker,name,asset_type,price_cents,currency,change_cents,change_percent,volume,market,data_source,updated_at",
+    )
+    .in(
+      "ticker",
+      tickers.map((ticker) => ticker.ticker),
+    );
 
   if (cachedRowsError) {
     return Response.json({ error: cachedRowsError.message }, { status: 500 });
@@ -296,13 +301,12 @@ Deno.serve(async (request) => {
   if (openExchangeRatesAppId) {
     const exchangeRates = await fetchOpenExchangeRates(openExchangeRatesAppId);
     if (exchangeRates.length) {
-      const { error: exchangeRateError } = await supabase.from("exchange_rates_cache").upsert(
-        exchangeRates,
-        {
+      const { error: exchangeRateError } = await supabase
+        .from("exchange_rates_cache")
+        .upsert(exchangeRates, {
           ignoreDuplicates: false,
           onConflict: "base_currency,quote_currency",
-        },
-      );
+        });
 
       if (exchangeRateError) {
         return Response.json({ error: exchangeRateError.message }, { status: 500 });
@@ -390,9 +394,7 @@ Deno.serve(async (request) => {
     const todayKey = new Date().toISOString().slice(0, 10);
     const notifications = ((alertTargets ?? []) as AlertTargetRow[])
       .map((position) => {
-        const threshold = normalizeAlertThreshold(
-          position.daily_price_alert_threshold_percent,
-        );
+        const threshold = normalizeAlertThreshold(position.daily_price_alert_threshold_percent);
         const market = resolvedMarketMap.get(position.ticker) ?? cachedMap.get(position.ticker);
 
         if (!market || market.change_percent == null || !threshold) {
@@ -417,13 +419,12 @@ Deno.serve(async (request) => {
       .filter((value): value is NonNullable<typeof value> => Boolean(value));
 
     if (notifications.length) {
-      const { error: notificationsError } = await supabase.from("notifications").upsert(
-        notifications,
-        {
+      const { error: notificationsError } = await supabase
+        .from("notifications")
+        .upsert(notifications, {
           ignoreDuplicates: true,
           onConflict: "user_id,event_key",
-        },
-      );
+        });
 
       if (notificationsError) {
         errorList.push(`notifications: ${notificationsError.message}`);

@@ -25,9 +25,7 @@ paths:
 // Mock Anthropic — never call real API in tests
 vi.mock("@ai-sdk/anthropic", () => ({ anthropic: () => "mock-model" }));
 vi.mock("ai", () => ({
-  streamText: vi
-    .fn()
-    .mockResolvedValue({ toDataStreamResponse: () => new Response() }),
+  streamText: vi.fn().mockResolvedValue({ toDataStreamResponse: () => new Response() }),
   tool: vi.fn((config) => config),
 }));
 
@@ -44,9 +42,7 @@ vi.mock("@/lib/supabase/server", () => ({
   createServerClient: () => ({
     from: mockSupabase.from,
     auth: {
-      getUser: vi
-        .fn()
-        .mockResolvedValue({ data: { user: { id: "test-uid" } } }),
+      getUser: vi.fn().mockResolvedValue({ data: { user: { id: "test-uid" } } }),
     },
   }),
 }));

@@ -120,22 +120,12 @@ export const INCOME_PATTERNS = [
 
 ```typescript
 // Detect which Spanish bank the CSV/Excel came from
-export function detectBankFormat(
-  headers: string[],
-  sampleRows: string[][],
-): BankFormat | null {
-  if (headers.includes("Fecha Valor") && headers.includes("Movimiento"))
-    return "santander";
-  if (
-    headers.includes("Fecha") &&
-    headers.includes("Concepto") &&
-    headers.includes("Importe (€)")
-  )
+export function detectBankFormat(headers: string[], sampleRows: string[][]): BankFormat | null {
+  if (headers.includes("Fecha Valor") && headers.includes("Movimiento")) return "santander";
+  if (headers.includes("Fecha") && headers.includes("Concepto") && headers.includes("Importe (€)"))
     return "bbva";
-  if (headers.includes("Data") && headers.includes("Concepte"))
-    return "caixabank"; // Catalan headers
-  if (headers.includes("Fecha/Hora") && headers.includes("Categoría ING"))
-    return "ing";
+  if (headers.includes("Data") && headers.includes("Concepte")) return "caixabank"; // Catalan headers
+  if (headers.includes("Fecha/Hora") && headers.includes("Categoría ING")) return "ing";
   return null;
 }
 ```

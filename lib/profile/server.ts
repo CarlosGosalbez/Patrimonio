@@ -1,32 +1,28 @@
-import type { SupabaseClient } from '@supabase/supabase-js'
-import type { Database } from '@/types/database'
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/types/database";
 
-type ServerClient = SupabaseClient<Database>
+type ServerClient = SupabaseClient<Database>;
 
 export async function ensureUserProfile(supabase: ServerClient, userId: string) {
-  const existing = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('user_id', userId)
-    .maybeSingle()
+  const existing = await supabase.from("profiles").select("*").eq("user_id", userId).maybeSingle();
 
   if (existing.error) {
-    throw new Error(existing.error.message)
+    throw new Error(existing.error.message);
   }
 
   if (existing.data) {
-    return existing.data
+    return existing.data;
   }
 
   const inserted = await supabase
-    .from('profiles')
+    .from("profiles")
     .insert({ user_id: userId } as never)
-    .select('*')
-    .single()
+    .select("*")
+    .single();
 
   if (inserted.error || !inserted.data) {
-    throw new Error(inserted.error?.message ?? 'Could not create profile')
+    throw new Error(inserted.error?.message ?? "Could not create profile");
   }
 
-  return inserted.data
+  return inserted.data;
 }

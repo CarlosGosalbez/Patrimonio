@@ -54,10 +54,7 @@ export async function POST(req: Request) {
   const body = await req.json();
   const parsed = RequestSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json(
-      { error: parsed.error.flatten() },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
   }
 
   // 3. Business logic with user.id from JWT

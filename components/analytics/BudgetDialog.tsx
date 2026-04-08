@@ -1,37 +1,35 @@
-'use client'
+"use client";
 
-import { useEffect, useId, useState } from 'react'
-import { useTranslations } from 'next-intl'
-import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { centsToDec } from '@/lib/financial/formatters'
-import type { BudgetListItem } from '@/lib/budgets/types'
+import { useEffect, useId, useState } from "react";
+import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { centsToDec } from "@/lib/financial/formatters";
+import type { BudgetListItem } from "@/lib/budgets/types";
 
 interface BudgetDialogProps {
-  budget: BudgetListItem | null
-  categories: Array<{ id: string; name: string }>
-  onOpenChange: (open: boolean) => void
-  onSubmit: (payload: Record<string, unknown>, id?: string) => Promise<void>
-  open: boolean
+  budget: BudgetListItem | null;
+  categories: Array<{ id: string; name: string }>;
+  onOpenChange: (open: boolean) => void;
+  onSubmit: (payload: Record<string, unknown>, id?: string) => Promise<void>;
+  open: boolean;
 }
 
 function buildInitialState(budget?: BudgetListItem | null) {
   return {
     alert_threshold: budget?.alert_threshold ?? 80,
-    category_id: budget?.category_id ?? '',
-    end_date: budget?.end_date ?? '',
+    category_id: budget?.category_id ?? "",
+    end_date: budget?.end_date ?? "",
     is_active: budget?.is_active ?? true,
-    limit_input: budget
-      ? String(centsToDec(budget.limit_cents).toFixed(2)).replace('.', ',')
-      : '',
-    period: budget?.period ?? 'monthly',
+    limit_input: budget ? String(centsToDec(budget.limit_cents).toFixed(2)).replace(".", ",") : "",
+    period: budget?.period ?? "monthly",
     start_date: budget?.start_date ?? new Date().toISOString().slice(0, 10),
-  }
+  };
 }
 
-type BudgetFormState = ReturnType<typeof buildInitialState>
+type BudgetFormState = ReturnType<typeof buildInitialState>;
 
 export function BudgetDialog({
   budget,
@@ -40,9 +38,9 @@ export function BudgetDialog({
   onSubmit,
   open,
 }: BudgetDialogProps) {
-  const t = useTranslations('analytics')
-  const uid = useId()
-  const [state, setState] = useState<BudgetFormState>(() => buildInitialState(budget))
+  const t = useTranslations("analytics");
+  const uid = useId();
+  const [state, setState] = useState<BudgetFormState>(() => buildInitialState(budget));
 
   const id = {
     category: `${uid}-category`,
@@ -52,14 +50,14 @@ export function BudgetDialog({
     startDate: `${uid}-start-date`,
     endDate: `${uid}-end-date`,
     active: `${uid}-active`,
-  }
+  };
 
   useEffect(() => {
-    setState(buildInitialState(budget))
-  }, [budget])
+    setState(buildInitialState(budget));
+  }, [budget]);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault()
+    event.preventDefault();
 
     await onSubmit(
       {
@@ -67,7 +65,7 @@ export function BudgetDialog({
         end_date: state.end_date || null,
       },
       budget?.id,
-    )
+    );
   }
 
   return (
@@ -75,14 +73,14 @@ export function BudgetDialog({
       <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>
-            {budget ? t('budgets.dialog.editTitle') : t('budgets.dialog.newTitle')}
+            {budget ? t("budgets.dialog.editTitle") : t("budgets.dialog.newTitle")}
           </DialogTitle>
         </DialogHeader>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor={id.category}>{t('budgets.form.category')}</Label>
+              <Label htmlFor={id.category}>{t("budgets.form.category")}</Label>
               <select
                 id={id.category}
                 className="flex min-h-[44px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
@@ -92,7 +90,7 @@ export function BudgetDialog({
                   setState((current) => ({ ...current, category_id: event.target.value }))
                 }
               >
-                <option value="">{t('budgets.form.selectCategory')}</option>
+                <option value="">{t("budgets.form.selectCategory")}</option>
                 {categories.map((category) => (
                   <option key={category.id} value={category.id}>
                     {category.name}
@@ -102,7 +100,7 @@ export function BudgetDialog({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor={id.period}>{t('budgets.form.period')}</Label>
+              <Label htmlFor={id.period}>{t("budgets.form.period")}</Label>
               <select
                 id={id.period}
                 className="flex min-h-[44px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
@@ -110,17 +108,17 @@ export function BudgetDialog({
                 onChange={(event) =>
                   setState((current) => ({
                     ...current,
-                    period: event.target.value as 'annual' | 'monthly',
+                    period: event.target.value as "annual" | "monthly",
                   }))
                 }
               >
-                <option value="monthly">{t('budgets.periods.monthly')}</option>
-                <option value="annual">{t('budgets.periods.annual')}</option>
+                <option value="monthly">{t("budgets.periods.monthly")}</option>
+                <option value="annual">{t("budgets.periods.annual")}</option>
               </select>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor={id.limit}>{t('budgets.form.limit')}</Label>
+              <Label htmlFor={id.limit}>{t("budgets.form.limit")}</Label>
               <Input
                 id={id.limit}
                 inputMode="decimal"
@@ -133,7 +131,7 @@ export function BudgetDialog({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor={id.threshold}>{t('budgets.form.threshold')}</Label>
+              <Label htmlFor={id.threshold}>{t("budgets.form.threshold")}</Label>
               <Input
                 id={id.threshold}
                 inputMode="numeric"
@@ -152,7 +150,7 @@ export function BudgetDialog({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor={id.startDate}>{t('budgets.form.startDate')}</Label>
+              <Label htmlFor={id.startDate}>{t("budgets.form.startDate")}</Label>
               <Input
                 id={id.startDate}
                 required
@@ -165,7 +163,7 @@ export function BudgetDialog({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor={id.endDate}>{t('budgets.form.endDate')}</Label>
+              <Label htmlFor={id.endDate}>{t("budgets.form.endDate")}</Label>
               <Input
                 id={id.endDate}
                 type="date"
@@ -188,20 +186,20 @@ export function BudgetDialog({
               }
             />
             <Label className="cursor-pointer text-sm font-normal" htmlFor={id.active}>
-              {t('budgets.form.active')}
+              {t("budgets.form.active")}
             </Label>
           </div>
 
           <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              {t('actions.cancel')}
+              {t("actions.cancel")}
             </Button>
             <Button type="submit">
-              {budget ? t('budgets.dialog.save') : t('budgets.dialog.create')}
+              {budget ? t("budgets.dialog.save") : t("budgets.dialog.create")}
             </Button>
           </div>
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

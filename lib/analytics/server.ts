@@ -85,30 +85,31 @@ export async function getAnalyticsSummary({
   ].sort()[0]!;
   const queryEnd = range.end;
 
-  const [transactionsResult, notificationsResult, snapshotsResult, budgetsOverview] = await Promise.all([
-    supabase
-      .from("transactions")
-      .select(transactionSelect)
-      .eq("user_id", userId)
-      .gte("transaction_date", queryStart)
-      .lte("transaction_date", queryEnd)
-      .is("deleted_at", null)
-      .order("transaction_date", { ascending: true }),
-    supabase
-      .from("notifications")
-      .select("id,title,message,type,severity,target_id,target_type,created_at")
-      .eq("user_id", userId)
-      .in("type", ["budget_exceeded", "anomaly_detected"])
-      .order("created_at", { ascending: false })
-      .limit(6),
-    supabase
-      .from("investment_snapshots")
-      .select("snapshot_date,total_value_cents,total_invested_cents,unrealized_pl_cents")
-      .eq("user_id", userId)
-      .order("snapshot_date", { ascending: false })
-      .limit(24),
-    getBudgetsOverview({ referenceDate, supabase, userId }),
-  ]);
+  const [transactionsResult, notificationsResult, snapshotsResult, budgetsOverview] =
+    await Promise.all([
+      supabase
+        .from("transactions")
+        .select(transactionSelect)
+        .eq("user_id", userId)
+        .gte("transaction_date", queryStart)
+        .lte("transaction_date", queryEnd)
+        .is("deleted_at", null)
+        .order("transaction_date", { ascending: true }),
+      supabase
+        .from("notifications")
+        .select("id,title,message,type,severity,target_id,target_type,created_at")
+        .eq("user_id", userId)
+        .in("type", ["budget_exceeded", "anomaly_detected"])
+        .order("created_at", { ascending: false })
+        .limit(6),
+      supabase
+        .from("investment_snapshots")
+        .select("snapshot_date,total_value_cents,total_invested_cents,unrealized_pl_cents")
+        .eq("user_id", userId)
+        .order("snapshot_date", { ascending: false })
+        .limit(24),
+      getBudgetsOverview({ referenceDate, supabase, userId }),
+    ]);
 
   if (transactionsResult.error) {
     throw new Error(transactionsResult.error.message);
