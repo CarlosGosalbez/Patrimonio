@@ -185,10 +185,8 @@ describe("commitmentInputSchema", () => {
     }
   });
 
-  // NOTE: Zod v4 does NOT catch errors thrown inside .transform() via safeParse —
-  // they bubble up. Fix: use ctx.addIssue() + return z.NEVER in the schema instead of throw.
-  // This is a known bug in optionalRateInput. Skipped until schema is fixed.
-  it.skip("rejects malformed interest rate (known Zod v4 throw-in-transform bug)", () => {
+  // Bug fixed in lib/commitments/schemas.ts: now uses ctx.addIssue + z.NEVER instead of throw
+  it("rejects malformed interest rate", () => {
     const result = commitmentInputSchema.safeParse({
       ...BASE_VALID,
       interest_rate_input: "abc",

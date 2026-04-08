@@ -50,7 +50,7 @@ export const customAlertInputSchema = z
   })
   .strict();
 
-export const customAlertPatchSchema = z
+const _customAlertPatchFieldsSchema = z
   .object({
     advance_notice_days: integerLike.optional(),
     auto_deactivate: z.boolean().optional(),
@@ -82,10 +82,18 @@ export const customAlertPatchSchema = z
     name: safeName(200).min(1).optional(),
     recurrence: alertRecurrenceSchema.optional(),
   })
-  .strict()
-  .refine((value) => Object.keys(value).length > 0, {
-    message: "At least one field is required",
-  });
+  .strict();
+
+// .pipe() ensures the "at least one field" check runs on the RAW input
+// (before field-level transforms that convert undefined→null would inflate key counts)
+export const customAlertPatchSchema = z
+  .record(z.string(), z.unknown())
+  .superRefine((raw, ctx) => {
+    if (Object.keys(raw).length === 0) {
+      ctx.addIssue({ code: "custom", message: "At least one field is required" });
+    }
+  })
+  .pipe(_customAlertPatchFieldsSchema);
 
 export const alertPreferencesSchema = z
   .object({

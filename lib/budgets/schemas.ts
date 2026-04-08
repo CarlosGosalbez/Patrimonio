@@ -29,7 +29,7 @@ export const budgetInputSchema = z
   })
   .strict();
 
-export const budgetPatchSchema = z
+const _budgetPatchFieldsSchema = z
   .object({
     alert_threshold: z.coerce.number().int().min(1).max(100).optional(),
     category_id: uuid.optional(),
@@ -49,7 +49,15 @@ export const budgetPatchSchema = z
     period: budgetPeriodSchema.optional(),
     start_date: dateString.optional(),
   })
-  .strict()
-  .refine((value) => Object.keys(value).length > 0, {
-    message: "At least one field is required",
-  });
+  .strict();
+
+// .pipe() ensures the "at least one field" check runs on the RAW input
+// (before field-level transforms that convert undefined→null would inflate key counts)
+export const budgetPatchSchema = z
+  .record(z.string(), z.unknown())
+  .superRefine((raw, ctx) => {
+    if (Object.keys(raw).length === 0) {
+      ctx.addIssue({ code: "custom", message: "At least one field is required" });
+    }
+  })
+  .pipe(_budgetPatchFieldsSchema);

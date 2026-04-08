@@ -16,13 +16,14 @@ const isoCurrency = z
 const integerLike = z.coerce.number().int().min(0);
 const optionalRateInput = z
   .union([z.string().trim(), z.null(), z.undefined()])
-  .transform((value) => {
+  .transform((value, ctx) => {
     if (!value) {
       return null;
     }
 
     if (!/^\d{1,3}([.,]\d{1,3})?$/.test(value)) {
-      throw new Error("Invalid interest rate");
+      ctx.addIssue({ code: "custom", message: "Invalid interest rate" });
+      return z.NEVER;
     }
 
     return Number.parseFloat(value.replace(",", "."));
