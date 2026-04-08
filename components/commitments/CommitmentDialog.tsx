@@ -44,6 +44,7 @@ const TYPE_VISIBILITY: Record<
     showMortgageFields: boolean;
     showServiceName: boolean;
     showToleranceDays: boolean;
+    isVariableUtility: boolean;
   }
 > = {
   mortgage: {
@@ -52,13 +53,15 @@ const TYPE_VISIBILITY: Record<
     showMortgageFields: true,
     showServiceName: false,
     showToleranceDays: false,
+    isVariableUtility: false,
   },
   rent_income: {
-    accountRequired: false,
+    accountRequired: true,
     showCancelledAt: false,
     showMortgageFields: false,
     showServiceName: false,
     showToleranceDays: true,
+    isVariableUtility: false,
   },
   rent_expense: {
     accountRequired: true,
@@ -66,6 +69,7 @@ const TYPE_VISIBILITY: Record<
     showMortgageFields: false,
     showServiceName: false,
     showToleranceDays: false,
+    isVariableUtility: false,
   },
   subscription: {
     accountRequired: true,
@@ -73,6 +77,7 @@ const TYPE_VISIBILITY: Record<
     showMortgageFields: false,
     showServiceName: true,
     showToleranceDays: false,
+    isVariableUtility: false,
   },
   tax: {
     accountRequired: true,
@@ -80,6 +85,7 @@ const TYPE_VISIBILITY: Record<
     showMortgageFields: false,
     showServiceName: false,
     showToleranceDays: false,
+    isVariableUtility: false,
   },
   insurance: {
     accountRequired: true,
@@ -87,6 +93,7 @@ const TYPE_VISIBILITY: Record<
     showMortgageFields: false,
     showServiceName: true,
     showToleranceDays: false,
+    isVariableUtility: false,
   },
   utility: {
     accountRequired: true,
@@ -94,13 +101,15 @@ const TYPE_VISIBILITY: Record<
     showMortgageFields: false,
     showServiceName: true,
     showToleranceDays: false,
+    isVariableUtility: true,
   },
   other: {
-    accountRequired: false,
+    accountRequired: true,
     showCancelledAt: true,
     showMortgageFields: false,
     showServiceName: true,
     showToleranceDays: true,
+    isVariableUtility: false,
   },
 };
 
@@ -113,7 +122,9 @@ interface CommitmentDialogProps {
   open: boolean;
 }
 
-function buildInitialState(commitment?: CommitmentListItem | null) {
+/** Exported for unit testing */
+export function buildCommitmentFormState(commitment?: CommitmentListItem | null) {
+  const today = new Date().toISOString().slice(0, 10);
   return {
     account_id: commitment?.account_id ?? "",
     advance_notice_days: commitment?.advance_notice_days ?? 7,
@@ -121,7 +132,7 @@ function buildInitialState(commitment?: CommitmentListItem | null) {
     amount_input: commitment
       ? String((commitment.amount_cents / 100).toFixed(2)).replace(".", ",")
       : "",
-    cancelled_at: commitment?.cancelled_at ?? "",
+    cancelled_at: commitment?.cancelled_at ? (commitment.cancelled_at.slice(0, 10) ?? "") : "",
     category_id: commitment?.category_id ?? "",
     commitment_type: (commitment?.commitment_type ?? "other") as CommitmentType,
     description: commitment?.description ?? "",
@@ -133,11 +144,17 @@ function buildInitialState(commitment?: CommitmentListItem | null) {
     is_variable_rate: commitment?.is_variable_rate ?? false,
     maturity_year: commitment?.maturity_year?.toString() ?? "",
     name: commitment?.name ?? "",
-    next_due_date: commitment?.next_due_date ?? new Date().toISOString().slice(0, 10),
+    // Always normalize to YYYY-MM-DD to prevent TS2882 / TZ-shift errors on edit
+    next_due_date: commitment?.next_due_date ? commitment.next_due_date.slice(0, 10) : today,
     service_name: commitment?.service_name ?? "",
-    start_date: commitment?.start_date ?? new Date().toISOString().slice(0, 10),
+    start_date: commitment?.start_date ? commitment.start_date.slice(0, 10) : today,
     tolerance_days: commitment?.tolerance_days ?? 3,
   };
+}
+
+// internal alias
+function buildInitialState(commitment?: CommitmentListItem | null) {
+  return buildCommitmentFormState(commitment);
 }
 
 type CommitmentFormState = ReturnType<typeof buildInitialState>;
@@ -172,14 +189,19 @@ export function CommitmentDialog({
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
+    // For utility type: default next_due_date to today if user left it empty
+    const today = new Date().toISOString().slice(0, 10);
+
     await onSubmit(
       {
         ...state,
-        account_id: state.account_id || null,
+        // account_id is always required by DB constraint; form enforces it via required select
+        account_id: state.account_id || undefined,
         cancelled_at: state.cancelled_at || null,
         category_id: state.category_id || null,
         interest_rate_input: state.interest_rate_input || null,
         maturity_year: state.maturity_year ? Number(state.maturity_year) : null,
+        next_due_date: state.next_due_date || today,
         service_name: state.service_name || null,
       },
       commitment?.id,
@@ -262,6 +284,9 @@ export function CommitmentDialog({
                     setState((current) => ({ ...current, amount_input: event.target.value }))
                   }
                 />
+                {visibility.isVariableUtility ? (
+                  <p className="text-xs text-muted-foreground">{t("fields.amountVariableHint")}</p>
+                ) : null}
               </div>
 
               <div className="space-y-2">
@@ -286,17 +311,26 @@ export function CommitmentDialog({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="commitment-next-due">{t("fields.nextDueDate")}</Label>
+                <Label htmlFor="commitment-next-due">
+                  {visibility.isVariableUtility
+                    ? t("fields.nextDueDateUtility")
+                    : t("fields.nextDueDate")}
+                </Label>
                 <Input
                   id="commitment-next-due"
                   className="min-h-[44px]"
                   type="date"
-                  required
+                  required={!visibility.isVariableUtility}
                   value={state.next_due_date}
                   onChange={(event) =>
                     setState((current) => ({ ...current, next_due_date: event.target.value }))
                   }
                 />
+                {visibility.isVariableUtility ? (
+                  <p className="text-xs text-muted-foreground">
+                    {t("fields.nextDueDateUtilityHint")}
+                  </p>
+                ) : null}
               </div>
 
               <div className="space-y-2">
