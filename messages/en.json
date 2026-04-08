@@ -1124,9 +1124,13 @@
     },
     "appVersion": {
       "title": "App information",
-      "description": "Current version of the installed software.",
-      "versionLabel": "Version",
-      "semverHint": "MAJOR.MINOR.PATCH — MAJOR: major redesign \u00b7 MINOR: new features \u00b7 PATCH: bug fixes"
+      "description": "Installed software version.",
+      "majorLabel": "MAJOR",
+      "majorDesc": "Breaking redesign",
+      "minorLabel": "MINOR",
+      "minorDesc": "New features",
+      "patchLabel": "PATCH",
+      "patchDesc": "Bug fixes"
     }
   },
   "categories": {
