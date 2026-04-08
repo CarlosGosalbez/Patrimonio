@@ -47,12 +47,12 @@ export async function GET(request: NextRequest) {
       const t = await getTranslations("investments");
       const report = await generateFiscalReport(supabase, user.id, year, t("fiscal.disclaimer"));
       pdfBuffer = await renderFiscalReportPdf(report);
-      filename = `patrimio-fiscal-irpf-${year}.pdf`;
+      filename = `patrimonio-fiscal-irpf-${year}.pdf`;
     } else {
       const m = month ?? now.getMonth() + 1;
       const report = await generateMonthlyReport(supabase, user.id, m, year);
       pdfBuffer = await renderMonthlyReportPdf(report);
-      filename = `patrimio-informe-${year}-${String(m).padStart(2, "0")}.pdf`;
+      filename = `patrimonio-informe-${year}-${String(m).padStart(2, "0")}.pdf`;
     }
 
     return new Response(new Uint8Array(pdfBuffer), {

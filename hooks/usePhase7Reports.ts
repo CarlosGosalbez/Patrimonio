@@ -79,8 +79,8 @@ export function useDownloadPdf() {
       if (month) params.set("month", String(month));
       const filename =
         type === "fiscal"
-          ? `patrimio-fiscal-irpf-${year}.pdf`
-          : `patrimio-informe-${year}-${String(month ?? 1).padStart(2, "0")}.pdf`;
+          ? `patrimonio-fiscal-irpf-${year}.pdf`
+          : `patrimonio-informe-${year}-${String(month ?? 1).padStart(2, "0")}.pdf`;
       await downloadFile(`/api/reports/pdf?${params}`, filename);
     },
   });
@@ -101,8 +101,8 @@ export function useDownloadExcel() {
       if (month) params.set("month", String(month));
       const filename =
         type === "annual"
-          ? `patrimio-anual-${year}.xlsx`
-          : `patrimio-informe-${year}-${String(month ?? 1).padStart(2, "0")}.xlsx`;
+          ? `patrimonio-anual-${year}.xlsx`
+          : `patrimonio-informe-${year}-${String(month ?? 1).padStart(2, "0")}.xlsx`;
       await downloadFile(`/api/reports/excel?${params}`, filename);
     },
   });
@@ -112,7 +112,7 @@ export function useDownloadGdpr() {
   return useMutation({
     mutationFn: async () => {
       const date = new Date().toISOString().slice(0, 10);
-      await downloadFile("/api/reports/gdpr", `patrimio-datos-${date}.zip`);
+      await downloadFile("/api/reports/gdpr", `patrimonio-datos-${date}.zip`);
     },
   });
 }

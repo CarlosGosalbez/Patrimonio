@@ -1,6 +1,9 @@
 import { withSentryConfig } from "@sentry/nextjs";
 import createNextIntlPlugin from "next-intl/plugin";
 import withPWAInit from "@ducanh2912/next-pwa";
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+const { version: APP_VERSION } = require("./package.json");
 
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
@@ -68,6 +71,9 @@ const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   compress: true,
+  env: {
+    NEXT_PUBLIC_APP_VERSION: APP_VERSION,
+  },
   // Generate client-side source maps in production so Sentry can upload and
   // resolve stack traces. Sentry's hideSourceMaps deletes them after upload.
   productionBrowserSourceMaps: true,

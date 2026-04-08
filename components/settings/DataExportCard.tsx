@@ -29,7 +29,7 @@ export function DataExportCard() {
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            a.download = `patrimio-export-${Date.now()}.json`;
+            a.download = `patrimonio-export-${Date.now()}.json`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);

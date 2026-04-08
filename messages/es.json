@@ -1,6 +1,6 @@
 {
   "common": {
-    "brandName": "Patrimio",
+    "brandName": "Patrimonio",
     "brand": "Gestión de patrimonio personal",
     "loading": "Cargando…",
     "cancel": "Cancelar",
@@ -13,13 +13,13 @@
     "processing": "Procesando..."
   },
   "metadata": {
-    "brandName": "Patrimio",
-    "appTitle": "Patrimio — Gestión de patrimonio personal",
+    "brandName": "Patrimonio",
+    "appTitle": "Patrimonio — Gestión de patrimonio personal",
     "appDescription": "Controla tu patrimonio, gastos e inversiones en un solo lugar.",
-    "logoAlt": "Logotipo de Patrimio"
+    "logoAlt": "Logotipo de Patrimonio"
   },
   "home": {
-    "title": "Patrimio",
+    "title": "Patrimonio",
     "subtitle": "Fase 0 — Fundamentos"
   },
   "auth": {
@@ -157,8 +157,8 @@
     "regenSuccess": "Nuevos códigos generados. Los anteriores han sido invalidados.",
     "regenError": "No se pudieron regenerar los códigos",
     "copySuccess": "Códigos copiados al portapapeles",
-    "downloadFilename": "patrimio-codigos-recuperacion-2fa.txt",
-    "fileTitle": "Patrimio — Códigos de recuperación 2FA",
+    "downloadFilename": "patrimonio-codigos-recuperacion-2fa.txt",
+    "fileTitle": "Patrimonio — Códigos de recuperación 2FA",
     "fileSeparator": "======================================",
     "fileWarning": "Guarda estos códigos en un lugar seguro.",
     "fileSingleUse": "Cada código solo se puede usar una vez."
@@ -914,7 +914,7 @@
     "submitting": "Creando cuenta…",
     "sessionExpired": "Sesión expirada. Por favor, inicia sesión de nuevo.",
     "error": "No se pudo crear la cuenta. Inténtalo de nuevo.",
-    "successToast": "¡Bienvenido a Patrimio! Tu primera cuenta ha sido creada."
+    "successToast": "¡Bienvenido a Patrimonio! Tu primera cuenta ha sido creada."
   },
   "settings": {
     "security": {
@@ -982,7 +982,7 @@
     "noSales": "Sin operaciones de venta en este ejercicio",
     "disclaimerLabel": "Aviso legal",
     "gdprTitle": "Exportar mis datos (RGPD)",
-    "gdprDescription": "Descarga un archivo ZIP con todos tus datos personales almacenados en Patrimio, conforme al Reglamento General de Protección de Datos (RGPD/GDPR).",
+    "gdprDescription": "Descarga un archivo ZIP con todos tus datos personales almacenados en Patrimonio, conforme al Reglamento General de Protección de Datos (RGPD/GDPR)",
     "gdprIncludes": {
       "profile": "Perfil y configuración",
       "transactions": "Historial completo de transacciones",
@@ -1118,6 +1118,12 @@
       "confirm": "Confirmar eliminación",
       "success": "Cuenta eliminada correctamente",
       "error": "Error al eliminar la cuenta"
+    },
+    "appVersion": {
+      "title": "Información de la app",
+      "description": "Versión actual del software instalado.",
+      "versionLabel": "Versión",
+      "semverHint": "MAYOR.MENOR.PARCHE — MAYOR: redise\u00f1o importante · MENOR: nuevas funciones · PARCHE: correcci\u00f3n de errores"
     }
   },
   "categories": {

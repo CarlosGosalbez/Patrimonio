@@ -52,7 +52,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <Link
             href="/dashboard"
             className="flex items-center gap-3 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            aria-label="Patrimio — ir al dashboard"
+            aria-label="Patrimonio — ir al dashboard"
           >
             <Logo variant="header" />
           </Link>

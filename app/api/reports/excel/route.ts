@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
       const end = endOfMonth(start);
       startDate = toIsoDate(start);
       endDate = toIsoDate(end);
-      filename = `patrimio-informe-${year}-${String(m).padStart(2, "0")}.xlsx`;
+      filename = `patrimonio-informe-${year}-${String(m).padStart(2, "0")}.xlsx`;
 
       const [report, txResult] = await Promise.all([
         generateMonthlyReport(supabase, user.id, m, year),
@@ -79,7 +79,7 @@ export async function GET(request: NextRequest) {
       const end = endOfYear(start);
       startDate = toIsoDate(start);
       endDate = toIsoDate(end);
-      filename = `patrimio-anual-${year}.xlsx`;
+      filename = `patrimonio-anual-${year}.xlsx`;
 
       const [report, txResult, invResult] = await Promise.all([
         generateAnnualReport(supabase, user.id, year),

@@ -29,11 +29,11 @@ export async function GET(request: NextRequest) {
     zip.file(
       "README.txt",
       [
-        "Patrimio — Exportación RGPD (GDPR)",
+        "Patrimonio — Exportación RGPD (GDPR)",
         "====================================",
         `Exportado el: ${exportData.exported_at}`,
         "",
-        "Este archivo ZIP contiene todos los datos personales almacenados en Patrimio.",
+        "Este archivo ZIP contiene todos los datos personales almacenados en Patrimonio.",
         "Cada fichero JSON contiene una colección de datos.",
         "",
         "Archivos incluidos:",
@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
         "  budgets.json         — Presupuestos",
         "  notifications.json   — Notificaciones (últimas 1000)",
         "",
-        "Para más información: https://patrimio.app/privacidad",
+        "Para más información: https://patrimonio.app/privacidad",
       ].join("\n"),
     );
 
@@ -67,7 +67,7 @@ export async function GET(request: NextRequest) {
     return new Response(zipBuffer, {
       headers: {
         "Content-Type": "application/zip",
-        "Content-Disposition": `attachment; filename="patrimio-datos-${exportedDate}.zip"`,
+        "Content-Disposition": `attachment; filename="patrimonio-datos-${exportedDate}.zip"`,
         "Cache-Control": "no-store",
       },
     });

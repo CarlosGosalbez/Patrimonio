@@ -1,6 +1,6 @@
 {
   "common": {
-    "brandName": "Patrimio",
+    "brandName": "Patrimonio",
     "brand": "Personal wealth management",
     "loading": "Loading…",
     "cancel": "Cancel",
@@ -13,13 +13,13 @@
     "processing": "Processing..."
   },
   "metadata": {
-    "brandName": "Patrimio",
-    "appTitle": "Patrimio — Personal wealth management",
+    "brandName": "Patrimonio",
+    "appTitle": "Patrimonio — Personal wealth management",
     "appDescription": "Track your wealth, expenses and investments in one place.",
-    "logoAlt": "Patrimio logo"
+    "logoAlt": "Patrimonio logo"
   },
   "home": {
-    "title": "Patrimio",
+    "title": "Patrimonio",
     "subtitle": "Phase 0 — Foundations"
   },
   "auth": {
@@ -159,8 +159,8 @@
     "regenSuccess": "New codes generated. Previous codes have been invalidated.",
     "regenError": "Could not regenerate codes",
     "copySuccess": "Codes copied to clipboard",
-    "downloadFilename": "patrimio-2fa-recovery-codes.txt",
-    "fileTitle": "Patrimio — 2FA Recovery Codes",
+    "downloadFilename": "patrimonio-2fa-recovery-codes.txt",
+    "fileTitle": "Patrimonio — 2FA Recovery Codes",
     "fileSeparator": "======================================",
     "fileWarning": "Store these codes in a safe place.",
     "fileSingleUse": "Each code can only be used once."
@@ -917,7 +917,7 @@
     "submitting": "Creating account…",
     "sessionExpired": "Session expired. Please sign in again.",
     "error": "Could not create account. Please try again.",
-    "successToast": "Welcome to Patrimio! Your first account has been created."
+    "successToast": "Welcome to Patrimonio! Your first account has been created."
   },
   "settings": {
     "security": {
@@ -985,7 +985,7 @@
     "noSales": "No sale operations in this fiscal year",
     "disclaimerLabel": "Legal disclaimer",
     "gdprTitle": "Export my data (GDPR)",
-    "gdprDescription": "Download a ZIP file with all your personal data stored in Patrimio, in compliance with the General Data Protection Regulation (GDPR).",
+    "gdprDescription": "Download a ZIP file with all your personal data stored in Patrimonio, in compliance with the General Data Protection Regulation (GDPR)",
     "gdprIncludes": {
       "profile": "Profile and settings",
       "transactions": "Full transaction history",
@@ -1121,6 +1121,12 @@
       "confirm": "Confirm deletion",
       "success": "Account deleted successfully",
       "error": "Error deleting account"
+    },
+    "appVersion": {
+      "title": "App information",
+      "description": "Current version of the installed software.",
+      "versionLabel": "Version",
+      "semverHint": "MAJOR.MINOR.PATCH — MAJOR: major redesign \u00b7 MINOR: new features \u00b7 PATCH: bug fixes"
     }
   },
   "categories": {

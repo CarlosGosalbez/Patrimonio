@@ -1,6 +1,6 @@
 {
-  "name": "Patrimio — Gestión de Patrimonio",
-  "short_name": "Patrimio",
+  "name": "Patrimonio — Gestión de Patrimonio",
+  "short_name": "Patrimonio",
   "description": "Controla tu patrimonio personal: gastos, inversiones, presupuestos y más.",
   "start_url": "/dashboard",
   "scope": "/",

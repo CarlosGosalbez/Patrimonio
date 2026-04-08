@@ -117,7 +117,7 @@ export function InvestmentsPageClient() {
       const url = window.URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = url
-      link.download = `patrimio-investments-${year}.xlsx`
+      link.download = `patrimonio-investments-${year}.xlsx`
       document.body.appendChild(link)
       link.click()
       link.remove()

@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Trash2 } from "lucide-react";
 import { DataExportCard } from "@/components/settings/DataExportCard";
 import { DeleteAccountDialog } from "@/components/settings/DeleteAccountDialog";
+import { AppVersionCard } from "@/components/settings/AppVersionCard";
 
 export function PrivacyContent() {
     const t = useTranslations("privacy");
@@ -45,6 +46,8 @@ export function PrivacyContent() {
                 open={showDeleteDialog}
                 onOpenChange={setShowDeleteDialog}
             />
+
+            <AppVersionCard />
         </div>
     );
 }
