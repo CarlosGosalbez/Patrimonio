@@ -8,11 +8,11 @@ import { z } from "zod";
 function sanitizePlainText(value: string) {
   return (
     value
-      // Remove null bytes and control characters (except newlines/tabs if needed)
+      // Remove null bytes and control characters
       .replace(/[\u0000-\u001F\u007F]/g, "")
-      // Remove common XSS patterns
-      .replace(/<script[^>]*>.*?<\/script>/gi, "")
-      .replace(/<iframe[^>]*>.*?<\/iframe>/gi, "")
+      // Remove all HTML tags (including opening-only tags like <iframe src="x">)
+      .replace(/<[^>]+>/g, "")
+      // Remove residual < that could be part of unclosed tags
       .replace(/javascript:/gi, "")
       .replace(/on\w+\s*=/gi, "")
       .trim()

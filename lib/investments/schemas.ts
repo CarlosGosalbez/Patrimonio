@@ -74,7 +74,7 @@ export const investmentPositionInputSchema = z
     notes: optionalNullableString(safeString(2000)),
     opening_date: dateString,
     opening_price_input: moneyInput,
-    opening_quantity_input: z.string().trim().min(1),
+    opening_quantity_input: safeString(50).min(1),
     sector: optionalNullableString(safeName(120)),
     ticker: safeString(20)
       .min(1)
@@ -82,7 +82,7 @@ export const investmentPositionInputSchema = z
   })
   .strict();
 
-export const investmentPositionPatchSchema = z
+const _investmentPositionPatchFieldsSchema = z
   .object({
     account_id: uuid.optional(),
     annual_dividend_per_share_input: moneyInput.optional(),
@@ -103,10 +103,16 @@ export const investmentPositionPatchSchema = z
       .transform((value) => value.toUpperCase())
       .optional(),
   })
-  .strict()
-  .refine((value) => Object.keys(value).length > 0, {
-    message: "At least one field is required",
-  });
+  .strict();
+
+export const investmentPositionPatchSchema = z
+  .record(z.string(), z.unknown())
+  .superRefine((raw, ctx) => {
+    if (Object.keys(raw).length === 0) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "At least one field is required" });
+    }
+  })
+  .pipe(_investmentPositionPatchFieldsSchema);
 
 export const investmentOperationInputSchema = z
   .object({
@@ -115,7 +121,7 @@ export const investmentOperationInputSchema = z
     operation_date: dateString,
     operation_type: operationTypeSchema,
     price_input: optionalMoneyInput,
-    quantity_input: z.string().trim().min(1),
+    quantity_input: safeString(50).min(1),
     withholding_input: optionalMoneyInput,
   })
   .strict()
