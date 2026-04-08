@@ -325,16 +325,14 @@ export function CommitmentDialog({
                     </span>
                   ) : null}
                 </Label>
-                {accounts.length === 0 ? (
-                  <button
-                    type="button"
-                    className="flex items-center gap-1 text-xs text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                    onClick={() => setAccountDialogOpen(true)}
-                  >
-                    <Plus className="h-3 w-3" aria-hidden="true" />
-                    {tAccount("actions.create")}
-                  </button>
-                ) : null}
+                <button
+                  type="button"
+                  className="flex items-center gap-1 text-xs text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  onClick={() => setAccountDialogOpen(true)}
+                >
+                  <Plus className="h-3 w-3" aria-hidden="true" />
+                  {tAccount("actions.create")}
+                </button>
               </div>
               <select
                 id="commitment-account"
