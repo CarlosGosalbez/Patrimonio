@@ -74,19 +74,20 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     steps:
       - name: Wait for Vercel deployment
-        # Waits up to 5 minutes for the Vercel deployment to be live
-        run: |
-          echo "Waiting 90s for Vercel deployment to complete..."
-          sleep 90
-      - name: Check /api/health endpoint
+        # Poll hasta 5 minutos en vez de sleep fijo
         run: |
           HEALTH_URL="https://patrimio.vercel.app/api/health"
-          echo "Checking: $HEALTH_URL"
-          response=$(curl -s -o /tmp/health.json -w "%{http_code}" "$HEALTH_URL")
-          echo "Status: $response"
+          echo "Polling $HEALTH_URL (max 5m)..."
+          for i in $(seq 1 20); do
+            response=$(curl -s -o /tmp/health.json -w "%{http_code}" "$HEALTH_URL" || echo "000")
+            echo "Attempt $i — Status: $response"
+            if [ "$response" = "200" ]; then
+              echo "✅ Health check passed"
+              cat /tmp/health.json
+              exit 0
+            fi
+            sleep 15
+          done
+          echo "❌ Health check failed after 5 minutes"
           cat /tmp/health.json
-          if [ "$response" != "200" ]; then
-            echo "❌ Health check failed with status $response"
-            exit 1
-          fi
-          echo "✅ Health check passed"
+          exit 1

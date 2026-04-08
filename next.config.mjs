@@ -127,15 +127,10 @@ export default withSentryConfig(withPWA(withNextIntl(nextConfig)), {
   // Proxy anti-adblockers: /monitoring → sentry.io
   tunnelRoute: "/monitoring",
 
-  // Detecta y monitorea automáticamente Vercel Cron Jobs
-  webpack: {
-    automaticVercelMonitors: true,
-  },
-
   // Generate + upload source maps in Sentry, then delete from public output
   hideSourceMaps: true,
 
-  // Reduce bundle size by removing Sentry logger statements (v10 API)
+  // Detecta Vercel Cron Jobs + elimina Sentry debug logs del bundle
   webpack: {
     automaticVercelMonitors: true,
     treeshake: {
