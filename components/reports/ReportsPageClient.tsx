@@ -66,9 +66,8 @@ function DeltaBadge({ pct, invert }: { pct: number | null; invert?: boolean }) {
   const isGood = invert ? pct <= 0 : pct >= 0;
   return (
     <span
-      className={`inline-flex items-center gap-0.5 text-xs font-medium ${
-        isGood ? "text-emerald-600" : "text-rose-600"
-      }`}
+      className={`inline-flex items-center gap-0.5 text-xs font-medium ${isGood ? "text-emerald-600" : "text-rose-600"
+        }`}
       aria-label={`${pct > 0 ? "+" : ""}${pct.toFixed(1)}% vs periodo anterior`}
     >
       {isGood ? (
@@ -269,7 +268,7 @@ function MonthlyTab({ month, year }: { month: number; year: number }) {
                 margin={{ top: 4, right: 4, left: 0, bottom: 0 }}
               >
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                <XAxis dataKey="name" tick={{ fontSize: 11 }} />
+                <XAxis dataKey="name" tick={{ fontSize: 11, fontFamily: 'inherit' }} />
                 <YAxis
                   tickFormatter={(v) => formatCurrency(v, "EUR")}
                   tick={{ fontSize: 10 }}
@@ -405,7 +404,7 @@ function AnnualTab({ year }: { year: number }) {
           <ResponsiveContainer width="100%" height={240}>
             <BarChart data={data.monthly_series} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-              <XAxis dataKey="label" tick={{ fontSize: 10 }} />
+              <XAxis dataKey="label" tick={{ fontSize: 10, fontFamily: 'inherit' }} />
               <YAxis tickFormatter={(v) => formatCurrency(v)} tick={{ fontSize: 10 }} width={72} />
               <Tooltip formatter={formatTooltipCurrency} />
               <Legend />

@@ -3,7 +3,6 @@
 import { useState, useMemo } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { formatCurrency } from "@/lib/financial/formatters";
 import type { ConfirmImportRowInput, ImportPreviewRow } from "@/lib/imports/types";
 import type { TransactionCategorySummary } from "@/lib/commitments/types";
 
@@ -54,6 +53,13 @@ export function ImportPreviewTable({
     [rows, startIndex, endIndex],
   );
 
+  const allSelected = rows.length > 0 && rows.every((row) => row.should_import !== false);
+  const someSelected = !allSelected && rows.some((row) => row.should_import !== false);
+
+  function handleSelectAll(checked: boolean) {
+    rows.forEach((_, i) => onRowChange(i, { should_import: checked }));
+  }
+
   if (!rows.length) {
     return <p className="text-sm text-muted-foreground">{labels.empty}</p>;
   }
@@ -80,7 +86,19 @@ export function ImportPreviewTable({
         <table className="min-w-full border-separate border-spacing-y-2">
           <thead>
             <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground">
-              <th className="px-3 py-2">{labels.importRow}</th>
+              <th className="px-3 py-2">
+                <input
+                  aria-label="Seleccionar todas las filas"
+                  checked={allSelected}
+                  className="h-4 w-4 cursor-pointer"
+                  ref={(el) => {
+                    if (el) el.indeterminate = someSelected;
+                  }}
+                  title={allSelected ? "Deseleccionar todas" : "Seleccionar todas"}
+                  type="checkbox"
+                  onChange={(event) => handleSelectAll(event.target.checked)}
+                />
+              </th>
               <th className="px-3 py-2">{labels.date}</th>
               <th className="px-3 py-2">{labels.description}</th>
               <th className="px-3 py-2">{labels.amount}</th>
@@ -142,9 +160,6 @@ export function ImportPreviewTable({
                         }
                       }}
                     />
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      {formatCurrency(row.amount_cents, "EUR", locale)}
-                    </p>
                   </td>
                   <td className="px-3 py-3 align-top">
                     <select

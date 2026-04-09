@@ -223,6 +223,7 @@ export function InvestmentPositionDialog({
                     ),
                   )}
                 </select>
+                <p className="text-xs text-muted-foreground">{t("fields.typeHint")}</p>
               </div>
 
               <div className="space-y-2">
@@ -276,6 +277,7 @@ export function InvestmentPositionDialog({
                     }))
                   }
                 />
+                <p className="text-xs text-muted-foreground">{t("fields.currencyHint")}</p>
               </div>
 
               <div className="space-y-2">
@@ -300,6 +302,7 @@ export function InvestmentPositionDialog({
                     setState((current) => ({ ...current, sector: event.target.value }))
                   }
                 />
+                <p className="text-xs text-muted-foreground">{t("fields.sectorHint")}</p>
               </div>
 
               <div className="space-y-2">
@@ -317,6 +320,7 @@ export function InvestmentPositionDialog({
                     }))
                   }
                 />
+                <p className="text-xs text-muted-foreground">{t("fields.alertThresholdHint")}</p>
               </div>
             </div>
 
@@ -337,6 +341,7 @@ export function InvestmentPositionDialog({
                       }))
                     }
                   />
+                  <p className="text-xs text-muted-foreground">{t("fields.initialQuantityHint")}</p>
                 </div>
 
                 <div className="space-y-2">
@@ -354,6 +359,7 @@ export function InvestmentPositionDialog({
                       }))
                     }
                   />
+                  <p className="text-xs text-muted-foreground">{t("fields.initialPriceHint")}</p>
                 </div>
 
                 <div className="space-y-2">

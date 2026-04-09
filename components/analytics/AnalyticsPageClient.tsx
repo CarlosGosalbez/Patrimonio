@@ -10,6 +10,7 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
+  Legend,
   Line,
   LineChart as RechartsLineChart,
   ResponsiveContainer,
@@ -270,11 +271,12 @@ export function AnalyticsPageClient() {
                 <ResponsiveContainer width="100%" height="100%" minHeight={320}>
                   <BarChart data={analyticsQuery.data?.series ?? []}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="label" />
-                    <YAxis tickFormatter={(value) => formatCurrencyCompact(value)} />
+                    <XAxis dataKey="label" tick={{ fontFamily: 'inherit', fontSize: 12 }} />
+                    <YAxis tickFormatter={(value) => formatCurrencyCompact(value)} tick={{ fontFamily: 'inherit', fontSize: 11 }} />
                     <Tooltip formatter={formatTooltipCurrency} />
-                    <Bar dataKey="income_cents" fill="hsl(160 84% 39%)" radius={[8, 8, 0, 0]} />
-                    <Bar dataKey="expense_cents" fill="hsl(0 84% 60%)" radius={[8, 8, 0, 0]} />
+                    <Legend />
+                    <Bar dataKey="income_cents" name={t("metrics.income")} fill="hsl(160 84% 39%)" radius={[8, 8, 0, 0]} />
+                    <Bar dataKey="expense_cents" name={t("metrics.expenses")} fill="hsl(0 84% 60%)" radius={[8, 8, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -674,8 +676,8 @@ export function AnalyticsPageClient() {
                       {budget.comparison_delta_percent === null
                         ? t("metrics.notAvailable")
                         : t("budgets.comparison", {
-                            change: formatPercentChange(budget.comparison_delta_percent),
-                          })}
+                          change: formatPercentChange(budget.comparison_delta_percent),
+                        })}
                     </p>
                   </CardContent>
                 </Card>
@@ -703,11 +705,12 @@ export function AnalyticsPageClient() {
               <ResponsiveContainer width="100%" height="100%" minHeight={320}>
                 <BarChart data={categoryComparisonData}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis tickFormatter={(value) => formatCurrencyCompact(value)} />
+                  <XAxis dataKey="name" tick={{ fontFamily: 'inherit', fontSize: 11 }} />
+                  <YAxis tickFormatter={(value) => formatCurrencyCompact(value)} tick={{ fontFamily: 'inherit', fontSize: 11 }} />
                   <Tooltip formatter={formatTooltipCurrency} />
-                  <Bar dataKey="current" fill="hsl(160 84% 39%)" radius={[8, 8, 0, 0]} />
-                  <Bar dataKey="previous" fill="hsl(195 85% 40%)" radius={[8, 8, 0, 0]} />
+                  <Legend />
+                  <Bar dataKey="current" name={t("categories.currentPeriod")} fill="hsl(160 84% 39%)" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="previous" name={t("categories.previousPeriod")} fill="hsl(195 85% 40%)" radius={[8, 8, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
