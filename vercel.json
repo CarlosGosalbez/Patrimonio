@@ -7,7 +7,7 @@
   "crons": [
     { "path": "/api/cron/generate-recurring", "schedule": "0 5 * * *" },
     { "path": "/api/cron/check-alerts", "schedule": "0 7 * * *" },
-    { "path": "/api/cron/market-updater", "schedule": "*/15 8-22 * * 1-5" }
+    { "path": "/api/cron/market-updater", "schedule": "0 20 * * 1-5" }
   ],
   "headers": [
     {
