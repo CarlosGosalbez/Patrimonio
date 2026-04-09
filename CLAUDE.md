@@ -25,7 +25,7 @@
 
 | Capa     | Tecnología                                                                |
 | -------- | ------------------------------------------------------------------------- |
-| Frontend | Next.js 14 App Router · TypeScript 5 · Tailwind · shadcn/ui               |
+| Frontend | Next.js 15 App Router · TypeScript 5 · Tailwind · shadcn/ui               |
 | Estado   | Zustand (global) · TanStack Query (server) · React Hook Form + Zod        |
 | Backend  | Supabase (PostgreSQL 15 · Auth JWT+TOTP · Storage · Realtime · Edge Deno) |
 | Deploy   | Vercel (Edge Middleware · CDN)                                            |

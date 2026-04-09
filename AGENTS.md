@@ -2,7 +2,7 @@
 
 > Config: `.codex/config.toml` — model, approval policy, shell commands, skills, rules.
 > Always read `docs/patrimio-technical-spec.md` before architectural changes.
-> Non-negotiable stack: Next.js 14 + Supabase + Claude Sonnet 4.6 + Vercel.
+> Non-negotiable stack: Next.js 15 + Supabase + Claude Sonnet 4.6 + Vercel.
 
 ---
 
@@ -68,7 +68,7 @@ Auto-loaded based on the file being edited:
 
 | Layer    | Technology                                                                |
 | -------- | ------------------------------------------------------------------------- |
-| Frontend | Next.js 14 App Router · TypeScript 5 · Tailwind · shadcn/ui               |
+| Frontend | Next.js 15 App Router · TypeScript 5 · Tailwind · shadcn/ui               |
 | State    | Zustand (global) · TanStack Query (server) · React Hook Form + Zod        |
 | Backend  | Supabase (PostgreSQL 15 · Auth JWT+TOTP · Storage · Realtime · Edge Deno) |
 | Deploy   | Vercel (Edge Middleware · CDN)                                            |

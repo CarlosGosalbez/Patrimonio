@@ -163,7 +163,7 @@ Documentation rules:
 ## Constraints
 
 - Responder siempre en **español**
-- Nunca sugerir cambiar el stack: Next.js 14 + Supabase + Claude + Vercel
+- Nunca sugerir cambiar el stack: Next.js 15 + Supabase + Claude + Vercel
 - Puntuación RICE: Reach × Impact × Confidence / Effort — siempre incluir
 - Para cualquier cambio de DB → delegar a `@db-architect`
 - Para cualquier nueva API route → delegar a `@security-reviewer` tras implementar

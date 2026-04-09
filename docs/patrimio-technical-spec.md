@@ -65,7 +65,7 @@ La aplicación se despliega como PWA optimizada para iPhone/Safari y se construy
 ```text
 ┌─────────────────────────────────────────────────────────────────┐
 │                        CLIENTE (PWA)                            │
-│   Next.js 14 App Router  │  React 18  │  Tailwind + shadcn/ui   │
+│   Next.js 15 App Router  │  React 18  │  Tailwind + shadcn/ui   │
 │   Service Worker (Cache) │  Zustand   │  React Query            │
 └──────────────────────────┬──────────────────────────────────────┘
                            │ HTTPS / WSS
@@ -1232,7 +1232,7 @@ Listados en política de privacidad con DPA firmado:
 
 ### ✅ Fase 0: Setup y Fundaciones — COMPLETADA (2026-04-05)
 
-- [x] Repositorio GitHub (`CarlosGosalbez/Patrimio`) con estructura Next.js 14 + TypeScript 5 + Tailwind + shadcn/ui
+- [x] Repositorio GitHub (`CarlosGosalbez/Patrimio`) con estructura Next.js 15 + TypeScript 5 + Tailwind + shadcn/ui
 - [x] Supabase project `febokmcgjatrfdfuaeyk` (eu-west-1): DB, Auth, Storage configurados
 - [x] RLS activado en todas las tablas
 - [x] 19 migraciones aplicadas al remoto (`supabase db push` vía pooler `aws-0-eu-west-1:6543`)
@@ -1385,7 +1385,7 @@ Listados en política de privacidad con DPA firmado:
 
 ### Documentación Oficial
 
-- [Next.js 14 App Router](https://nextjs.org/docs/app) — Routing, layouts, server components
+- [Next.js 15 App Router](https://nextjs.org/docs/app) — Routing, layouts, server components
 - [Supabase Auth](https://supabase.com/docs/guides/auth) — JWT, TOTP, RLS
 - [Supabase Row Level Security](https://supabase.com/docs/guides/auth/row-level-security)
 - [Vercel Edge Middleware](https://vercel.com/docs/functions/edge-middleware)

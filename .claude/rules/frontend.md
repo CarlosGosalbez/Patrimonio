@@ -8,7 +8,7 @@ paths:
 
 # Frontend Rules — Patrimio
 
-## Server vs Client components (Next.js 14 App Router)
+## Server vs Client components (Next.js 15 App Router)
 
 | Pattern                         | Use                                          |
 | ------------------------------- | -------------------------------------------- |

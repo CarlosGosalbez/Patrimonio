@@ -37,7 +37,7 @@ El asistente DEBE seguir estas reglas en TODAS las respuestas:
 ## Proyecto
 
 **Patrimio** — PWA de gestión de patrimonio personal.
-Stack: Next.js 14 + TypeScript + Supabase + Vercel + Anthropic Claude API
+Stack: Next.js 15 + TypeScript + Supabase + Vercel + Anthropic Claude API
 Spec completa: `docs/patrimio-technical-spec.md`
 
 ## Reglas de seguridad NO negociables
