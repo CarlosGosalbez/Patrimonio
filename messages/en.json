@@ -353,6 +353,11 @@
       "selectCategory": "Select a category",
       "apply": "Apply category"
     },
+    "bulkSelect": {
+      "label": "Select all rows",
+      "selectAll": "Select all",
+      "deselectAll": "Deselect all"
+    },
     "preview": {
       "title": "Interactive preview",
       "empty": "There are no rows to review yet.",
@@ -947,6 +952,10 @@
   "reports": {
     "title": "Reports & Export",
     "subtitle": "Download full reports of your financial activity.",
+    "selectAccount": "Select account",
+    "chooseAccount": "Choose an account",
+    "editAccount": "Edit account",
+    "deleteAccountLabel": "Delete account",
     "tabMonthly": "Monthly",
     "tabAnnual": "Annual",
     "tabFiscal": "Tax Report",
@@ -972,6 +981,8 @@
     "downloadPdf": "Download PDF",
     "downloadExcel": "Download Excel",
     "downloadExcelFull": "Export full Excel",
+    "exportPdf": "Export PDF",
+    "exportExcel": "Export Excel",
     "downloadFiscalPdf": "Download tax PDF",
     "pdfDownloaded": "PDF downloaded successfully",
     "excelDownloaded": "Excel downloaded successfully",
@@ -1004,7 +1015,49 @@
     },
     "gdprConfirmLabel": "I confirm I want to export all my personal data.",
     "gdprDownloadButton": "Download ZIP with my data",
-    "gdprDownloaded": "Data exported successfully"
+    "gdprDownloaded": "Data exported successfully",
+    "deleteAccount": {
+      "title": "Delete account",
+      "description": "This action will permanently delete the account.",
+      "accountName": "Account",
+      "warning": "⚠️ You cannot delete this account if it has active transactions or commitments associated. You must move them to another account first.",
+      "confirmLabel": "I confirm I want to delete this account",
+      "deleteButton": "Delete account",
+      "successToast": "Account deleted successfully",
+      "errorToast": "Error deleting account. It may have active transactions associated."
+    },
+    "analytics": {
+      "title": "Account analytics",
+      "byCategory": "By category",
+      "monthlyFlow": "Monthly flow",
+      "distribution": "Distribution",
+      "trends": "Trends",
+      "expenses": "Expenses",
+      "income": "Income",
+      "balance": "Balance",
+      "movingAverage": "Moving average (30 days)"
+    },
+    "interestSimulator": {
+      "title": "Interest simulator",
+      "expand": "Expand simulator",
+      "collapse": "Collapse simulator",
+      "principalLabel": "Initial balance (€)",
+      "rateLabel": "Annual interest rate (%)",
+      "periodLabel": "Period",
+      "capitalizationLabel": "Capitalization",
+      "month": "month",
+      "months": "months",
+      "monthly": "Monthly",
+      "quarterly": "Quarterly",
+      "annual": "Annual",
+      "finalBalance": "Final balance",
+      "totalInterest": "Total interest",
+      "monthlyBreakdown": "Monthly breakdown",
+      "startBalance": "Start balance",
+      "interest": "Interest",
+      "endBalance": "End balance",
+      "zeroRateWarning": "Enter an interest rate greater than 0 to see results."
+    }
   },
   "offline": {
     "title": "You're offline",

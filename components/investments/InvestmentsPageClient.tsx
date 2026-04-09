@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
 import {
   Area,
@@ -17,7 +18,14 @@ import { Download, Plus, RefreshCcw } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { InvestmentOperationDialog } from "@/components/investments/InvestmentOperationDialog";
-import { InvestmentPositionDialog } from "@/components/investments/InvestmentPositionDialog";
+
+const InvestmentPositionDialog = dynamic(
+  () => import("@/components/investments/InvestmentPositionDialog").then(mod => ({ default: mod.InvestmentPositionDialog })),
+  {
+    loading: () => <div className="h-screen w-full animate-pulse rounded-xl bg-muted" />,
+    ssr: false,
+  }
+);
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

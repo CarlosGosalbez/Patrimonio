@@ -6,15 +6,19 @@ import { useTranslations } from "next-intl";
 import {
   BarChart2,
   CalendarDays,
+  ChevronDown,
   Download,
+  Edit2,
   FileSpreadsheet,
   FileText,
   Info,
   Shield,
+  Trash2,
   TrendingDown,
   TrendingUp,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
 import {
   Bar,
   BarChart,
@@ -25,10 +29,21 @@ import {
   Tooltip,
   XAxis,
   YAxis,
+  PieChart,
+  Pie,
+  LineChart,
+  Line,
 } from "recharts";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   useMonthlyReportQuery,
@@ -39,7 +54,26 @@ import {
   useDownloadExcel,
   useDownloadGdpr,
 } from "@/hooks/usePhase7Reports";
+import { useAccountsQuery } from "@/hooks/useAccounts";
+import { AccountFormDialog } from "@/components/settings/AccountFormDialog";
+import { DeleteAccountDialog } from "@/components/reports/DeleteAccountDialog";
+import { InterestSimulatorCard } from "@/components/reports/InterestSimulatorCard";
 import { formatCurrency, formatPercentChange } from "@/lib/financial/formatters";
+import type { PieLabelRenderProps } from "recharts";
+import type { Database } from "@/types/database";
+
+type Account = Database["public"]["Tables"]["accounts"]["Row"];
+
+const CHART_COLORS = [
+  "#ef4444",
+  "#f59e0b",
+  "#10b981",
+  "#3b82f6",
+  "#6366f1",
+  "#8b5cf6",
+  "#ec4899",
+  "#14b8a6",
+];
 
 const MONTHS = [
   "Enero",
@@ -686,6 +720,7 @@ export function ReportsPageClient() {
   const [selectedMonth, setSelectedMonth] = useState(now.getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(now.getFullYear());
   const [tab, setTab] = useState<"monthly" | "annual" | "fiscal" | "gdpr">("monthly");
+  const [analyticsPeriod, setAnalyticsPeriod] = useState("month");
 
   const currentYear = now.getFullYear();
   const yearOptions = Array.from({ length: 5 }, (_, i) => currentYear - i);
@@ -693,8 +728,255 @@ export function ReportsPageClient() {
   const monthSelectId = useId();
   const yearSelectId = useId();
 
+  // Account selector state
+  const { data: accounts = [] } = useAccountsQuery();
+  const [selectedAccountId, setSelectedAccountId] = useState<string | null>(null);
+  const [editAccount, setEditAccount] = useState<Account | null>(null);
+  const [deleteAccount, setDeleteAccount] = useState<Account | null>(null);
+
+  const selectedAccount = accounts.find((acc) => acc.id === selectedAccountId) ?? null;
+
+  // Fetch analytics data (solo si hay account seleccionada)
+  const { data: categoryData = [] } = useQuery({
+    queryKey: ["analytics", "by-category", selectedAccountId, analyticsPeriod],
+    queryFn: () =>
+      fetch(`/api/analytics/account/${selectedAccountId}/by-category?period=${analyticsPeriod}`).then(
+        (r) => r.json()
+      ),
+    enabled: !!selectedAccountId,
+    staleTime: 300_000,
+  });
+
+  const { data: monthlyFlowData = [] } = useQuery({
+    queryKey: ["analytics", "monthly-flow", selectedAccountId],
+    queryFn: () =>
+      fetch(`/api/analytics/account/${selectedAccountId}/monthly-flow?months=12`).then(
+        (r) => r.json()
+      ),
+    enabled: !!selectedAccountId,
+    staleTime: 300_000,
+  });
+
+  const { data: distributionData = [] } = useQuery({
+    queryKey: ["analytics", "distribution", selectedAccountId, analyticsPeriod],
+    queryFn: () =>
+      fetch(`/api/analytics/account/${selectedAccountId}/distribution?period=${analyticsPeriod}`).then(
+        (r) => r.json()
+      ),
+    enabled: !!selectedAccountId,
+    staleTime: 300_000,
+  });
+
+  const { data: balanceHistoryData = [] } = useQuery({
+    queryKey: ["analytics", "balance-history", selectedAccountId],
+    queryFn: () =>
+      fetch(`/api/analytics/account/${selectedAccountId}/balance-history?months=12`).then(
+        (r) => r.json()
+      ),
+    enabled: !!selectedAccountId,
+    staleTime: 300_000,
+  });
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6">\n      {/* Account Selector Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">{t("selectAccount")}</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <Select value={selectedAccountId ?? ""} onValueChange={setSelectedAccountId}>
+              <SelectTrigger className="w-full sm:w-[320px]">
+                <SelectValue placeholder={t("chooseAccount")} />
+              </SelectTrigger>
+              <SelectContent>
+                {accounts.map((account) => (
+                  <SelectItem key={account.id} value={account.id}>
+                    <div className="flex items-center gap-2">
+                      {account.icon && <span aria-hidden="true">{account.icon}</span>}
+                      <span>{account.name}</span>
+                      <Badge variant="outline" className="ml-2">
+                        {account.account_type}
+                      </Badge>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {selectedAccount && (
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setEditAccount(selectedAccount)}
+                  className="gap-2"
+                >
+                  <Edit2 className="h-4 w-4" aria-hidden="true" />
+                  {t("editAccount")}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setDeleteAccount(selectedAccount)}
+                  className="gap-2 text-destructive hover:bg-destructive/10"
+                >
+                  <Trash2 className="h-4 w-4" aria-hidden="true" />
+                  {t("deleteAccountLabel")}
+                </Button>
+              </div>
+            )}
+          </div>
+
+          {selectedAccount && (
+            <div className="rounded-lg border border-border bg-muted/30 p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium">{selectedAccount.name}</p>
+                  <p className="text-xl font-semibold">
+                    {formatCurrency(selectedAccount.current_balance_cents)}
+                  </p>
+                </div>
+                <Badge variant="secondary">{selectedAccount.account_type}</Badge>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Analytics Tabs Section */}
+      {selectedAccountId && (
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("analytics.title")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Tabs defaultValue="category" className="w-full">
+              <TabsList className="grid w-full grid-cols-4">
+                <TabsTrigger value="category">{t("analytics.byCategory")}</TabsTrigger>
+                <TabsTrigger value="flow">{t("analytics.monthlyFlow")}</TabsTrigger>
+                <TabsTrigger value="distribution">{t("analytics.distribution")}</TabsTrigger>
+                <TabsTrigger value="trends">{t("analytics.trends")}</TabsTrigger>
+              </TabsList>
+
+              {/* Tab 1: Gastos por Categoría */}
+              <TabsContent value="category" className="space-y-4">
+                <ResponsiveContainer width="100%" height={400}>
+                  <BarChart data={categoryData} layout="vertical">
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis type="number" tickFormatter={(value) => formatCurrency(value)} />
+                    <YAxis type="category" dataKey="category" width={150} />
+                    <Tooltip formatter={(value) => formatCurrency(value as number)} />
+                    <Legend />
+                    <Bar dataKey="total_cents" fill="#ef4444" name={t("analytics.expenses")} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </TabsContent>
+
+              {/* Tab 2: Flujo Mensual */}
+              <TabsContent value="flow" className="space-y-4">
+                <ResponsiveContainer width="100%" height={400}>
+                  <BarChart data={monthlyFlowData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" />
+                    <YAxis tickFormatter={(value) => formatCurrency(value)} />
+                    <Tooltip formatter={(value) => formatCurrency(value as number)} />
+                    <Legend />
+                    <Bar dataKey="income_cents" fill="#10b981" name={t("analytics.income")} />
+                    <Bar dataKey="expenses_cents" fill="#ef4444" name={t("analytics.expenses")} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </TabsContent>
+
+              {/* Tab 3: Distribución */}
+              <TabsContent value="distribution" className="space-y-4">
+                <ResponsiveContainer width="100%" height={400}>
+                  <PieChart>
+                    <Pie
+                      data={distributionData}
+                      dataKey="total_cents"
+                      nameKey="category"
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={120}
+                      label={((entry: PieLabelRenderProps & { category?: string; total_cents?: number }) =>
+                        entry.category ? `${entry.category}: ${formatCurrency(entry.total_cents ?? 0)}` : ""
+                      ) as unknown as PieLabelRenderProps}
+                    >
+                      {distributionData.map((_: unknown, index: number) => (
+                        <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(value) => formatCurrency(value as number)} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </TabsContent>
+
+              {/* Tab 4: Tendencias */}
+              <TabsContent value="trends" className="space-y-4">
+                <ResponsiveContainer width="100%" height={400}>
+                  <LineChart data={balanceHistoryData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" />
+                    <YAxis tickFormatter={(value) => formatCurrency(value)} />
+                    <Tooltip formatter={(value) => formatCurrency(value as number)} />
+                    <Legend />
+                    <Line
+                      type="monotone"
+                      dataKey="balance_cents"
+                      stroke="#3b82f6"
+                      name={t("analytics.balance")}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="moving_avg_cents"
+                      stroke="#10b981"
+                      strokeDasharray="5 5"
+                      name={t("analytics.movingAverage")}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </TabsContent>
+            </Tabs>
+
+            {/* Account Export Buttons */}
+            <div className="mt-4 flex justify-end gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  window.open(`/api/reports/account/${selectedAccountId}/pdf`, "_blank")
+                }
+                disabled={!selectedAccountId}
+                className="min-h-[44px] gap-2"
+              >
+                <FileText className="h-4 w-4" aria-hidden="true" />
+                {t("exportPdf")}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  window.open(`/api/reports/account/${selectedAccountId}/excel`, "_blank")
+                }
+                disabled={!selectedAccountId}
+                className="min-h-[44px] gap-2"
+              >
+                <FileSpreadsheet className="h-4 w-4" aria-hidden="true" />
+                {t("exportExcel")}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Interest Simulator (solo savings/credit) */}
+      {selectedAccount &&
+        (selectedAccount.account_type === "savings" ||
+          selectedAccount.account_type === "credit") && (
+          <InterestSimulatorCard account={selectedAccount} />
+        )}
+
       <div className="flex flex-col gap-1">
         <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
         <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
@@ -777,6 +1059,20 @@ export function ReportsPageClient() {
           <GdprSection />
         </TabsContent>
       </Tabs>
+
+      {/* Dialogs */}
+      {editAccount && (
+        <AccountFormDialog
+          account={editAccount}
+          open={!!editAccount}
+          onOpenChange={(open) => !open && setEditAccount(null)}
+        />
+      )}
+      <DeleteAccountDialog
+        account={deleteAccount}
+        open={!!deleteAccount}
+        onOpenChange={(open) => !open && setDeleteAccount(null)}
+      />
     </div>
   );
 }

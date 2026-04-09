@@ -126,7 +126,11 @@ export async function GET(request: NextRequest) {
         amount_max_cents,
       },
     });
-    return NextResponse.json(result);
+    return NextResponse.json(result, {
+      headers: {
+        "Cache-Control": "s-maxage=30, stale-while-revalidate=120",
+      },
+    });
   } catch (err) {
     return NextResponse.json(
       { error: err instanceof Error ? err.message : "Internal server error" },

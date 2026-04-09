@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { ConfirmImportRowInput, ImportPreviewRow } from "@/lib/imports/types";
@@ -43,6 +44,7 @@ export function ImportPreviewTable({
   onRowChange: (index: number, patch: Partial<ConfirmImportRowInput & ImportPreviewRow>) => void;
   rows: Array<ConfirmImportRowInput & ImportPreviewRow>;
 }) {
+  const t = useTranslations("imports.bulkSelect");
   const [currentPage, setCurrentPage] = useState(1);
 
   const totalPages = Math.ceil(rows.length / ROWS_PER_PAGE);
@@ -88,13 +90,13 @@ export function ImportPreviewTable({
             <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground">
               <th className="px-3 py-2">
                 <input
-                  aria-label="Seleccionar todas las filas"
+                  aria-label={t("label")}
                   checked={allSelected}
                   className="h-4 w-4 cursor-pointer"
                   ref={(el) => {
                     if (el) el.indeterminate = someSelected;
                   }}
-                  title={allSelected ? "Deseleccionar todas" : "Seleccionar todas"}
+                  title={allSelected ? t("deselectAll") : t("selectAll")}
                   type="checkbox"
                   onChange={(event) => handleSelectAll(event.target.checked)}
                 />

@@ -22,7 +22,11 @@ export async function GET() {
       userId: user.id,
     });
 
-    return NextResponse.json(summary);
+    return NextResponse.json(summary, {
+      headers: {
+        "Cache-Control": "s-maxage=300, stale-while-revalidate=600",
+      },
+    });
   } catch (routeError) {
     return NextResponse.json(
       { error: routeError instanceof Error ? routeError.message : "Internal server error" },

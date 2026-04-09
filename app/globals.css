@@ -111,6 +111,7 @@
 }
 
 @layer utilities {
+
   /* Safe area padding utilities */
   .pt-safe {
     padding-top: env(safe-area-inset-top);
@@ -152,5 +153,22 @@
 
   .scrollbar-none::-webkit-scrollbar {
     display: none;
+  }
+
+  /* Mobile safe area for toasts (Sonner) and fixed notifications */
+  @supports (padding: max(0px)) {
+    [data-sonner-toaster] {
+      padding-top: max(0.5rem, env(safe-area-inset-top));
+    }
+
+    [data-sonner-toast] {
+      margin-top: env(safe-area-inset-top, 0);
+    }
+
+    /* Custom notification alerts (if any) */
+    .notification-alert,
+    [role="alert"][data-fixed] {
+      padding-top: max(1rem, env(safe-area-inset-top));
+    }
   }
 }

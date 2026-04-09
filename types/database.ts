@@ -1,4 +1,4 @@
-export type Json =
+﻿export type Json =
   | string
   | number
   | boolean
@@ -17,6 +17,7 @@ export type Database = {
       accounts: {
         Row: {
           account_type: string
+          annual_interest_rate: number | null
           bank_name: string | null
           color: string | null
           created_at: string
@@ -27,6 +28,7 @@ export type Database = {
           icon: string | null
           id: string
           initial_balance_cents: number
+          interest_capitalization: string | null
           is_default: boolean
           is_hidden: boolean
           name: string
@@ -35,6 +37,7 @@ export type Database = {
         }
         Insert: {
           account_type: string
+          annual_interest_rate?: number | null
           bank_name?: string | null
           color?: string | null
           created_at?: string
@@ -45,6 +48,7 @@ export type Database = {
           icon?: string | null
           id?: string
           initial_balance_cents?: number
+          interest_capitalization?: string | null
           is_default?: boolean
           is_hidden?: boolean
           name: string
@@ -53,6 +57,7 @@ export type Database = {
         }
         Update: {
           account_type?: string
+          annual_interest_rate?: number | null
           bank_name?: string | null
           color?: string | null
           created_at?: string
@@ -63,6 +68,7 @@ export type Database = {
           icon?: string | null
           id?: string
           initial_balance_cents?: number
+          interest_capitalization?: string | null
           is_default?: boolean
           is_hidden?: boolean
           name?: string

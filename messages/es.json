@@ -351,6 +351,11 @@
       "selectCategory": "Selecciona una categoría",
       "apply": "Aplicar categoría"
     },
+    "bulkSelect": {
+      "label": "Seleccionar todas las filas",
+      "selectAll": "Seleccionar todas",
+      "deselectAll": "Deseleccionar todas"
+    },
     "preview": {
       "title": "Preview interactivo",
       "empty": "No hay filas para revisar todavía.",
@@ -945,6 +950,10 @@
   "reports": {
     "title": "Informes y exportación",
     "subtitle": "Descarga informes completos de tu actividad financiera.",
+    "selectAccount": "Seleccionar cuenta",
+    "chooseAccount": "Elige una cuenta",
+    "editAccount": "Editar cuenta",
+    "deleteAccountLabel": "Eliminar cuenta",
     "tabMonthly": "Mensual",
     "tabAnnual": "Anual",
     "tabFiscal": "Fiscal IRPF",
@@ -970,6 +979,8 @@
     "downloadPdf": "Descargar PDF",
     "downloadExcel": "Descargar Excel",
     "downloadExcelFull": "Exportar Excel completo",
+    "exportPdf": "Exportar PDF",
+    "exportExcel": "Exportar Excel",
     "downloadFiscalPdf": "Descargar PDF fiscal",
     "pdfDownloaded": "PDF descargado correctamente",
     "excelDownloaded": "Excel descargado correctamente",
@@ -1002,7 +1013,49 @@
     },
     "gdprConfirmLabel": "Confirmo que quiero exportar todos mis datos personales.",
     "gdprDownloadButton": "Descargar ZIP con mis datos",
-    "gdprDownloaded": "Datos exportados correctamente"
+    "gdprDownloaded": "Datos exportados correctamente",
+    "analytics": {
+      "title": "Analítica de cuenta",
+      "byCategory": "Por categoría",
+      "monthlyFlow": "Flujo mensual",
+      "distribution": "Distribución",
+      "trends": "Tendencias",
+      "expenses": "Gastos",
+      "income": "Ingresos",
+      "balance": "Saldo",
+      "movingAverage": "Media móvil (30 días)"
+    },
+    "deleteAccount": {
+      "title": "Eliminar cuenta",
+      "description": "Esta acción eliminará la cuenta de forma permanente.",
+      "accountName": "Cuenta",
+      "warning": "⚠️ No podrás eliminar esta cuenta si tiene transacciones o compromisos activos asociados. Deberás moverlos a otra cuenta primero.",
+      "confirmLabel": "Confirmo que quiero eliminar esta cuenta",
+      "deleteButton": "Eliminar cuenta",
+      "successToast": "Cuenta eliminada correctamente",
+      "errorToast": "Error al eliminar la cuenta. Puede que tenga transacciones activas asociadas."
+    },
+    "interestSimulator": {
+      "title": "Simulador de intereses",
+      "expand": "Expandir simulador",
+      "collapse": "Contraer simulador",
+      "principalLabel": "Saldo inicial (€)",
+      "rateLabel": "Tasa de interés anual (%)",
+      "periodLabel": "Período",
+      "capitalizationLabel": "Capitalización",
+      "month": "mes",
+      "months": "meses",
+      "monthly": "Mensual",
+      "quarterly": "Trimestral",
+      "annual": "Anual",
+      "finalBalance": "Saldo final",
+      "totalInterest": "Interés total",
+      "monthlyBreakdown": "Desglose mensual",
+      "startBalance": "Saldo inicial",
+      "interest": "Interés",
+      "endBalance": "Saldo final",
+      "zeroRateWarning": "Introduce una tasa de interés mayor que 0 para ver resultados."
+    }
   },
   "offline": {
     "title": "Sin conexión",
@@ -1132,8 +1185,12 @@
     "appVersion": {
       "title": "Información de la app",
       "description": "Versión actual del software instalado.",
-      "versionLabel": "Versión",
-      "semverHint": "MAYOR.MENOR.PARCHE — MAYOR: redise\u00f1o importante · MENOR: nuevas funciones · PARCHE: correcci\u00f3n de errores"
+      "majorLabel": "MAYOR",
+      "majorDesc": "Rediseño importante",
+      "minorLabel": "MENOR",
+      "minorDesc": "Nuevas funciones",
+      "patchLabel": "PARCHE",
+      "patchDesc": "Corrección de errores"
     }
   },
   "categories": {
@@ -1146,7 +1203,7 @@
     "deleted": "Categoría eliminada",
     "nameRequired": "El nombre es obligatorio",
     "createError": "Error al crear categoría",
-    "delete Error": "Error al eliminar categoría",
+    "deleteError": "Error al eliminar categoría",
     "confirmDelete": "¿Eliminar esta categoría?",
     "createTitle": "Crear Categoría",
     "createDescription": "Añade una nueva categoría personalizada",

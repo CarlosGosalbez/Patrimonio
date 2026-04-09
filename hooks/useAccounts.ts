@@ -19,6 +19,8 @@ export type Account = {
   icon: string | null;
   is_default: boolean;
   is_hidden: boolean;
+  annual_interest_rate: number | null;
+  interest_capitalization: string | null;
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
@@ -46,6 +48,26 @@ export function useUpdateAccountMutation() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updates),
       });
+      return response.account;
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.accounts });
+    },
+  });
+}
+
+export function useDeleteAccountMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (accountId: string) => {
+      const response = await requestJson<{ account: Account }>(
+        `/api/accounts/${accountId}/soft-delete`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        },
+      );
       return response.account;
     },
     onSuccess: () => {
