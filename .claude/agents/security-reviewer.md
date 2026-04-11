@@ -1,11 +1,18 @@
 ---
 name: security-reviewer
+priority: P2
 description: >
-  Revisor de seguridad de Patrimio. Úsalo proactivamente después de cualquier cambio en
-  API routes, flujos de autenticación, queries Supabase o código que maneje datos de
-  usuario. Revisa OWASP Top 10, inyección SQL, RLS, secrets y JWT. Agente de solo lectura.
-tools: Read, Grep, Glob, Bash
-disallowedTools: Write, Edit, MultiEdit
+  [PRIORITY P2 — INFRA SEC] Revisor de seguridad proactivo de Patrimio. Invoca
+  automáticamente tras cualquier cambio en API routes, migraciones, auth o código que
+  maneje datos de usuario. Lee errores de Sentry para detectar fallos de seguridad en
+  producción. OWASP Top 10 + financial data rules. Solo lectura (no escribe código).
+toolsAllowed: Read, Grep, Glob, Bash,
+  sentry/analyze_issue_with_seer, sentry/search_issues, sentry/search_events,
+  sentry/get_doc, sentry/get_issue_tag_values, sentry/get_profile_details,
+  sentry/get_replay_details, sentry/search_docs, sentry/search_issue_events,
+  sentry/update_issue, sentry/whoami,
+  supabase/execute_sql, supabase/get_advisors, supabase/list_tables,
+  supabase/list_migrations
 model: opus
 effort: high
 memory: project

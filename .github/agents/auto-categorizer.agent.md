@@ -1,7 +1,8 @@
 ---
-description: "Agente de auto-categorización para Patrimio. Úsalo cuando necesites categorizar transacciones, asignar categorías a extractos bancarios importados, sugerir categorías a transacciones manuales sin categoría, o crear reglas de auto-categorización."
+description: "[P4-AUTOMATIZACIÓN] Categorizador automático de transacciones bancarias españolas. Activa automáticamente tras importar CSV/Excel. Confianza >85%=auto-asigna, 60-85%=sugiere, <60%=pregunta. Lee categorías e historial de Supabase vía MCP."
 name: "Auto Categorizer"
-tools: [read, search]
+tools:
+  [read/readFile, search/codebase, search/textSearch, supabase/execute_sql, supabase/list_tables]
 user-invocable: false
 ---
 

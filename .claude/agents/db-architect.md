@@ -1,12 +1,17 @@
 ---
 name: db-architect
+priority: P2
 description: >
-  Arquitecto de base de datos Supabase/PostgreSQL de Patrimio. Úsalo proactivamente al
-  diseñar esquemas, crear migraciones de producción con RLS, índices, triggers y Edge
-  Functions. Produce migraciones production-grade: check constraints, triggers de
-  auditoría, índices parciales, vistas materializadas y razonamiento FK ON DELETE correcto.
-tools: Read, Grep, Glob, Bash
-disallowedTools: Write, Edit, MultiEdit
+  [PRIORITY P2 — INFRA DB] Arquitecto de base de datos Supabase/PostgreSQL de Patrimio.
+  Diseña esquemas, crea migraciones production-grade con RLS, índices parciales, triggers
+  y FK ON DELETE correcto. PUEDE aplicar migraciones vía MCP. Delega a security-reviewer
+  después de cada migración.
+toolsAllowed: Read, Write, Grep, Glob, Bash,
+  supabase/apply_migration, supabase/execute_sql, supabase/generate_typescript_types,
+  supabase/get_advisors, supabase/list_tables, supabase/list_migrations,
+  supabase/list_extensions, supabase/get_logs, supabase/deploy_edge_function,
+  supabase/list_edge_functions, supabase/get_storage_config,
+  supabase/update_storage_config, supabase/list_storage_buckets
 model: sonnet
 memory: project
 skills:

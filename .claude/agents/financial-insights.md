@@ -1,11 +1,12 @@
 ---
 name: financial-insights
+priority: P3
 description: >
-  Analista financiero de Patrimio. Úsalo para generar insights mensuales de gastos,
-  detectar anomalías estadísticas, crear alertas de presupuesto y análisis narrativo de
-  salud financiera. Responde siempre en español con terminología financiera local (es-ES).
-tools: Read, Grep, Bash
-disallowedTools: Write, Edit, MultiEdit
+  [PRIORITY P3 — ANÁLISIS] Analista financiero de Patrimio. Invocable en lenguaje natural:
+  'analiza mis gasos', 'cómo voy este mes', 'detecta anomalías'. Lee datos reales
+  de Supabase vía MCP. Responde siempre en español con terminología es-ES. Solo lectura.
+toolsAllowed: Read, Grep, Bash,
+  supabase/execute_sql, supabase/list_tables
 model: sonnet
 memory: project
 skills:

@@ -28,7 +28,11 @@
       "Bash(git checkout *)",
       "Bash(npx tsc --noEmit)"
     ],
-    "ask": ["Bash(git push *)", "Bash(git reset *)", "Bash(npx supabase db reset *)"],
+    "ask": [
+      "Bash(git push *)",
+      "Bash(git reset *)",
+      "Bash(npx supabase db reset *)"
+    ],
     "deny": [
       "Read(./.env)",
       "Read(./.env.*)",
@@ -38,14 +42,23 @@
       "Bash(curl *)",
       "Bash(wget *)"
     ],
-    "additionalDirectories": ["../docs"]
+    "additionalDirectories": [
+      "../docs"
+    ]
   },
   "env": {
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
     "CLAUDE_CODE_EFFORT_LEVEL": "medium"
   },
   "worktree": {
-    "sparsePaths": ["app", "components", "lib", "supabase", "types", "tests"]
+    "sparsePaths": [
+      "app",
+      "components",
+      "lib",
+      "supabase",
+      "types",
+      "tests"
+    ]
   },
   "hooks": {
     "PostToolUse": [
@@ -63,6 +76,22 @@
   "mcpServers": {
     "supabase": {
       "url": "https://mcp.supabase.com/mcp?project_ref=febokmcgjatrfdfuaeyk&features=account%2Cdatabase%2Cdebugging%2Cdevelopment%2Cfunctions%2Cbranching%2Cstorage"
+    },
+    "sentry": {
+      "url": "https://mcp.sentry.io/mcp",
+      "headers": {
+        "Authorization": "Bearer ${SENTRY_AUTH_TOKEN}"
+      }
+    },
+    "vercel": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@vercel/mcp-adapter@latest"
+      ],
+      "env": {
+        "VERCEL_TOKEN": "${VERCEL_TOKEN}"
+      }
     }
   }
 }

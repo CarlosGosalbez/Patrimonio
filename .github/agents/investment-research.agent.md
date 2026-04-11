@@ -1,7 +1,8 @@
 ---
-description: "Agente de investigación de inversiones para Patrimio. Úsalo cuando necesites investigar una acción, ETF o criptomoneda de la cartera, consultar el historial de dividendos, analizar la posición en el mercado, o resumir noticias recientes de un activo de inversión."
+description: "[P3-ANÁLISIS] Investigador de inversiones. Invocable en lenguaje natural: 'analiza mi portfolio', 'cómo van mis ETFs', 'busca noticias de MSCI'. Lee posiciones de Supabase vía MCP. Disclaimer regulatorio obligatorio. Solo lectura."
 name: "Investment Research"
-tools: [read, search, web]
+tools:
+  [read/readFile, search/codebase, search/textSearch, supabase/execute_sql, supabase/list_tables]
 user-invocable: true
 ---
 

@@ -2,8 +2,23 @@
 
 ## Punto de entrada: @project-orchestrator
 
-Para cualquier tarea compleja (nueva feature, bug multi-capa, decisión de arquitectura) invoca `@project-orchestrator`.
-Analiza, planifica y delega a especialistas. No invoques otros agentes directamente salvo para tareas atómicas conocidas.
+Para **cualquier petición en lenguaje natural** escribe lo que quieres y `@project-orchestrator` lo analiza, planifica y delega automáticamente. No necesitas conocer la jerarquía — el orquestador la aplica.
+
+## Jerarquía de agentes (prioridad de delegación)
+
+| Prioridad | Agente               | Invocación              | Cuándo actúa                          | MCPs                       |
+| --------- | -------------------- | ----------------------- | ------------------------------------- | -------------------------- |
+| **P0**    | Project Orchestrator | `@project-orchestrator` | Toda petición → entrada universal     | Sentry + Supabase + Vercel |
+| **P1**    | Feature Builder      | sub-agente              | Build DB→API→UI→tests completo        | Supabase + Sentry + Vercel |
+| **P2**    | DB Architect         | sub-agente              | Schema, migraciones, RLS, índices     | Supabase (write)           |
+| **P2**    | Security Reviewer    | sub-agente (automático) | Tras cambios en API/auth/migraciones  | Sentry + Supabase (read)   |
+| **P2**    | Product Strategist   | `@product-strategist`   | Ideas → spec técnica, sprints, docs   | —                          |
+| **P3**    | Financial Insights   | `@financial-insights`   | "analiza mis gastos", "cómo voy hoy"  | Supabase (read)            |
+| **P3**    | Investment Research  | `@investment-research`  | "analiza mi portfolio", "ETFs"        | Supabase (read)            |
+| **P3**    | Budget Optimizer     | `@budget-optimizer`     | "optimiza mi presupuesto", "50/30/20" | Supabase (read)            |
+| **P4**    | Auto Categorizer     | sub-agente (automático) | Tras importar transacciones           | Supabase (read)            |
+| **P4**    | Import Assistant     | `@import-assistant`     | "importa este extracto CSV"           | Supabase (read)            |
+| **P4**    | Code Reviewer        | sub-agente (automático) | Tras cambios de código significativos | Sentry (read)              |
 
 ## Protocolo anti-desperdicio de tokens (obligatorio)
 
@@ -71,18 +86,12 @@ Spec completa: `docs/patrimio-technical-spec.md`
 
 ## Agentes disponibles
 
-| Agente               | Invocación              | Rol                                       | user-invocable |
-| -------------------- | ----------------------- | ----------------------------------------- | -------------- |
-| Project Orchestrator | `@project-orchestrator` | Entrada principal — planifica y delega    | ✅             |
-| Feature Builder      | sub-agente              | Implementa features completas DB→UI→tests | —              |
-| Product Strategist   | sub-agente              | Análisis de producto, specs, routing      | —              |
-| DB Architect         | sub-agente              | Migraciones, RLS, índices                 | —              |
-| Security Reviewer    | sub-agente              | Auditoría OWASP                           | —              |
-| Code Reviewer        | sub-agente              | Calidad TypeScript/React                  | —              |
-| Financial Insights   | `@financial-insights`   | Análisis financiero en lenguaje natural   | ✅             |
-| Import Assistant     | `@import-assistant`     | Importación CSV/Excel bancos españoles    | ✅             |
-| Investment Research  | `@investment-research`  | Análisis de inversiones                   | ✅             |
-| Budget Optimizer     | `@budget-optimizer`     | Optimización presupuestal 50/30/20        | ✅             |
+Ver jerarquía completa en la sección anterior. Invocables directamente:
+`@project-orchestrator` · `@product-strategist` · `@financial-insights` · `@import-assistant` · `@investment-research` · `@budget-optimizer`
+
+## Modelo de IA
+
+**Defecto:** Claude Sonnet 4.6 · **Opus:** solo bugs arquitecturales complejos con múltiples dependencias
 
 ## Patrones de API Routes
 
@@ -147,17 +156,11 @@ CREATE TRIGGER set_updated_at BEFORE UPDATE ON nombre FOR EACH ROW EXECUTE FUNCT
 - ❌ `useEffect` para fetching — usar TanStack Query
 - ❌ Direct Supabase calls en componentes React — usar hooks en `hooks/`
 
-## Modelo de IA y pensamiento
-
-**Modelo por defecto:** Claude Sonnet 4.6 (seleccionarlo en el selector de modelo del chat)  
-**Modo de pensamiento:** Medio para tareas habituales  
-**Claude Opus:** Solo para errores muy complejos o decisiones de arquitectura críticas con múltiples dependencias
-
 ## Distinción clave entre agentes de planificación
 
-| Agente                  | Cuándo usarlo                                                                                                   |
-| ----------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `@project-orchestrator` | Coordina la **EJECUCIÓN** — delega a db-architect, feature-builder, security-reviewer para CONSTRUIR            |
-| `@product-strategist`   | Gestiona la **IDEACIÓN → DOCUMENTACIÓN** — convierte ideas en spec técnica, planifica sprints, documenta código |
+| Agente                  | Cuándo usarlo                                                                    |
+| ----------------------- | -------------------------------------------------------------------------------- |
+| `@project-orchestrator` | Coordina **EJECUCIÓN** — delega a especialistas para CONSTRUIR                   |
+| `@product-strategist`   | Gestiona **IDEACIÓN → DOC** — convierte ideas en spec técnica, planifica sprints |
 
 Flujo habitual: `@product-strategist` (spec + sprint) → `@project-orchestrator` (ejecución)

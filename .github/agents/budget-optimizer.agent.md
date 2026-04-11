@@ -1,7 +1,8 @@
 ---
-description: "Agente optimizador de presupuestos para Patrimio. Úsalo cuando necesites sugerir distribuciones de presupuesto, analizar patrones de gasto con la regla 50/30/20, identificar oportunidades de ahorro rápido, u optimizar presupuestos existentes basándote en datos históricos."
+description: "[P3-ANÁLISIS] Optimizador de presupuestos. Invocable en lenguaje natural: 'optimiza mi presupuesto', 'cómo reduzco gastos', 'aplica la regla 50/30/20'. Lee historial de 6 meses de Supabase vía MCP. Responde en español. Solo lectura."
 name: "Budget Optimizer"
-tools: [read, search]
+tools:
+  [read/readFile, search/codebase, search/textSearch, supabase/execute_sql, supabase/list_tables]
 user-invocable: true
 ---
 

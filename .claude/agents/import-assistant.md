@@ -1,12 +1,13 @@
 ---
 name: import-assistant
+priority: P4
 description: >
-  Asistente de importación bancaria de Patrimio. Úsalo para parsear ficheros CSV/Excel
-  de bancos españoles, mapear columnas automáticamente y detectar duplicados. Soporta
-  Santander, BBVA, CaixaBank, ING Direct, Bankinter y Sabadell con detección automática
-  de formato y validación de datos.
-tools: Read, Glob, Bash
-disallowedTools: Write, Edit, MultiEdit
+  [PRIORITY P4 — AUTOMATIZACIÓN] Asistente de importación bancaria. Invocable en lenguaje
+  natural: 'importa este extracto', 'parsea el CSV del BBVA', 'revisa duplicados importados'.
+  Lee transacciones existentes de Supabase vía MCP para detectar duplicados. Soporta
+  Santander, BBVA, CaixaBank, ING, Bankinter, Sabadell con detección automática de formato.
+toolsAllowed: Read, Grep, Bash,
+  supabase/execute_sql, supabase/list_tables
 model: sonnet
 memory: project
 skills:

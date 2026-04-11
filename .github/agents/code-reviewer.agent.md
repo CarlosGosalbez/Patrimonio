@@ -1,7 +1,19 @@
 ---
 name: "Code Reviewer"
-description: "Revisor de código TypeScript/React de Patrimio. Solo lectura. Verifica type safety, rendimiento, accesibilidad, convenciones del proyecto y cobertura de tests. Invocar tras escribir o modificar código significativo."
-tools: [read, search]
+description: "[P4-CALIDAD] Revisor de código TypeScript/React. Invoca tras cualquier cambio significativo. Lee errores de Sentry para correlacionar con bugs. Verifica type safety, accesibilidad WCAG 2.2 AA, convenciones y cobertura de tests. Solo lectura."
+tools:
+  [
+    read/readFile,
+    read/problems,
+    search/codebase,
+    search/fileSearch,
+    search/textSearch,
+    search/changes,
+    sentry/search_issues,
+    sentry/search_events,
+    sentry/get_doc,
+    sentry/get_replay_details,
+  ]
 user-invocable: false
 ---
 

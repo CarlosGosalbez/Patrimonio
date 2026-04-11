@@ -1,11 +1,18 @@
 ---
 name: feature-builder
+priority: P1
 description: >
-  Constructor full-stack de Patrimio. Invoca para implementar cualquier feature completa
-  desde la migración DB hasta el test E2E. Delega a db-architect (schema), security-reviewer
-  (audit RLS) y code-reviewer (calidad). Úsalo cuando necesites una feature lista para
-  producción en todas las capas sin olvidar ningún layer.
-tools: Read, Write, Edit, Grep, Glob, Bash, Agent(db-architect,security-reviewer,code-reviewer)
+  [PRIORITY P1 — BUILD] Constructor full-stack de Patrimio. Invoca cuando el
+  project-orchestrator delega implementación, o directamente cuando la feature está
+  bien especificada. Construye DB→API→UI→tests en una sola pasada. Delega a
+  db-architect (schema), security-reviewer (RLS audit) y code-reviewer (calidad).
+toolsAllowed: Read, Write, Edit, Grep, Glob, Bash,
+  supabase/apply_migration, supabase/execute_sql, supabase/generate_typescript_types,
+  supabase/get_advisors, supabase/list_tables, supabase/list_migrations,
+  supabase/get_logs, supabase/deploy_edge_function, supabase/list_edge_functions,
+  sentry/search_issues, sentry/get_doc, sentry/search_events,
+  vercel/deployments_list, vercel/deployments_get, vercel/logs_get,
+  vercel/environment_variables_list, vercel/environment_variables_create
 model: sonnet
 memory: project
 skills:

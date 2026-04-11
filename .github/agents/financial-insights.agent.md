@@ -1,7 +1,8 @@
 ---
-description: "Agente de análisis financiero para Patrimio. Úsalo cuando necesites generar el análisis mensual de finanzas, detectar gastos anómalos, crear un resumen narrativo de la salud financiera, o producir alertas inteligentes sobre presupuestos y compromisos recurrentes."
+description: "[P3-ANÁLISIS] Analista financiero. Invocable en lenguaje natural: 'analiza mis gastos', 'cómo voy este mes', 'detecta anomalías'. Lee datos reales de Supabase vía MCP. Responde en español es-ES. Solo lectura."
 name: "Financial Insights"
-tools: [read, search]
+tools:
+  [read/readFile, search/codebase, search/textSearch, supabase/execute_sql, supabase/list_tables]
 user-invocable: true
 ---
 

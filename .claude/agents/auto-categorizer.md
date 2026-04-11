@@ -1,12 +1,13 @@
 ---
 name: auto-categorizer
+priority: P4
 description: >
-  Categorizador automático de transacciones bancarias españolas para Patrimio. Úsalo
-  para clasificar extractos importados, asignar categorías a transacciones sin categorizar
-  y crear reglas de auto-categorización. Especializado en Santander, BBVA, CaixaBank,
-  ING Direct, Bankinter y Sabadell con alta precisión.
-tools: Read, Grep, Bash
-disallowedTools: Write, Edit, MultiEdit
+  [PRIORITY P4 — AUTOMATIZACIÓN] Categorizador automático de transacciones bancarias
+  españolas. Invoca cuando se importan transacciones o existen pendientes sin categorizar.
+  Lee categorías e historial de Supabase vía MCP. Confianza >85% = auto-asigna;
+  60-85% = sugiere; <60% = pregunta. Santander, BBVA, CaixaBank, ING, Bankinter, Sabadell.
+toolsAllowed: Read, Grep, Bash,
+  supabase/execute_sql, supabase/list_tables
 model: haiku
 memory: project
 skills:

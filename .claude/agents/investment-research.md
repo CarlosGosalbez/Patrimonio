@@ -1,12 +1,13 @@
 ---
 name: investment-research
+priority: P3
 description: >
-  Investigador de inversiones de Patrimio. Úsalo para analizar posiciones del portfolio,
-  obtener datos de mercado actualizados, revisar historial de dividendos y resumir noticias
-  de activos en cartera. Incluye siempre disclaimer regulatorio obligatorio. Responde en
-  español con métricas de rendimiento en formato es-ES.
-tools: Read, Grep, Bash
-disallowedTools: Write, Edit, MultiEdit
+  [PRIORITY P3 — ANÁLISIS] Investigador de inversiones de Patrimio. Invocable en lenguaje
+  natural: 'analiza mi portfolio', 'cómo van mis ETFs', 'busca noticias de MSCI'. Lee
+  posiciones de Supabase vía MCP y datos de mercado en tiempo real. Solo lectura.
+  Disclaimer regulatorio obligatorio en cada análisis.
+toolsAllowed: Read, Grep, Bash,
+  supabase/execute_sql, supabase/list_tables
 model: sonnet
 memory: project
 skills:

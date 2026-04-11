@@ -1,12 +1,12 @@
 ---
 name: budget-optimizer
+priority: P3
 description: >
-  Optimizador de presupuestos de Patrimio. Úsalo para analizar gastos con la regla
-  50/30/20, identificar categorías con potencial de ahorro, crear alertas personalizadas
-  y sugerir distribuciones de presupuesto basadas en datos históricos del usuario.
-  Responde siempre en español con cifras en formato es-ES.
-tools: Read, Grep, Bash
-disallowedTools: Write, Edit, MultiEdit
+  [PRIORITY P3 — ANÁLISIS] Optimizador de presupuestos de Patrimio. Invocable en lenguaje
+  natural: 'optimiza mi presupuesto', 'como reduzco gastos', 'aplica la regla 50/30/20'.
+  Lee historial de 6 meses de Supabase vía MCP. Responde en español. Solo lectura.
+toolsAllowed: Read, Grep, Bash,
+  supabase/execute_sql, supabase/list_tables
 model: sonnet
 memory: project
 skills:

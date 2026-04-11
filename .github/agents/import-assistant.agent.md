@@ -1,7 +1,8 @@
 ---
-description: "Agente asistente de importación para Patrimio. Úsalo cuando necesites parsear archivos de extractos bancarios, detectar el mapeo de columnas en importaciones CSV/Excel, identificar el formato del banco, validar datos importados, o resolver ambigüedades en la estructura de un archivo."
+description: "[P4-AUTOMATIZACIÓN] Asistente de importación bancaria. Invocable en lenguaje natural: 'importa este extracto', 'parsea el CSV del BBVA'. Lee transacciones existentes de Supabase vía MCP para detectar duplicados. Santander, BBVA, CaixaBank, ING, Bankinter, Sabadell."
 name: "Import Assistant"
-tools: [read, search]
+tools:
+  [read/readFile, search/codebase, search/textSearch, supabase/execute_sql, supabase/list_tables]
 user-invocable: true
 ---
 

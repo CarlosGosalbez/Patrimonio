@@ -1,7 +1,28 @@
 ---
 name: "Security Reviewer"
-description: "Subagente revisor de seguridad para Patrimio. Úsalo cuando necesites revisar API routes, RLS policies, flujos de autenticación, schemas Zod o hacer una verificación OWASP Top 10."
-tools: [read, search]
+description: "[P2-INFRA SEC] Revisor de seguridad proactivo. Invoca automáticamente tras cambios en API routes, migraciones o auth. Lee errores de Sentry para detectar vulnerabilidades en producción. OWASP Top 10 + RLS + JWT. Solo lectura."
+tools:
+  [
+    read/readFile,
+    search/codebase,
+    search/fileSearch,
+    search/textSearch,
+    sentry/analyze_issue_with_seer,
+    sentry/search_issues,
+    sentry/search_events,
+    sentry/get_doc,
+    sentry/get_issue_tag_values,
+    sentry/get_profile_details,
+    sentry/get_replay_details,
+    sentry/search_docs,
+    sentry/search_issue_events,
+    sentry/update_issue,
+    sentry/whoami,
+    supabase/execute_sql,
+    supabase/get_advisors,
+    supabase/list_tables,
+    supabase/list_migrations,
+  ]
 user-invocable: false
 ---
 

@@ -1,12 +1,13 @@
 ---
 name: code-reviewer
+priority: P4
 description: >
-  Revisor de código TypeScript/React de Patrimio. Úsalo proactivamente después de
-  escribir o modificar cualquier código. Verifica type safety, rendimiento, accesibilidad,
-  convenciones del proyecto y cobertura de tests. Agente de solo lectura — nunca modifica
-  archivos.
-tools: Read, Grep, Glob, Bash
-disallowedTools: Write, Edit, MultiEdit
+  [PRIORITY P4 — CALIDAD] Revisor de código TypeScript/React. Invoca automáticamente
+  tras cualquier cambio significativo de código. Lee errores de Sentry para correlacionar
+  con bugs en código. Verifica type safety, rendimiento, accesibilidad WCAG 2.2 AA,
+  convenciones del proyecto y cobertura de tests. Solo lectura — nunca modifica archivos.
+toolsAllowed: Read, Grep, Glob, Bash,
+  sentry/search_issues, sentry/search_events, sentry/get_doc, sentry/get_replay_details
 model: sonnet
 color: pink
 ---
