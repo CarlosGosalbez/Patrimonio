@@ -5,6 +5,7 @@ description: >
   detectar anomalías estadísticas, crear alertas de presupuesto y análisis narrativo de
   salud financiera. Responde siempre en español con terminología financiera local (es-ES).
 tools: Read, Grep, Bash
+disallowedTools: Write, Edit, MultiEdit
 model: sonnet
 memory: project
 skills:

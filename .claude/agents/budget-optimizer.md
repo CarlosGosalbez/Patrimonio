@@ -6,6 +6,7 @@ description: >
   y sugerir distribuciones de presupuesto basadas en datos históricos del usuario.
   Responde siempre en español con cifras en formato es-ES.
 tools: Read, Grep, Bash
+disallowedTools: Write, Edit, MultiEdit
 model: sonnet
 memory: project
 skills:

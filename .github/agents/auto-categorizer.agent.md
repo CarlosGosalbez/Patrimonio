@@ -1,7 +1,7 @@
 ---
 description: "Agente de auto-categorización para Patrimio. Úsalo cuando necesites categorizar transacciones, asignar categorías a extractos bancarios importados, sugerir categorías a transacciones manuales sin categoría, o crear reglas de auto-categorización."
 name: "Auto Categorizer"
-tools: [read, search, edit]
+tools: [read, search]
 user-invocable: false
 ---
 

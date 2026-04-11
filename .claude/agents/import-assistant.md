@@ -6,6 +6,7 @@ description: >
   Santander, BBVA, CaixaBank, ING Direct, Bankinter y Sabadell con detección automática
   de formato y validación de datos.
 tools: Read, Glob, Bash
+disallowedTools: Write, Edit, MultiEdit
 model: sonnet
 memory: project
 skills:

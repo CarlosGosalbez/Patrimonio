@@ -6,6 +6,7 @@ description: >
   y crear reglas de auto-categorización. Especializado en Santander, BBVA, CaixaBank,
   ING Direct, Bankinter y Sabadell con alta precisión.
 tools: Read, Grep, Bash
+disallowedTools: Write, Edit, MultiEdit
 model: haiku
 memory: project
 skills:

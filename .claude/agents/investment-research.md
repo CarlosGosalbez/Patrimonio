@@ -6,6 +6,7 @@ description: >
   de activos en cartera. Incluye siempre disclaimer regulatorio obligatorio. Responde en
   español con métricas de rendimiento en formato es-ES.
 tools: Read, Grep, Bash
+disallowedTools: Write, Edit, MultiEdit
 model: sonnet
 memory: project
 skills:

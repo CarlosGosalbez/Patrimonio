@@ -39,13 +39,13 @@ Read the corresponding SKILL.md before executing tasks in that domain:
 
 | Skill                         | File                                                  | When to load                            |
 | ----------------------------- | ----------------------------------------------------- | --------------------------------------- |
-| `supabase-migration`          | `.claude/skills/supabase-migration/SKILL.md`          | Any CREATE TABLE, ALTER, RLS, migration |
-| `transaction-formatter`       | `.claude/skills/transaction-formatter/SKILL.md`       | Formatting amounts or dates in UI       |
-| `spanish-finance-categorizer` | `.claude/skills/spanish-finance-categorizer/SKILL.md` | Auto-categorization, CSV bank import    |
-| `market-data-fetcher`         | `.claude/skills/market-data-fetcher/SKILL.md`         | Stock, ETF, crypto prices               |
-| `anomaly-detector`            | `.claude/skills/anomaly-detector/SKILL.md`            | Alerts, unusual patterns, duplicates    |
-| `report-generator`            | `.claude/skills/report-generator/SKILL.md`            | PDF/Excel exports, module M7            |
-| `context-optimizer`           | `.claude/skills/context-optimizer/SKILL.md`           | Session approaching context limit       |
+| `supabase-migration`          | `.github/skills/supabase-migration/SKILL.md`          | Any CREATE TABLE, ALTER, RLS, migration |
+| `transaction-formatter`       | `.github/skills/transaction-formatter/SKILL.md`       | Formatting amounts or dates in UI       |
+| `spanish-finance-categorizer` | `.github/skills/spanish-finance-categorizer/SKILL.md` | Auto-categorization, CSV bank import    |
+| `market-data-fetcher`         | `.github/skills/market-data-fetcher/SKILL.md`         | Stock, ETF, crypto prices               |
+| `anomaly-detector`            | `.github/skills/anomaly-detector/SKILL.md`            | Alerts, unusual patterns, duplicates    |
+| `report-generator`            | `.github/skills/report-generator/SKILL.md`            | PDF/Excel exports, module M7            |
+| `context-optimizer`           | `.github/skills/context-optimizer/SKILL.md`           | Session approaching context limit       |
 
 ---
 
@@ -233,217 +233,25 @@ Before using any API, prop, or import in new or modified code:
 
 ## Code patterns
 
-### DB — Migration template
+> Full patterns with code examples are in the path-scoped instruction files.
+> DB/SQL → `.github/instructions/database.instructions.md` ·
+> API routes → `.github/instructions/security.instructions.md` ·
+> AI agents → `.github/instructions/ai-agents.instructions.md` ·
+> Financial → `.github/instructions/financial-logic.instructions.md` ·
+> React/UI → `.github/instructions/frontend.instructions.md` ·
+> Tests → `.github/instructions/testing.instructions.md`
 
-```sql
--- supabase/migrations/YYYYMMDDHHMMSS_add_[tabla].sql
--- ROLLBACK:
---   DROP TRIGGER IF EXISTS trg_[tabla]_updated_at ON [tabla];
---   DROP TABLE IF EXISTS [tabla] CASCADE;
---   DROP TYPE IF EXISTS [enum];
+### Critical quick-reference
 
-CREATE TABLE [tabla] (
-  id           UUID         PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id      UUID         NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  name         VARCHAR(200) NOT NULL,
-  amount_cents INTEGER      NOT NULL,          -- 850.75€ = 85075
-  currency     VARCHAR(3)   NOT NULL DEFAULT 'EUR',
-  created_at   TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
-  updated_at   TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
-  deleted_at   TIMESTAMPTZ,
-  CONSTRAINT chk_[tabla]_amount_positive CHECK (amount_cents > 0),
-  CONSTRAINT chk_[tabla]_name_not_empty  CHECK (char_length(trim(name)) > 0)
-);
+**DB:** UUID PK · INTEGER cents · soft delete `deleted_at` · RLS on every table · trigger `moddatetime(updated_at)`
 
-CREATE INDEX idx_[tabla]_user   ON [tabla](user_id);
-CREATE INDEX idx_[tabla]_active ON [tabla](user_id) WHERE deleted_at IS NULL;
+**API:** JWT auth first (`supabase.auth.getUser()`) · Zod `.strict()` on all inputs · `user_id` always from JWT, never from body
 
-ALTER TABLE [tabla] ENABLE ROW LEVEL SECURITY;
+**AI:** `model: anthropic("claude-sonnet-4-5")` · `abortSignal: req.signal` · `hasPromptInjection()` before user text reaches LLM
 
-CREATE POLICY "users_select_[tabla]" ON [tabla]
-  FOR SELECT USING (auth.uid() = user_id AND deleted_at IS NULL);
-CREATE POLICY "users_insert_[tabla]" ON [tabla]
-  FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "users_update_[tabla]" ON [tabla]
-  FOR UPDATE USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+**Finance:** `lib/financial/formatters.ts` always · `decToCents()` / `formatCurrency()` · never `parseFloat` for amounts
 
-CREATE TRIGGER trg_[tabla]_updated_at
-  BEFORE UPDATE ON [tabla]
-  FOR EACH ROW EXECUTE FUNCTION moddatetime(updated_at);
-```
-
-### FK ON DELETE — Decisión por tipo de relación
-
-| FK target    | ON DELETE | Reason                                    |
-| ------------ | --------- | ----------------------------------------- |
-| `auth.users` | CASCADE   | User deleted → all their data deleted     |
-| `categories` | SET NULL  | Transaction survives without category     |
-| `accounts`   | RESTRICT  | Cannot delete account with active records |
-| `budgets`    | SET NULL  | Transactions survive without budget       |
-
-### API Routes — Base pattern
-
-```typescript
-// app/api/[resource]/route.ts
-import { createServerClient } from "@/lib/supabase/server";
-import { z } from "zod";
-import { NextResponse } from "next/server";
-
-const InputSchema = z
-  .object({
-    // NEVER include user_id here — always comes from JWT
-    amount_cents: z.number().int().positive(),
-    description: z.string().max(500).trim(),
-  })
-  .strict(); // .strict() REQUIRED
-
-export async function POST(req: Request) {
-  // 1. Auth from JWT — NEVER from body
-  const supabase = createServerClient();
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
-  if (error || !user) return new Response("Unauthorized", { status: 401 });
-
-  // 2. Validate input
-  const parsed = InputSchema.safeParse(await req.json());
-  if (!parsed.success) return NextResponse.json({ error: parsed.error }, { status: 400 });
-
-  // 3. Query filtered by user.id from JWT
-  const { data, error: dbError } = await supabase
-    .from("tabla")
-    .insert({ ...parsed.data, user_id: user.id }) // user.id always from JWT
-    .select()
-    .single();
-
-  if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 });
-  return NextResponse.json(data, { status: 201 });
-}
-```
-
-### AI agents — Streaming pattern
-
-```typescript
-// app/api/ai/[agent]/route.ts
-import { streamText, tool } from "ai";
-import { anthropic } from "@ai-sdk/anthropic";
-import { createServerClient } from "@/lib/supabase/server";
-import { z } from "zod";
-
-const AgentInputSchema = z
-  .object({
-    messages: z.array(
-      z.object({
-        role: z.enum(["user", "assistant"]),
-        content: z.string(),
-      }),
-    ),
-  })
-  .strict();
-
-export async function POST(req: Request) {
-  const supabase = createServerClient();
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
-  if (error || !user) return new Response("Unauthorized", { status: 401 });
-
-  const input = AgentInputSchema.parse(await req.json());
-
-  const result = await streamText({
-    model: anthropic("claude-sonnet-4-5"),
-    system: SYSTEM_PROMPT,
-    messages: input.messages,
-    maxSteps: 8,
-    abortSignal: req.signal, // Cancel if client disconnects
-    tools: {
-      getTransactions: tool({
-        description: "Fetches user transactions",
-        parameters: z.object({ month: z.number(), year: z.number() }).strict(),
-        execute: async ({ month, year }) => {
-          // user.id always from external JWT closure — never as parameter
-          const { data } = await supabase
-            .from("transactions")
-            .select("*")
-            .eq("user_id", user.id) // ← CRITICAL: always filter by authenticated user
-            .limit(100);
-          return data;
-        },
-      }),
-    },
-  });
-
-  return result.toDataStreamResponse();
-}
-```
-
-### Financial data
-
-```typescript
-// ALWAYS use lib/financial/formatters.ts — never format inline
-import { formatCurrency, centsToDec, decToCents } from "@/lib/financial/formatters";
-
-// Display: cents → UI
-formatCurrency(85075, "EUR"); // → "850,75 €" (locale es-ES)
-
-// User input: euros → cents to save
-decToCents(850.75); // → 85075
-
-// Never: amount * 100 (float error)  ✗
-// Never: parseFloat(input)           ✗
-// Always: decToCents(parseFloat(input)) or better, inputMode="decimal" + decToCents
-```
-
-### UI — Next.js App Router
-
-**RSC vs Client Component:**
-
-| Use case                  | RSC (default)             | Client (`"use client"`)     |
-| ------------------------- | ------------------------- | --------------------------- |
-| Server data fetch         | ✅                        | ❌ use TanStack Query       |
-| Interactive state / hooks | ❌                        | ✅                          |
-| Supabase with auth        | ✅ `createServerClient()` | Via hooks in `hooks/`       |
-| Forms                     | ❌                        | ✅ React Hook Form          |
-| AI streaming              | ❌                        | ✅ `useChat` from Vercel AI |
-
-**Component rules:**
-
-- Amounts: `inputMode="decimal"`, always save as cents
-- Touch targets: `min-h-[44px]` — critical on mobile
-- Formatting: always `lib/financial/formatters.ts`, never inline
-- Soft delete in UI: `onDelete` → `PATCH deleted_at`, never DELETE
-
-### Tests
-
-```typescript
-// Unit (Vitest) — always mock Supabase and Anthropic
-vi.mock("@/lib/supabase/server", () => ({
-  createServerClient: () => ({
-    auth: {
-      getUser: vi.fn().mockResolvedValue({ data: { user: { id: "uid-test" } }, error: null }),
-    },
-    from: vi.fn().mockReturnThis(),
-    select: vi.fn().mockReturnThis(),
-    eq: vi.fn().mockReturnThis(),
-    single: vi.fn().mockResolvedValue({ data: null, error: null }),
-  }),
-}));
-
-vi.mock("ai", () => ({
-  streamText: vi.fn().mockResolvedValue({ toDataStreamResponse: () => new Response("ok") }),
-}));
-```
-
-```typescript
-// E2E (Playwright) — always include iPhone 14
-// playwright.config.ts
-projects: [
-  { name: "mobile", use: { ...devices["iPhone 14"] } },
-  { name: "desktop", use: { ...devices["Desktop Chrome"] } },
-],
-```
+**UI:** `shadcn/ui` + `cn()` · `min-h-[44px]` touch targets · `useId()` for form labels · `role="alert"` on errors
 
 ---
 
@@ -481,23 +289,3 @@ npx supabase db diff -f migration_name          # Generate migration from local 
 npx supabase db push --linked                   # Apply migrations (remote, no Docker)
 npx supabase gen types typescript --linked > types/database.ts
 ```
-
----
-
-## Post-change verification
-
-Run in order after any implementation:
-
-```bash
-npm run type-check   # No type errors
-npm run lint         # No ESLint warnings
-npm run test         # Unit tests pass
-```
-
-Additional checklist:
-
-- [ ] Every new table has `ALTER TABLE X ENABLE ROW LEVEL SECURITY`
-- [ ] Every new API route validates with `supabase.auth.getUser()` before any logic
-- [ ] No monetary amount uses `float` or `.toFixed()` in calculations
-- [ ] After migration: `npx supabase gen types typescript --linked > types/database.ts`
-- [ ] Sensitive data (tokens, keys) only in environment variables — never in code
