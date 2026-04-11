@@ -4,9 +4,9 @@ priority: P4
 description: >
   [PRIORITY P4 — AUTOMATIZACIÓN] Categorizador automático de transacciones bancarias
   españolas. Invoca cuando se importan transacciones o existen pendientes sin categorizar.
-  Lee categorías e historial de Supabase vía MCP. Confianza >85% = auto-asigna;
-  60-85% = sugiere; <60% = pregunta. Santander, BBVA, CaixaBank, ING, Bankinter, Sabadell.
-toolsAllowed: Read, Grep, Bash,
+  Lee categorías de Supabase vía MCP, puede crear reglas y actualizar archivos. Confianza
+  >85%=auto-asigna, 60-85%=sugiere, <60%=pregunta. Santander, BBVA, CaixaBank, ING, Bankinter, Sabadell.
+tools: Read, Write, Edit, MultiEdit, Grep, Bash,
   supabase/execute_sql, supabase/list_tables
 model: haiku
 memory: project

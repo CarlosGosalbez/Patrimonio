@@ -4,9 +4,9 @@ priority: P3
 description: >
   [PRIORITY P3 — ANÁLISIS] Investigador de inversiones de Patrimio. Invocable en lenguaje
   natural: 'analiza mi portfolio', 'cómo van mis ETFs', 'busca noticias de MSCI'. Lee
-  posiciones de Supabase vía MCP y datos de mercado en tiempo real. Solo lectura.
+  posiciones de Supabase vía MCP, puede actualizar datos y generar informes.
   Disclaimer regulatorio obligatorio en cada análisis.
-toolsAllowed: Read, Grep, Bash,
+tools: Read, Write, Edit, MultiEdit, Grep, Bash,
   supabase/execute_sql, supabase/list_tables
 model: sonnet
 memory: project

@@ -12,6 +12,8 @@ tools:
     edit/createFile,
     edit/editFiles,
     edit/rename,
+    run/runCommands,
+    run/createAndRunTask,
     search/changes,
     search/codebase,
     search/fileSearch,

@@ -6,7 +6,7 @@ description: >
   Diseña esquemas, crea migraciones production-grade con RLS, índices parciales, triggers
   y FK ON DELETE correcto. PUEDE aplicar migraciones vía MCP. Delega a security-reviewer
   después de cada migración.
-toolsAllowed: Read, Write, Grep, Glob, Bash,
+tools: Read, Write, Edit, Grep, Glob, Bash,
   supabase/apply_migration, supabase/execute_sql, supabase/generate_typescript_types,
   supabase/get_advisors, supabase/list_tables, supabase/list_migrations,
   supabase/list_extensions, supabase/get_logs, supabase/deploy_edge_function,

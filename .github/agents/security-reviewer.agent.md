@@ -1,12 +1,23 @@
 ---
 name: "Security Reviewer"
-description: "[P2-INFRA SEC] Revisor de seguridad proactivo. Invoca automáticamente tras cambios en API routes, migraciones o auth. Lee errores de Sentry para detectar vulnerabilidades en producción. OWASP Top 10 + RLS + JWT. Solo lectura."
+description: "[P2-INFRA SEC] Revisor de seguridad proactivo. Invoca automáticamente tras cambios en API routes, migraciones o auth. Lee errores de Sentry y aplica fixes directamente en el código. OWASP Top 10 + RLS + JWT."
 tools:
   [
     read/readFile,
+    read/problems,
+    read/terminalSelection,
+    read/terminalLastCommand,
+    edit/editFiles,
+    edit/createFile,
+    edit/createDirectory,
+    edit/rename,
+    run/runCommands,
+    run/createAndRunTask,
     search/codebase,
     search/fileSearch,
+    search/listDirectory,
     search/textSearch,
+    search/usages,
     sentry/analyze_issue_with_seer,
     sentry/search_issues,
     sentry/search_events,

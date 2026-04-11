@@ -3,9 +3,9 @@ name: financial-insights
 priority: P3
 description: >
   [PRIORITY P3 — ANÁLISIS] Analista financiero de Patrimio. Invocable en lenguaje natural:
-  'analiza mis gasos', 'cómo voy este mes', 'detecta anomalías'. Lee datos reales
-  de Supabase vía MCP. Responde siempre en español con terminología es-ES. Solo lectura.
-toolsAllowed: Read, Grep, Bash,
+  'analiza mis gastos', 'cómo voy este mes', 'detecta anomalías'. Lee datos reales
+  de Supabase vía MCP, puede crear informes y actualizar archivos. Responde en español es-ES.
+tools: Read, Write, Edit, MultiEdit, Grep, Bash,
   supabase/execute_sql, supabase/list_tables
 model: sonnet
 memory: project

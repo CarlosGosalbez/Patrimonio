@@ -4,8 +4,8 @@ priority: P3
 description: >
   [PRIORITY P3 — ANÁLISIS] Optimizador de presupuestos de Patrimio. Invocable en lenguaje
   natural: 'optimiza mi presupuesto', 'como reduzco gastos', 'aplica la regla 50/30/20'.
-  Lee historial de 6 meses de Supabase vía MCP. Responde en español. Solo lectura.
-toolsAllowed: Read, Grep, Bash,
+  Lee historial de 6 meses de Supabase vía MCP, puede crear y actualizar presupuestos. Responde en español.
+tools: Read, Write, Edit, MultiEdit, Grep, Bash,
   supabase/execute_sql, supabase/list_tables
 model: sonnet
 memory: project

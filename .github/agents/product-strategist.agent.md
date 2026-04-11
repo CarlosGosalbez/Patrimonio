@@ -4,12 +4,18 @@ description: "[P2-ESTRATEGIA] Traduce ideas en documentación técnica. Usa para
 tools:
   [
     read/readFile,
+    read/problems,
+    read/terminalSelection,
+    read/terminalLastCommand,
     search/codebase,
     search/fileSearch,
     search/listDirectory,
     search/textSearch,
     edit/createFile,
     edit/editFiles,
+    edit/createDirectory,
+    edit/rename,
+    run/runCommands,
   ]
 user-invocable: true
 ---

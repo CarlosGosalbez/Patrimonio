@@ -4,9 +4,9 @@ priority: P4
 description: >
   [PRIORITY P4 — AUTOMATIZACIÓN] Asistente de importación bancaria. Invocable en lenguaje
   natural: 'importa este extracto', 'parsea el CSV del BBVA', 'revisa duplicados importados'.
-  Lee transacciones existentes de Supabase vía MCP para detectar duplicados. Soporta
+  Lee y escribe transacciones en Supabase vía MCP, puede editar archivos de importación.
   Santander, BBVA, CaixaBank, ING, Bankinter, Sabadell con detección automática de formato.
-toolsAllowed: Read, Grep, Bash,
+tools: Read, Write, Edit, MultiEdit, Grep, Bash,
   supabase/execute_sql, supabase/list_tables
 model: sonnet
 memory: project

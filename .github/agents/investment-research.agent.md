@@ -1,8 +1,23 @@
 ---
-description: "[P3-ANÁLISIS] Investigador de inversiones. Invocable en lenguaje natural: 'analiza mi portfolio', 'cómo van mis ETFs', 'busca noticias de MSCI'. Lee posiciones de Supabase vía MCP. Disclaimer regulatorio obligatorio. Solo lectura."
+description: "[P3-ANÁLISIS] Investigador de inversiones. Invocable en lenguaje natural: 'analiza mi portfolio', 'cómo van mis ETFs', 'busca noticias de MSCI'. Lee posiciones de Supabase vía MCP, puede actualizar datos de mercado y guardar análisis. Disclaimer regulatorio obligatorio."
 name: "Investment Research"
 tools:
-  [read/readFile, search/codebase, search/textSearch, supabase/execute_sql, supabase/list_tables]
+  [
+    read/readFile,
+    read/problems,
+    read/terminalSelection,
+    read/terminalLastCommand,
+    edit/editFiles,
+    edit/createFile,
+    edit/createDirectory,
+    run/runCommands,
+    search/codebase,
+    search/fileSearch,
+    search/listDirectory,
+    search/textSearch,
+    supabase/execute_sql,
+    supabase/list_tables,
+  ]
 user-invocable: true
 ---
 

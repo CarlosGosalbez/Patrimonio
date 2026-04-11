@@ -1,8 +1,23 @@
 ---
-description: "[P3-ANÁLISIS] Optimizador de presupuestos. Invocable en lenguaje natural: 'optimiza mi presupuesto', 'cómo reduzco gastos', 'aplica la regla 50/30/20'. Lee historial de 6 meses de Supabase vía MCP. Responde en español. Solo lectura."
+description: "[P3-ANÁLISIS] Optimizador de presupuestos. Invocable en lenguaje natural: 'optimiza mi presupuesto', 'cómo reduzco gastos', 'aplica la regla 50/30/20'. Lee historial de 6 meses de Supabase vía MCP, puede crear y actualizar presupuestos. Responde en español."
 name: "Budget Optimizer"
 tools:
-  [read/readFile, search/codebase, search/textSearch, supabase/execute_sql, supabase/list_tables]
+  [
+    read/readFile,
+    read/problems,
+    read/terminalSelection,
+    read/terminalLastCommand,
+    edit/editFiles,
+    edit/createFile,
+    edit/createDirectory,
+    run/runCommands,
+    search/codebase,
+    search/fileSearch,
+    search/listDirectory,
+    search/textSearch,
+    supabase/execute_sql,
+    supabase/list_tables,
+  ]
 user-invocable: true
 ---
 

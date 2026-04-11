@@ -6,7 +6,7 @@ description: >
   project-orchestrator delega implementación, o directamente cuando la feature está
   bien especificada. Construye DB→API→UI→tests en una sola pasada. Delega a
   db-architect (schema), security-reviewer (RLS audit) y code-reviewer (calidad).
-toolsAllowed: Read, Write, Edit, Grep, Glob, Bash,
+tools: Read, Write, Edit, Grep, Glob, Bash,
   supabase/apply_migration, supabase/execute_sql, supabase/generate_typescript_types,
   supabase/get_advisors, supabase/list_tables, supabase/list_migrations,
   supabase/get_logs, supabase/deploy_edge_function, supabase/list_edge_functions,

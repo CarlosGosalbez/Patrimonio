@@ -27,20 +27,30 @@ description: "Guidelines for keeping Claude Code sessions efficient in Patrimio:
 
 ```yaml
 name: my-agent
-description: "Spanish description. Use proactively when..."  # triggers auto-delegation
+description: "Spanish description. Use proactively when..." # triggers auto-delegation
 model: opus | sonnet | haiku | inherit
-effort: low | medium | high | max             # max = Opus 4.6 only
+effort: low | medium | high | max # max = Opus 4.6 only
 memory: user | project | local
 skills:
-  - skill-name                                # preloads full skill content at startup
-tools: Read, Write, Edit, Grep, Glob, Bash
-disallowedTools: Write, Edit, MultiEdit       # for read-only agents
+  - skill-name # preloads full skill content at startup
+# CORRECT: use 'tools' (not 'toolsAllowed' — that key doesn't exist in Claude Code)
+tools: Read, Write, Edit, Grep, Glob, Bash,
+  supabase/apply_migration, supabase/execute_sql # MCP tools: namespace/tool_name
+disallowedTools: Write, Edit, MultiEdit # for read-only agents (security, code-reviewer, analysts)
 color: red | blue | green | yellow | magenta | orange | cyan | purple | pink | violet
-tools: ..., Agent(db-architect,security-reviewer)  # restrict which subagents this can spawn
-isolation: worktree                           # isolated git worktree (destructive operations)
-background: true                              # always run as background task
-maxTurns: 20                                  # cap agentic turns
+isolation: worktree # isolated git worktree (destructive operations)
+background: true # always run as background task
+maxTurns: 20 # cap agentic turns
 ```
+
+### ⚠️ Common mistakes
+
+| Wrong                      | Correct                          | Why                                   |
+| -------------------------- | -------------------------------- | ------------------------------------- |
+| `toolsAllowed: Read,...`   | `tools: Read,...`                | `toolsAllowed` is not a valid key     |
+| `tools: [read, search]`    | `tools: Read, Grep, Glob, Bash`  | Use PascalCase Claude Code tool names |
+| Omitting `disallowedTools` | Add `disallowedTools: Write,...` | Read-only agents MUST block writes    |
+| `tools: write` for agents  | `disallowedTools: Write,...`     | Explicit deny is safer than omission  |
 
 ## Path-scoped rules (auto-loaded — zero token cost until file touched)
 

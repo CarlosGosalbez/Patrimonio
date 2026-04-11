@@ -3,10 +3,10 @@ name: code-reviewer
 priority: P4
 description: >
   [PRIORITY P4 — CALIDAD] Revisor de código TypeScript/React. Invoca automáticamente
-  tras cualquier cambio significativo de código. Lee errores de Sentry para correlacionar
-  con bugs en código. Verifica type safety, rendimiento, accesibilidad WCAG 2.2 AA,
-  convenciones del proyecto y cobertura de tests. Solo lectura — nunca modifica archivos.
-toolsAllowed: Read, Grep, Glob, Bash,
+  tras cualquier cambio significativo de código. Lee errores de Sentry y aplica fixes
+  directamente. Verifica type safety, rendimiento, accesibilidad WCAG 2.2 AA,
+  convenciones del proyecto y cobertura de tests.
+tools: Read, Write, Edit, MultiEdit, Grep, Glob, Bash,
   sentry/search_issues, sentry/search_events, sentry/get_doc, sentry/get_replay_details
 model: sonnet
 color: pink
