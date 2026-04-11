@@ -33,7 +33,8 @@ export function useAccountsQuery() {
       const response = await requestJson<{ accounts: Account[] }>("/api/accounts");
       return response.accounts;
     },
-    staleTime: 300_000, // 5 minutes
+    staleTime: 600_000, // 10 minutes — accounts rarely change
+    gcTime: 30 * 60 * 1000,
   });
 }
 

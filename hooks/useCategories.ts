@@ -36,7 +36,8 @@ export function useCategoriesQuery(type?: "income" | "expense") {
       const data = await res.json();
       return data.categories as CategoryTree[];
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 15 * 60 * 1000, // 15 minutes — categories rarely change
+    gcTime: 30 * 60 * 1000,
   });
 }
 

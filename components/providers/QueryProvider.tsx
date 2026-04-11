@@ -11,6 +11,8 @@ export function QueryProvider({ children }: { children: ReactNode }) {
           queries: {
             refetchOnWindowFocus: false,
             staleTime: 60_000,
+            gcTime: 10 * 60 * 1000, // 10 min antes de limpiar del cache
+            retry: 1, // solo 1 reintento (defecto son 3)
           },
         },
       }),

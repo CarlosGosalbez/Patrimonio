@@ -77,7 +77,13 @@ const nextConfig = {
   // Generate client-side source maps in production so Sentry can upload and
   // resolve stack traces. Sentry's hideSourceMaps deletes them after upload.
   productionBrowserSourceMaps: true,
-  experimental: {},
+  images: {
+    formats: ["image/avif", "image/webp"],
+    minimumCacheTTL: 60 * 60 * 24 * 30, // 30 días
+  },
+  experimental: {
+    optimizePackageImports: ["lucide-react", "recharts", "@radix-ui/react-icons"],
+  },
   headers: async () => [
     {
       source: "/(.*)",
