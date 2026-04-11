@@ -310,8 +310,8 @@ function MonthlyTab({ month, year }: { month: number; year: number }) {
                 />
                 <Tooltip formatter={formatTooltipCurrency} />
                 <Legend />
-                <Bar dataKey="income" name={t("income")} fill="#059669" radius={[3, 3, 0, 0]} />
-                <Bar dataKey="expenses" name={t("expenses")} fill="#dc2626" radius={[3, 3, 0, 0]} />
+                <Bar dataKey="income" name={t("income")} fill="hsl(var(--chart-income))" radius={[3, 3, 0, 0]} />
+                <Bar dataKey="expenses" name={t("expenses")} fill="hsl(var(--chart-expense))" radius={[3, 3, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -442,11 +442,11 @@ function AnnualTab({ year }: { year: number }) {
               <YAxis tickFormatter={(v) => formatCurrency(v)} tick={{ fontSize: 10 }} width={72} />
               <Tooltip formatter={formatTooltipCurrency} />
               <Legend />
-              <Bar dataKey="income_cents" name={t("income")} fill="#059669" radius={[2, 2, 0, 0]} />
+              <Bar dataKey="income_cents" name={t("income")} fill="hsl(var(--chart-income))" radius={[2, 2, 0, 0]} />
               <Bar
                 dataKey="expenses_cents"
                 name={t("expenses")}
-                fill="#dc2626"
+                fill="hsl(var(--chart-expense))"
                 radius={[2, 2, 0, 0]}
               />
             </BarChart>
@@ -869,7 +869,7 @@ export function ReportsPageClient() {
                     <YAxis type="category" dataKey="category" width={150} />
                     <Tooltip formatter={(value) => formatCurrency(value as number)} />
                     <Legend />
-                    <Bar dataKey="total_cents" fill="#ef4444" name={t("analytics.expenses")} />
+                    <Bar dataKey="total_cents" fill="hsl(var(--chart-expense))" name={t("analytics.expenses")} />
                   </BarChart>
                 </ResponsiveContainer>
               </TabsContent>
@@ -883,8 +883,8 @@ export function ReportsPageClient() {
                     <YAxis tickFormatter={(value) => formatCurrency(value)} />
                     <Tooltip formatter={(value) => formatCurrency(value as number)} />
                     <Legend />
-                    <Bar dataKey="income_cents" fill="#10b981" name={t("analytics.income")} />
-                    <Bar dataKey="expenses_cents" fill="#ef4444" name={t("analytics.expenses")} />
+                    <Bar dataKey="income_cents" fill="hsl(var(--chart-income))" name={t("analytics.income")} />
+                    <Bar dataKey="expenses_cents" fill="hsl(var(--chart-expense))" name={t("analytics.expenses")} />
                   </BarChart>
                 </ResponsiveContainer>
               </TabsContent>
@@ -925,13 +925,13 @@ export function ReportsPageClient() {
                     <Line
                       type="monotone"
                       dataKey="balance_cents"
-                      stroke="#3b82f6"
+                      stroke="hsl(var(--chart-primary))"
                       name={t("analytics.balance")}
                     />
                     <Line
                       type="monotone"
                       dataKey="moving_avg_cents"
-                      stroke="#10b981"
+                      stroke="hsl(var(--chart-income))"
                       strokeDasharray="5 5"
                       name={t("analytics.movingAverage")}
                     />

@@ -29,7 +29,7 @@
 | Estado   | Zustand (global) · TanStack Query (server) · React Hook Form + Zod        |
 | Backend  | Supabase (PostgreSQL 15 · Auth JWT+TOTP · Storage · Realtime · Edge Deno) |
 | Deploy   | Vercel (Edge Middleware · CDN)                                            |
-| IA       | Claude claude-sonnet-4 · Vercel AI SDK (streaming)                        |
+| IA       | Claude Sonnet 4.6 · Vercel AI SDK (streaming)                             |
 | Testing  | Vitest (unit) · Playwright (E2E + Safari/iOS)                             |
 
 ---

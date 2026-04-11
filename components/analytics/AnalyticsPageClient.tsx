@@ -275,8 +275,8 @@ export function AnalyticsPageClient() {
                     <YAxis tickFormatter={(value) => formatCurrencyCompact(value)} tick={{ fontFamily: 'inherit', fontSize: 11 }} />
                     <Tooltip formatter={formatTooltipCurrency} />
                     <Legend />
-                    <Bar dataKey="income_cents" name={t("metrics.income")} fill="hsl(160 84% 39%)" radius={[8, 8, 0, 0]} />
-                    <Bar dataKey="expense_cents" name={t("metrics.expenses")} fill="hsl(0 84% 60%)" radius={[8, 8, 0, 0]} />
+                    <Bar dataKey="income_cents" name={t("metrics.income")} fill="hsl(var(--chart-income))" radius={[8, 8, 0, 0]} />
+                    <Bar dataKey="expense_cents" name={t("metrics.expenses")} fill="hsl(var(--chart-expense))" radius={[8, 8, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -296,8 +296,8 @@ export function AnalyticsPageClient() {
                       <Tooltip formatter={formatTooltipCurrency} />
                       <Area
                         dataKey="total_value_cents"
-                        fill="hsl(195 85% 45% / 0.2)"
-                        stroke="hsl(195 85% 40%)"
+                        fill="hsl(var(--chart-primary) / 0.2)"
+                        stroke="hsl(var(--chart-primary))"
                         type="monotone"
                       />
                     </AreaChart>
@@ -709,8 +709,8 @@ export function AnalyticsPageClient() {
                   <YAxis tickFormatter={(value) => formatCurrencyCompact(value)} tick={{ fontFamily: 'inherit', fontSize: 11 }} />
                   <Tooltip formatter={formatTooltipCurrency} />
                   <Legend />
-                  <Bar dataKey="current" name={t("categories.currentPeriod")} fill="hsl(160 84% 39%)" radius={[8, 8, 0, 0]} />
-                  <Bar dataKey="previous" name={t("categories.previousPeriod")} fill="hsl(195 85% 40%)" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="current" name={t("categories.currentPeriod")} fill="hsl(var(--chart-income))" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="previous" name={t("categories.previousPeriod")} fill="hsl(var(--chart-primary))" radius={[8, 8, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>

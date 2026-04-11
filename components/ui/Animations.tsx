@@ -4,7 +4,7 @@
 // Framer Motion reusable animation components for Patrimio
 // ============================================================
 
-import { motion, type Variants, type HTMLMotionProps } from "framer-motion";
+import { motion, type Variants, type HTMLMotionProps, useReducedMotion } from "framer-motion";
 
 // ─────────────────────────────────────────────────────────────
 // Fade In Up — generic enter animation
@@ -25,10 +25,11 @@ interface FadeInUpProps extends HTMLMotionProps<"div"> {
 }
 
 export function FadeInUp({ delay = 0, children, ...props }: FadeInUpProps) {
+  const reduce = useReducedMotion();
   return (
     <motion.div
       variants={fadeInUpVariants}
-      initial="hidden"
+      initial={reduce ? false : "hidden"}
       animate="visible"
       custom={delay}
       {...props}
@@ -67,10 +68,11 @@ interface StaggerContainerProps {
 }
 
 export function StaggerContainer({ children, className }: StaggerContainerProps) {
+  const reduce = useReducedMotion();
   return (
     <motion.div
       variants={staggerContainerVariants}
-      initial="hidden"
+      initial={reduce ? false : "hidden"}
       animate="visible"
       className={className}
     >

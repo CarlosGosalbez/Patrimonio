@@ -20,7 +20,7 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
     return (
       <div
         className={cn(
-          "flex h-9 w-9 items-center justify-center rounded-lg border border-border/60",
+          "flex h-11 w-11 items-center justify-center rounded-lg border border-border/60",
           className,
         )}
         aria-hidden="true"
@@ -35,7 +35,7 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
       type="button"
       onClick={() => setTheme(isDark ? "light" : "dark")}
       className={cn(
-        "flex min-h-[36px] min-w-[36px] items-center justify-center rounded-lg border border-border/60 bg-background/60 transition-colors",
+        "flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg border border-border/60 bg-background/60 transition-colors",
         "hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
         "[-webkit-tap-highlight-color:transparent]",
         className,

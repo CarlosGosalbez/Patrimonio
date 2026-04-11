@@ -4,6 +4,18 @@ import { useId, useState } from "react";
 import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
+import {
+  ShoppingCart,
+  Shirt,
+  Bus,
+  Coffee,
+  Pill,
+  Gamepad2,
+  TrendingUp,
+  Smartphone,
+  Briefcase,
+  type LucideIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -13,22 +25,23 @@ import { decToCents, formatCurrency } from "@/lib/financial/formatters";
 import { requestJson } from "@/lib/http/client";
 
 interface QuickAction {
-  emoji: string;
+  icon: LucideIcon;
   labelKey: string;
   categoryName: string;
   isIncome: boolean;
+  color: string;
 }
 
 const QUICK_ACTIONS: QuickAction[] = [
-  { emoji: "🛒", labelKey: "supermarket", categoryName: "Supermercado", isIncome: false },
-  { emoji: "👕", labelKey: "clothing", categoryName: "Ropa", isIncome: false },
-  { emoji: "🚗", labelKey: "transport", categoryName: "Transporte público", isIncome: false },
-  { emoji: "☕", labelKey: "restaurant", categoryName: "Restaurantes", isIncome: false },
-  { emoji: "💊", labelKey: "health", categoryName: "Sanidad", isIncome: false },
-  { emoji: "🎮", labelKey: "leisure", categoryName: "Ocio y entretenimiento", isIncome: false },
-  { emoji: "💰", labelKey: "income", categoryName: "Otros ingresos", isIncome: true },
-  { emoji: "📲", labelKey: "bizumIn", categoryName: "Bizum recibido", isIncome: true },
-  { emoji: "💼", labelKey: "salary", categoryName: "Nómina", isIncome: true },
+  { icon: ShoppingCart, labelKey: "supermarket", categoryName: "Supermercado", isIncome: false, color: "text-blue-600 dark:text-blue-400" },
+  { icon: Shirt, labelKey: "clothing", categoryName: "Ropa", isIncome: false, color: "text-violet-600 dark:text-violet-400" },
+  { icon: Bus, labelKey: "transport", categoryName: "Transporte público", isIncome: false, color: "text-sky-600 dark:text-sky-400" },
+  { icon: Coffee, labelKey: "restaurant", categoryName: "Restaurantes", isIncome: false, color: "text-amber-600 dark:text-amber-400" },
+  { icon: Pill, labelKey: "health", categoryName: "Sanidad", isIncome: false, color: "text-rose-600 dark:text-rose-400" },
+  { icon: Gamepad2, labelKey: "leisure", categoryName: "Ocio y entretenimiento", isIncome: false, color: "text-indigo-600 dark:text-indigo-400" },
+  { icon: TrendingUp, labelKey: "income", categoryName: "Otros ingresos", isIncome: true, color: "text-emerald-600 dark:text-emerald-400" },
+  { icon: Smartphone, labelKey: "bizumIn", categoryName: "Bizum recibido", isIncome: true, color: "text-teal-600 dark:text-teal-400" },
+  { icon: Briefcase, labelKey: "salary", categoryName: "Nómina", isIncome: true, color: "text-green-600 dark:text-green-400" },
 ];
 
 interface CreateTransactionPayload {
@@ -113,20 +126,21 @@ export function QuickActionButtons({ categoryMap }: { categoryMap: Record<string
         aria-label={t("ariaLabel")}
         className="grid grid-cols-3 gap-2 sm:grid-cols-5 lg:grid-cols-9"
       >
-        {QUICK_ACTIONS.map((action) => (
-          <button
-            key={action.labelKey}
-            type="button"
-            aria-label={t(action.labelKey)}
-            onClick={() => openAction(action)}
-            className="flex min-h-[64px] flex-col items-center justify-center gap-1 rounded-2xl border border-border/60 bg-card p-2 text-xs font-medium transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            <span className="text-2xl" aria-hidden="true">
-              {action.emoji}
-            </span>
-            <span className="text-muted-foreground">{t(action.labelKey)}</span>
-          </button>
-        ))}
+        {QUICK_ACTIONS.map((action) => {
+          const Icon = action.icon;
+          return (
+            <button
+              key={action.labelKey}
+              type="button"
+              aria-label={t(action.labelKey)}
+              onClick={() => openAction(action)}
+              className="flex min-h-[64px] flex-col items-center justify-center gap-1 rounded-2xl border border-border/60 bg-card p-2 text-xs font-medium transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <Icon className={`h-5 w-5 ${action.color}`} aria-hidden="true" />
+              <span className="text-muted-foreground">{t(action.labelKey)}</span>
+            </button>
+          );
+        })}
       </div>
 
       <Dialog
@@ -135,8 +149,12 @@ export function QuickActionButtons({ categoryMap }: { categoryMap: Record<string
       >
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle>
-              {selectedAction?.emoji} {selectedAction ? t(selectedAction.labelKey) : ""}
+            <DialogTitle className="flex items-center gap-2">
+              {selectedAction && (() => {
+                const Icon = selectedAction.icon;
+                return <Icon className={`h-5 w-5 ${selectedAction.color}`} aria-hidden="true" />;
+              })()}
+              {selectedAction ? t(selectedAction.labelKey) : ""}
             </DialogTitle>
           </DialogHeader>
 

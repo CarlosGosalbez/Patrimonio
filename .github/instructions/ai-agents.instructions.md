@@ -6,7 +6,7 @@ applyTo: ["app/api/ai/**", "lib/ai/**"]
 
 # AI Agents Guidelines — Patrimio
 
-All AI features use **Claude claude-sonnet-4** via Anthropic API with **Vercel AI SDK** for streaming responses.
+All AI features use **Claude Sonnet 4.6** (`claude-sonnet-4-5`) via Anthropic API with **Vercel AI SDK** for streaming responses.
 
 ## The 5 Patrimio Agents
 

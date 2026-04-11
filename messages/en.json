@@ -1067,6 +1067,7 @@
   "offline": {
     "title": "You're offline",
     "description": "No internet connection. You can still view cached data.",
+    "online": "Connection restored",
     "retry": "Retry",
     "cached": "Some data may be outdated."
   },

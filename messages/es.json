@@ -1065,6 +1065,7 @@
   "offline": {
     "title": "Sin conexión",
     "description": "No hay conexión a internet. Puedes seguir viendo los datos guardados en caché.",
+    "online": "Conexión restaurada",
     "retry": "Reintentar",
     "cached": "Algunos datos pueden estar desactualizados."
   },

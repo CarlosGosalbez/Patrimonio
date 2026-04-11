@@ -21,7 +21,7 @@ export function Footer() {
           <Button
             variant="outline"
             size="sm"
-            className="min-h-[36px] gap-2 text-xs"
+            className="min-h-[44px] gap-2 text-xs"
             onClick={() => setReportOpen(true)}
           >
             <Bug className="h-3.5 w-3.5" aria-hidden />

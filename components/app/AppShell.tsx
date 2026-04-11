@@ -19,13 +19,13 @@ import { Logo } from "@/components/ui/Logo";
 import { Footer } from "@/components/ui/Footer";
 import { cn } from "@/lib/utils";
 
+// Max 5 items per WCAG / usability best practice (bottom nav)
 const navigation = [
   { href: "/dashboard", icon: LayoutDashboard, key: "dashboard" },
   { href: "/investments", icon: Landmark, key: "investments" },
   { href: "/analytics", icon: LineChart, key: "analytics" },
   { href: "/reports", icon: FileText, key: "reports" },
   { href: "/commitments", icon: WalletCards, key: "commitments" },
-  { href: "/settings/security", icon: FolderCog, key: "settings" },
 ] as const;
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -51,6 +51,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </Link>
 
           <div className="flex items-center gap-2">
+            <Link
+              href="/settings/security"
+              className={cn(
+                "flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg border border-border/60 bg-background/60 transition-colors",
+                "hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                "[-webkit-tap-highlight-color:transparent]",
+                pathname.startsWith("/settings") && "bg-muted",
+              )}
+              aria-label={t("settings")}
+            >
+              <FolderCog className="h-4 w-4 text-foreground" aria-hidden="true" />
+            </Link>
             <ThemeToggle />
             <LanguageSwitcher className="hidden sm:flex" />
           </div>
@@ -68,7 +80,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <Footer />
 
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border/70 bg-background/95 px-2 pb-[calc(env(safe-area-inset-bottom)+8px)] pt-2 backdrop-blur">
-        <div className="mx-auto grid max-w-5xl grid-cols-6 gap-1 rounded-2xl bg-muted/60 p-1">
+        <div className="mx-auto grid max-w-5xl grid-cols-5 gap-1 rounded-2xl bg-muted/60 p-1">
           {navigation.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
             const Icon = item.icon;
