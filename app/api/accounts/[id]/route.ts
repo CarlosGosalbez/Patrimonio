@@ -85,3 +85,40 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
   return NextResponse.json({ account });
 }
+
+export async function DELETE(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const { id } = await params;
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+
+  if (error || !user) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
+  // Soft-delete: set deleted_at. The DB trigger cascade_soft_delete_account
+  // will propagate deleted_at to transactions and investments automatically.
+  const { data: account, error: deleteError } = await supabase
+    .from("accounts")
+    .update({ deleted_at: new Date().toISOString() })
+    .eq("id", id)
+    .eq("user_id", user.id)
+    .is("deleted_at", null)
+    .select("id")
+    .single();
+
+  if (deleteError) {
+    return NextResponse.json({ error: deleteError.message || "Database error" }, { status: 500 });
+  }
+
+  if (!account) {
+    return NextResponse.json({ error: "Account not found" }, { status: 404 });
+  }
+
+  return NextResponse.json({ success: true, id: account.id });
+}

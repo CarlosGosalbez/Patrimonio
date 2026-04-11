@@ -268,7 +268,7 @@
     "subtitle": "Centro de control financiero",
     "skipToMain": "Saltar al contenido principal",
     "dashboard": "Dashboard",
-    "analytics": "Analytics",
+    "analytics": "Análisis y Presupuestos",
     "investments": "Inversiones",
     "reports": "Informes",
     "imports": "Importar",
@@ -427,6 +427,11 @@
     "editTitle": "Editar compromiso",
     "confirmDelete": "¿Eliminar este compromiso?",
     "projectedFlow": "Proyección de flujo",
+    "chartLabels": {
+      "income": "Ingresos",
+      "expense": "Gastos",
+      "total": "Total"
+    },
     "annualMatrix": "Matriz anual",
     "activeList": "Compromisos activos",
     "timeline": "Línea temporal — 24 meses",
@@ -1003,7 +1008,7 @@
     "noSales": "Sin operaciones de venta en este ejercicio",
     "disclaimerLabel": "Aviso legal",
     "gdprTitle": "Exportar mis datos (RGPD)",
-    "gdprDescription": "Descarga un archivo ZIP con todos tus datos personales almacenados en Patrimonio, conforme al Reglamento General de Protección de Datos (RGPD/GDPR)",
+    "gdprDescription": "Descarga un archivo Excel con todos tus datos personales almacenados en Patrimio, conforme al Reglamento General de Protección de Datos (RGPD/GDPR)",
     "gdprIncludes": {
       "profile": "Perfil y configuración",
       "transactions": "Historial completo de transacciones",
@@ -1012,7 +1017,7 @@
       "budgets": "Presupuestos y alertas"
     },
     "gdprConfirmLabel": "Confirmo que quiero exportar todos mis datos personales.",
-    "gdprDownloadButton": "Descargar ZIP con mis datos",
+    "gdprDownloadButton": "Descargar Excel con mis datos",
     "gdprDownloaded": "Datos exportados correctamente",
     "analytics": {
       "title": "Analítica de cuenta",

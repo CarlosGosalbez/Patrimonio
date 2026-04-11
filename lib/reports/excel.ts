@@ -5,7 +5,7 @@
 
 import * as XLSX from "xlsx";
 import { centsToDec, formatCurrency, formatDate } from "@/lib/financial/formatters";
-import type { MonthlyReport, AnnualReport } from "@/lib/reports/types";
+import type { MonthlyReport, AnnualReport, GdprExportData } from "@/lib/reports/types";
 
 const CURRENCY = "EUR";
 
@@ -120,8 +120,110 @@ export function buildMonthlyExcel(
 }
 
 // ─────────────────────────────────────────────────────────────
-// Full Annual Excel Export
+// GDPR Full Data Export — Multi-sheet Excel
 // ─────────────────────────────────────────────────────────────
+
+function toRecord(item: unknown): Record<string, unknown> {
+  return item != null && typeof item === "object" ? (item as Record<string, unknown>) : {};
+}
+
+function gdprSheetFromArray(rows: unknown[], label: string): XLSX.WorkSheet {
+  if (rows.length === 0) {
+    return XLSX.utils.aoa_to_sheet([[label], ["Sin datos"]]);
+  }
+  const first = toRecord(rows[0]);
+  const headers = Object.keys(first);
+  const data = rows.map((r) => headers.map((h) => toRecord(r)[h] ?? ""));
+  const ws = XLSX.utils.aoa_to_sheet([headers, ...data]);
+  ws["!cols"] = headers.map((h) => ({ wch: Math.min(Math.max(h.length + 4, 12), 40) }));
+  return ws;
+}
+
+export function buildGdprExcel(exportData: GdprExportData): Buffer {
+  const wb = XLSX.utils.book_new();
+
+  // Sheet 1 — Resumen
+  const summaryData: unknown[][] = [
+    ["Patrimio — Exportación RGPD (GDPR)"],
+    ["Exportado el", exportData.exported_at],
+    ["Usuario", exportData.user_id],
+    [],
+    ["Hoja", "Registros"],
+    ["Perfil", "1"],
+    ["Cuentas", String(exportData.accounts.length)],
+    ["Categorías", String(exportData.categories.length)],
+    ["Transacciones", String(exportData.transactions.length)],
+    ["Compromisos", String(exportData.recurring_commitments.length)],
+    ["Inversiones", String(exportData.investments.length)],
+    ["Operaciones inversión", String(exportData.investment_operations.length)],
+    ["Presupuestos", String(exportData.budgets.length)],
+    ["Notificaciones", String(exportData.notifications.length)],
+    [],
+    [
+      "Aviso RGPD",
+      "Datos exportados conforme al Reglamento (UE) 2016/679. Para más información: patrimio.app/privacidad",
+    ],
+  ];
+  const wsSummary = XLSX.utils.aoa_to_sheet(summaryData);
+  wsSummary["!cols"] = [{ wch: 30 }, { wch: 60 }];
+  XLSX.utils.book_append_sheet(wb, wsSummary, "Resumen");
+
+  // Sheet 2 — Perfil
+  const profileRows = Object.entries(exportData.profile).map(([k, v]) => [
+    k,
+    typeof v === "object" ? JSON.stringify(v) : String(v ?? ""),
+  ]);
+  const wsProfile = XLSX.utils.aoa_to_sheet([["Campo", "Valor"], ...profileRows]);
+  wsProfile["!cols"] = [{ wch: 24 }, { wch: 50 }];
+  XLSX.utils.book_append_sheet(wb, wsProfile, "Perfil");
+
+  // Sheet 3 — Cuentas
+  XLSX.utils.book_append_sheet(wb, gdprSheetFromArray(exportData.accounts, "Cuentas"), "Cuentas");
+
+  // Sheet 4 — Transacciones
+  XLSX.utils.book_append_sheet(
+    wb,
+    gdprSheetFromArray(exportData.transactions, "Transacciones"),
+    "Transacciones",
+  );
+
+  // Sheet 5 — Compromisos recurrentes
+  XLSX.utils.book_append_sheet(
+    wb,
+    gdprSheetFromArray(exportData.recurring_commitments, "Compromisos"),
+    "Compromisos",
+  );
+
+  // Sheet 6 — Inversiones
+  XLSX.utils.book_append_sheet(
+    wb,
+    gdprSheetFromArray(exportData.investments, "Inversiones"),
+    "Inversiones",
+  );
+
+  // Sheet 7 — Operaciones de inversión
+  XLSX.utils.book_append_sheet(
+    wb,
+    gdprSheetFromArray(exportData.investment_operations, "Operaciones"),
+    "Operaciones inv.",
+  );
+
+  // Sheet 8 — Presupuestos
+  XLSX.utils.book_append_sheet(
+    wb,
+    gdprSheetFromArray(exportData.budgets, "Presupuestos"),
+    "Presupuestos",
+  );
+
+  // Sheet 9 — Notificaciones
+  XLSX.utils.book_append_sheet(
+    wb,
+    gdprSheetFromArray(exportData.notifications, "Notificaciones"),
+    "Notificaciones",
+  );
+
+  return XLSX.write(wb, { type: "buffer", bookType: "xlsx" }) as Buffer;
+}
 
 export function buildAnnualExcel(
   report: AnnualReport,

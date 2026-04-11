@@ -736,13 +736,19 @@ export function ReportsPageClient() {
 
   const selectedAccount = accounts.find((acc) => acc.id === selectedAccountId) ?? null;
 
+  // Helper: fetch + validate response is an array (prevents "x.map is not a function" crash)
+  async function fetchArray(url: string): Promise<unknown[]> {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+    const json: unknown = await res.json();
+    return Array.isArray(json) ? json : [];
+  }
+
   // Fetch analytics data (solo si hay account seleccionada)
   const { data: categoryData = [] } = useQuery({
     queryKey: ["analytics", "by-category", selectedAccountId, analyticsPeriod],
     queryFn: () =>
-      fetch(`/api/analytics/account/${selectedAccountId}/by-category?period=${analyticsPeriod}`).then(
-        (r) => r.json()
-      ),
+      fetchArray(`/api/analytics/account/${selectedAccountId}/by-category?period=${analyticsPeriod}`),
     enabled: !!selectedAccountId,
     staleTime: 300_000,
   });
@@ -750,9 +756,7 @@ export function ReportsPageClient() {
   const { data: monthlyFlowData = [] } = useQuery({
     queryKey: ["analytics", "monthly-flow", selectedAccountId],
     queryFn: () =>
-      fetch(`/api/analytics/account/${selectedAccountId}/monthly-flow?months=12`).then(
-        (r) => r.json()
-      ),
+      fetchArray(`/api/analytics/account/${selectedAccountId}/monthly-flow?months=12`),
     enabled: !!selectedAccountId,
     staleTime: 300_000,
   });
@@ -760,9 +764,7 @@ export function ReportsPageClient() {
   const { data: distributionData = [] } = useQuery({
     queryKey: ["analytics", "distribution", selectedAccountId, analyticsPeriod],
     queryFn: () =>
-      fetch(`/api/analytics/account/${selectedAccountId}/distribution?period=${analyticsPeriod}`).then(
-        (r) => r.json()
-      ),
+      fetchArray(`/api/analytics/account/${selectedAccountId}/distribution?period=${analyticsPeriod}`),
     enabled: !!selectedAccountId,
     staleTime: 300_000,
   });
@@ -770,15 +772,14 @@ export function ReportsPageClient() {
   const { data: balanceHistoryData = [] } = useQuery({
     queryKey: ["analytics", "balance-history", selectedAccountId],
     queryFn: () =>
-      fetch(`/api/analytics/account/${selectedAccountId}/balance-history?months=12`).then(
-        (r) => r.json()
-      ),
+      fetchArray(`/api/analytics/account/${selectedAccountId}/balance-history?months=12`),
     enabled: !!selectedAccountId,
     staleTime: 300_000,
   });
 
   return (
-    <div className="space-y-6">\n      {/* Account Selector Section */}
+    <div className="space-y-6">
+      {/* Account Selector Section */}
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">{t("selectAccount")}</CardTitle>

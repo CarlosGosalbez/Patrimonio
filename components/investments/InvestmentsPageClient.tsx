@@ -415,6 +415,7 @@ export function InvestmentsPageClient() {
                       />
                       <Area
                         dataKey="total_value_cents"
+                        name={t("summary.totalValue")}
                         fill="hsl(var(--primary) / 0.18)"
                         stroke="hsl(var(--primary))"
                         type="monotone"

@@ -3,6 +3,35 @@ import { NextResponse, type NextRequest } from "next/server";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 
+// ── CORS ────────────────────────────────────────────────────────────────────
+// Allowlist of origins permitted to call the Patrimio API.
+// Only same-origin browser requests pass — third-party callers are rejected.
+const ALLOWED_ORIGINS = [
+  "https://patrimio.app",
+  "https://www.patrimio.app",
+  "https://staging.patrimio.app",
+  ...(process.env.NODE_ENV === "development"
+    ? ["http://localhost:3000", "http://127.0.0.1:3000"]
+    : []),
+];
+
+const CORS_HEADERS = {
+  "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  "Access-Control-Max-Age": "86400",
+  "Access-Control-Allow-Credentials": "true",
+};
+
+function getCorsResponse(origin: string | null, res: NextResponse): NextResponse {
+  if (origin && ALLOWED_ORIGINS.includes(origin)) {
+    res.headers.set("Access-Control-Allow-Origin", origin);
+    res.headers.set("Vary", "Origin");
+    Object.entries(CORS_HEADERS).forEach(([k, v]) => res.headers.set(k, v));
+  }
+  return res;
+}
+// ── END CORS ─────────────────────────────────────────────────────────────────
+
 // Rate limiters — only instantiated if Upstash env vars are present
 let authRatelimit: Ratelimit | null = null;
 let apiRatelimit: Ratelimit | null = null;
@@ -40,6 +69,13 @@ const AUTH_API_ROUTES = ["/api/auth"];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const origin = request.headers.get("origin");
+
+  // Handle CORS preflight (OPTIONS) for API routes
+  if (request.method === "OPTIONS" && pathname.startsWith("/api/")) {
+    const preflightRes = new NextResponse(null, { status: 204 });
+    return getCorsResponse(origin, preflightRes);
+  }
 
   // Skip public/static routes
   if (PUBLIC_ROUTES.some((r) => pathname.startsWith(r))) {
@@ -136,7 +172,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(user ? "/dashboard" : "/login", request.url));
   }
 
-  return response;
+  return getCorsResponse(origin, response);
 }
 
 export const config = {

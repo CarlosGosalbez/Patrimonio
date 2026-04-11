@@ -185,6 +185,7 @@ export function CommitmentsPageClient() {
                     <Tooltip formatter={formatTooltipValue} />
                     <Area
                       dataKey="income"
+                      name={t("chartLabels.income")}
                       stackId="1"
                       stroke="#10b981"
                       fill="#10b981"
@@ -192,6 +193,7 @@ export function CommitmentsPageClient() {
                     />
                     <Area
                       dataKey="expense"
+                      name={t("chartLabels.expense")}
                       stackId="2"
                       stroke="#ef4444"
                       fill="#ef4444"
@@ -391,7 +393,7 @@ export function CommitmentsPageClient() {
                     <XAxis dataKey="month" tickFormatter={(value) => value.slice(5, 7)} />
                     <YAxis tickFormatter={(value) => `${Math.round(value / 100)}€`} />
                     <Tooltip formatter={formatTooltipValue} />
-                    <Bar dataKey="total_cents" fill="#2563eb" radius={[8, 8, 0, 0]} />
+                    <Bar dataKey="total_cents" name={t("chartLabels.total")} fill="#2563eb" radius={[8, 8, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>

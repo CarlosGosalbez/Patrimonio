@@ -429,6 +429,11 @@
     "editTitle": "Edit commitment",
     "confirmDelete": "Delete this commitment?",
     "projectedFlow": "Projected cash flow",
+    "chartLabels": {
+      "income": "Income",
+      "expense": "Expenses",
+      "total": "Total"
+    },
     "annualMatrix": "Annual matrix",
     "activeList": "Active commitments",
     "timeline": "Timeline — 24 months",
@@ -1005,7 +1010,7 @@
     "noSales": "No sale operations in this fiscal year",
     "disclaimerLabel": "Legal disclaimer",
     "gdprTitle": "Export my data (GDPR)",
-    "gdprDescription": "Download a ZIP file with all your personal data stored in Patrimonio, in compliance with the General Data Protection Regulation (GDPR)",
+    "gdprDescription": "Download an Excel file with all your personal data stored in Patrimio, in compliance with the General Data Protection Regulation (GDPR)",
     "gdprIncludes": {
       "profile": "Profile and settings",
       "transactions": "Full transaction history",
@@ -1014,7 +1019,7 @@
       "budgets": "Budgets and alerts"
     },
     "gdprConfirmLabel": "I confirm I want to export all my personal data.",
-    "gdprDownloadButton": "Download ZIP with my data",
+    "gdprDownloadButton": "Download Excel with my data",
     "gdprDownloaded": "Data exported successfully",
     "deleteAccount": {
       "title": "Delete account",
