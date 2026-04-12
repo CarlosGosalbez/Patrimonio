@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  buildImportDedupeKey,
   descriptionSimilarity,
+  detectDuplicateRowsInFile,
   detectPossibleDuplicate,
   detectUnexpectedCharge,
   suggestCategory,
@@ -115,5 +117,173 @@ describe("imports matching", () => {
 
   it("computes normalized similarity for merchant names", () => {
     expect(descriptionSimilarity("Nómina ACME, S.L.", "Nomina ACME SL")).toBeGreaterThan(0.9);
+  });
+});
+
+describe("descriptionSimilarity — edge cases", () => {
+  it("returns 0 when either string is empty", () => {
+    expect(descriptionSimilarity("", "Netflix")).toBe(0);
+    expect(descriptionSimilarity("Netflix", "")).toBe(0);
+  });
+
+  it("returns 1 for exact match after normalization", () => {
+    expect(descriptionSimilarity("Netflix", "Netflix")).toBe(1);
+  });
+
+  it("returns 0.92 when one string contains the other", () => {
+    expect(descriptionSimilarity("Netflix Spain", "Netflix")).toBe(0.92);
+    expect(descriptionSimilarity("Netflix", "Netflix Spain")).toBe(0.92);
+  });
+
+  it("returns partial overlap score for partially matching tokens", () => {
+    const score = descriptionSimilarity("PAGO RECIBO GAS", "RECIBO ACS GAS");
+    expect(score).toBeGreaterThan(0);
+    expect(score).toBeLessThan(1);
+  });
+});
+
+describe("buildImportDedupeKey", () => {
+  const row = {
+    amount_cents: 1599,
+    description: "Netflix ES",
+    external_id: null,
+    is_income: false,
+    merchant_key: null,
+    notes: null,
+    source_row_index: 0,
+    transaction_date: "2026-04-01",
+    value_date: null,
+  };
+
+  it("includes accountId, date, amount and normalized description", () => {
+    const key = buildImportDedupeKey("account-1", row);
+    expect(key).toContain("account-1");
+    expect(key).toContain("2026-04-01");
+    expect(key).toContain("1599");
+  });
+});
+
+describe("detectDuplicateRowsInFile", () => {
+  it("counts duplicate rows with same date/amount/description", () => {
+    const rows = [
+      {
+        amount_cents: 1599,
+        description: "Netflix",
+        transaction_date: "2026-04-01",
+        external_id: null,
+        is_income: false,
+        merchant_key: null,
+        notes: null,
+        source_row_index: 0,
+        value_date: null,
+      },
+      {
+        amount_cents: 1599,
+        description: "Netflix",
+        transaction_date: "2026-04-01",
+        external_id: null,
+        is_income: false,
+        merchant_key: null,
+        notes: null,
+        source_row_index: 1,
+        value_date: null,
+      },
+    ];
+    const counts = detectDuplicateRowsInFile(rows);
+    // Should detect 1 unique key with count 2
+    let maxCount = 0;
+    for (const count of counts.values()) {
+      maxCount = Math.max(maxCount, count);
+    }
+    expect(maxCount).toBe(2);
+  });
+});
+
+describe("suggestCategory — additional branches", () => {
+  const baseRow = {
+    amount_cents: 1299,
+    description: "STARBUCKS ES",
+    external_id: null,
+    is_income: false,
+    merchant_key: "starbucks es",
+    notes: null,
+    source_row_index: 0,
+    transaction_date: "2026-04-05",
+    value_date: null,
+  };
+
+  it("matches via case-sensitive regex rule", () => {
+    const suggestion = suggestCategory(
+      baseRow,
+      [
+        {
+          category_id: "cat-cafe",
+          is_case_sensitive: true,
+          is_regex: true,
+          pattern: "STARBUCKS",
+          priority: 100,
+        },
+      ],
+      [],
+    );
+    expect(suggestion.source).toBe("rule");
+    expect(suggestion.category_id).toBe("cat-cafe");
+  });
+
+  it("returns null suggestion when no rule or merchant hint matches", () => {
+    const suggestion = suggestCategory(
+      { ...baseRow, description: "XXXXXXXX99", merchant_key: null },
+      [],
+      [],
+    );
+    expect(suggestion.source).toBeNull();
+    expect(suggestion.category_id).toBeNull();
+    expect(suggestion.confidence).toBe(0);
+  });
+
+  it("returns null when regex rule is invalid", () => {
+    const suggestion = suggestCategory(
+      baseRow,
+      [
+        {
+          category_id: "cat-invalid",
+          is_case_sensitive: false,
+          is_regex: true,
+          pattern: "[invalid((regex",
+          priority: 50,
+        },
+      ],
+      [],
+    );
+    // Invalid regex should not match → falls through to null
+    expect(suggestion.source).toBeNull();
+  });
+});
+
+describe("detectUnexpectedCharge — additional branches", () => {
+  const baseRow = {
+    amount_cents: 1299,
+    description: "Netflix",
+    external_id: null,
+    is_income: false,
+    merchant_key: null,
+    notes: null,
+    source_row_index: 0,
+    transaction_date: "2026-04-05",
+    value_date: null,
+  };
+
+  it("returns null when row is income", () => {
+    const result = detectUnexpectedCharge({ ...baseRow, is_income: true }, [
+      { cancelled_at: "2026-03-01T00:00:00Z", id: "c1", name: "Netflix", service_name: "Netflix" },
+    ]);
+    expect(result).toBeNull();
+  });
+
+  it("returns null when commitment service_name is null", () => {
+    const result = detectUnexpectedCharge(baseRow, [
+      { cancelled_at: "2026-03-01T00:00:00Z", id: "c2", name: "Unknown", service_name: null },
+    ]);
+    expect(result).toBeNull();
   });
 });

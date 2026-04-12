@@ -3,6 +3,8 @@
 > Gestiona tu patrimonio, gastos e inversiones en un solo lugar — en 3 segundos ves tu situación financiera completa.
 
 [![Security](https://img.shields.io/badge/security-0%20vulnerabilities-brightgreen)](docs/SECURITY.md)
+[![Tests](https://img.shields.io/badge/tests-580%2B-blue)](docs/TESTING.md)
+[![Coverage](https://img.shields.io/badge/coverage-80%25%2B-brightgreen)](docs/TESTING.md)
 [![Next.js](https://img.shields.io/badge/Next.js-15.5.14-black)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)](https://www.typescriptlang.org)
 
