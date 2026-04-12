@@ -1,22 +1,7 @@
 ---
 name: "Product Strategist"
 description: "[P2-ESTRATEGIA] Traduce ideas en documentación técnica. Usa para: convertir una idea en spec técnica, planificar sprints, analizar gaps del producto, benchmark Fintonic/YNAB/Copilot Money. DIFERENCIA: project-orchestrator=EJECUCIÓN, este agente=IDEACIÓN→DOC. Investiga en web y actualiza docs/patrimio-technical-spec.md."
-tools:
-  [
-    read/readFile,
-    read/problems,
-    read/terminalSelection,
-    read/terminalLastCommand,
-    search/codebase,
-    search/fileSearch,
-    search/listDirectory,
-    search/textSearch,
-    edit/createFile,
-    edit/editFiles,
-    edit/createDirectory,
-    edit/rename,
-    run/runCommands,
-  ]
+tools: [read, edit, search, web]
 user-invocable: true
 ---
 

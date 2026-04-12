@@ -5,7 +5,7 @@ description: >
   [PRIORITY P3 — ANÁLISIS] Analista financiero de Patrimio. Invocable en lenguaje natural:
   'analiza mis gastos', 'cómo voy este mes', 'detecta anomalías'. Lee datos reales
   de Supabase vía MCP, puede crear informes y actualizar archivos. Responde en español es-ES.
-tools: Read, Write, Edit, MultiEdit, Grep, Bash,
+tools: Read, Write, Edit, MultiEdit, Grep, Bash, WebFetch,
   supabase/execute_sql, supabase/list_tables
 model: sonnet
 memory: project

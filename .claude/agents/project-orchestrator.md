@@ -15,10 +15,14 @@ memory: project
 skills:
   - context-optimizer
   - ui-ux-pro-max
-tools: Read, Write, Edit, MultiEdit, Grep, Glob, Bash,
-  sentry/analyze_issue_with_seer, sentry/create_dsn, sentry/create_project, sentry/create_team, sentry/find_dsns, sentry/find_organizations, sentry/find_projects, sentry/find_releases, sentry/find_teams, sentry/get_doc, sentry/get_event_attachment, sentry/get_issue_tag_values, sentry/get_profile_details, sentry/get_replay_details, sentry/get_sentry_resource, sentry/search_docs, sentry/search_events, sentry/search_issue_events, sentry/search_issues, sentry/update_issue, sentry/update_project, sentry/whoami,
-  supabase/apply_migration, supabase/create_branch, supabase/delete_branch, supabase/deploy_edge_function, supabase/execute_sql, supabase/generate_typescript_types, supabase/get_advisors, supabase/get_edge_function, supabase/get_logs, supabase/get_project_url, supabase/get_publishable_keys, supabase/get_storage_config, supabase/list_branches, supabase/list_edge_functions, supabase/list_extensions, supabase/list_migrations, supabase/list_storage_buckets, supabase/list_tables, supabase/merge_branch, supabase/rebase_branch, supabase/reset_branch, supabase/update_storage_config,
-  vercel/deployments_list, vercel/deployments_get, vercel/logs_get, vercel/environment_variables_list, vercel/environment_variables_create
+tools:
+  Read, Write, Edit, MultiEdit, Grep, Glob, Bash, WebFetch, WebSearch, TodoRead, TodoWrite, Task,
+  supabase/apply_migration, supabase/execute_sql, supabase/generate_typescript_types,
+  supabase/get_advisors, supabase/list_tables, supabase/list_migrations, supabase/get_logs,
+  supabase/list_extensions, supabase/list_edge_functions, supabase/deploy_edge_function,
+  supabase/get_project_url, supabase/list_storage_buckets, supabase/create_branch,
+  supabase/list_branches, supabase/merge_branch, supabase/delete_branch, supabase/reset_branch,
+  supabase/rebase_branch, supabase/get_storage_config, supabase/update_storage_config
 initialPrompt: >
   Patrimio dev session active. Describe what you want to build or fix —
   in plain Spanish — and I'll handle everything: DB, code, security, tests, deploy.
@@ -159,183 +163,9 @@ After all delegations, run the completion checklist:
 
 ---
 
-## Available Tools — When to Use Each
+## Creating MCPs
 
-You have access to all GitHub Copilot and VS Code tools. Use them strategically:
-
-### File Operations
-
-| Tool                           | When                           | Example                                     |
-| ------------------------------ | ------------------------------ | ------------------------------------------- |
-| `read_file`                    | Get context before editing     | Read migration template, existing API route |
-| `create_file`                  | New migration, component, test | Create `20240405_add_alerts.sql`            |
-| `replace_string_in_file`       | Single precise edit            | Fix one function, update one query          |
-| `multi_replace_string_in_file` | Multiple edits across files    | Update imports in 5 components at once      |
-| `list_dir`                     | Explore structure              | Check what migrations exist                 |
-| `create_directory`             | New module folder              | Create `app/api/alerts/`                    |
-
-### Search & Discovery
-
-| Tool              | When                       | Example                           |
-| ----------------- | -------------------------- | --------------------------------- |
-| `grep_search`     | Find exact code patterns   | Find all uses of `deleted_at`     |
-| `semantic_search` | Conceptual search          | "where is authentication logic"   |
-| `file_search`     | Find files by name/pattern | `**/*transaction*.tsx`            |
-| `get_errors`      | TypeScript/lint errors     | After editing, verify no breakage |
-
-### Execution & Validation
-
-| Tool                  | When                     | Example                               |
-| --------------------- | ------------------------ | ------------------------------------- |
-| `run_in_terminal`     | Run commands             | `npm run type-check`, migration apply |
-| `get_terminal_output` | Check background process | Check dev server status               |
-| `run_vscode_command`  | VS Code actions          | Open file, format document            |
-
-### Orchestration
-
-| Tool                  | When                   | Example                                           |
-| --------------------- | ---------------------- | ------------------------------------------------- |
-| `runSubagent`         | Delegate to specialist | Call db-architect for migration design            |
-| `manage_todo_list`    | Track multi-step work  | Break feature into 8 numbered tasks               |
-| `vscode_askQuestions` | Clarify requirements   | "Which investment type: stocks, crypto, or both?" |
-| `memory`              | Save decisions         | Record FK choice, categorization rule             |
-
-### Discovery (Deferred Tools)
-
-| Tool                     | When                    | Example                                            |
-| ------------------------ | ----------------------- | -------------------------------------------------- |
-| `tool_search_tool_regex` | Load MCP tools          | Search for `mcp_.*create` to find MCP capabilities |
-| `get_changed_files`      | Review uncommitted work | See what files are staged                          |
-| `get_project_setup_info` | Understand workspace    | Get package.json scripts, tsconfig                 |
-
----
-
-## Creating MCPs (Model Context Protocol)
-
-If the user provides instructions to create an MCP server, follow this workflow:
-
-### 1. Understand the Requirement
-
-Ask clarifying questions if needed:
-
-- What data source does the MCP need to access? (API, database, file system)
-- What operations should it support? (read, write, search)
-- Any authentication required?
-- Rate limits or caching needs?
-
-### 2. MCP Structure for Patrimio
-
-Create in `mcp-servers/[name]/`:
-
-```
-mcp-servers/
-  [mcp-name]/
-    package.json          # MCP SDK dependency
-    tsconfig.json         # TypeScript config
-    src/
-      index.ts            # Main server file
-      tools/              # Tool definitions
-        [tool-name].ts
-    README.md             # Usage documentation
-```
-
-### 3. Implementation Pattern
-
-```typescript
-// src/index.ts
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
-
-const server = new Server(
-  {
-    name: "patrimonio-[name]",
-    version: "1.0.0",
-  },
-  {
-    capabilities: {
-      tools: {},
-    },
-  },
-);
-
-// List available tools
-server.setRequestHandler(ListToolsRequestSchema, async () => ({
-  tools: [
-    {
-      name: "tool_name",
-      description: "What it does",
-      inputSchema: {
-        type: "object",
-        properties: {
-          param: { type: "string", description: "Parameter description" },
-        },
-        required: ["param"],
-      },
-    },
-  ],
-}));
-
-// Handle tool calls
-server.setRequestHandler(CallToolRequestSchema, async (request) => {
-  const { name, arguments: args } = request.params;
-
-  if (name === "tool_name") {
-    // Implementation
-    const result = await doWork(args.param);
-    return { content: [{ type: "text", text: JSON.stringify(result) }] };
-  }
-
-  throw new Error(`Unknown tool: ${name}`);
-});
-
-// Start server
-const transport = new StdioServerTransport();
-await server.connect(transport);
-```
-
-### 4. Register in `.claude/settings.json`
-
-```json
-{
-  "mcpServers": {
-    "patrimonio-[name]": {
-      "command": "node",
-      "args": ["./mcp-servers/[name]/dist/index.js"],
-      "env": {
-        "API_KEY": "${PATRIMONIO_API_KEY}"
-      }
-    }
-  }
-}
-```
-
-### 5. Security Rules for Patrimio MCPs
-
-- **Never** include `service_role` key in MCP code
-- Always validate input with Zod schemas
-- Apply rate limiting for external API calls
-- Use environment variables for API keys
-- Log all MCP tool invocations for debugging
-- Test with mock data before production use
-
-### 6. Planned Patrimio MCPs
-
-| MCP           | Purpose                      | Tools                                                |
-| ------------- | ---------------------------- | ---------------------------------------------------- |
-| `market-data` | Fetch stock/crypto prices    | `getQuote`, `getHistorical`, `searchTicker`          |
-| `bank-parser` | Parse Spanish bank CSVs      | `detectFormat`, `parseTransactions`, `mapCategories` |
-| `reports`     | Generate financial PDFs      | `monthlyReport`, `investmentReport`, `taxSummary`    |
-| `categorizer` | Auto-categorize transactions | `suggestCategory`, `trainModel`, `getConfidence`     |
-
-When asked to create an MCP:
-
-1. Use `create_directory` to set up folder structure
-2. Use `create_file` for package.json, tsconfig, and source files
-3. Implement the tool following the pattern above
-4. Update `.claude/settings.json` to register it
-5. Create README.md with usage examples
-6. Test with `node dist/index.js` before delegating to Claude Code
+Create in `mcp-servers/[name]/src/index.ts` with `@modelcontextprotocol/sdk`. Register in `.claude/settings.json` under `mcpServers`. Security rules: no `service_role` key, Zod validation, env vars for secrets.
 
 ---
 

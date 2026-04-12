@@ -6,8 +6,9 @@ description: >
   tras cualquier cambio significativo de código. Lee errores de Sentry y aplica fixes
   directamente. Verifica type safety, rendimiento, accesibilidad WCAG 2.2 AA,
   convenciones del proyecto y cobertura de tests.
-tools: Read, Write, Edit, MultiEdit, Grep, Glob, Bash,
+tools: Read, Grep, Glob, Bash,
   sentry/search_issues, sentry/search_events, sentry/get_doc, sentry/get_replay_details
+disallowedTools: Write, MultiEdit
 model: sonnet
 color: pink
 ---

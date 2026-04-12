@@ -1,23 +1,7 @@
 ---
 description: "[P3-ANÁLISIS] Analista financiero. Invocable en lenguaje natural: 'analiza mis gastos', 'cómo voy este mes', 'detecta anomalías'. Lee datos reales de Supabase vía MCP, genera informes y guarda resultados. Responde en español es-ES."
 name: "Financial Insights"
-tools:
-  [
-    read/readFile,
-    read/problems,
-    read/terminalSelection,
-    read/terminalLastCommand,
-    edit/editFiles,
-    edit/createFile,
-    edit/createDirectory,
-    run/runCommands,
-    search/codebase,
-    search/fileSearch,
-    search/listDirectory,
-    search/textSearch,
-    supabase/execute_sql,
-    supabase/list_tables,
-  ]
+tools: [read, search, supabase/*]
 user-invocable: true
 ---
 

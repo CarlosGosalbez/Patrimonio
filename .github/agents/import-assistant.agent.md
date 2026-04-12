@@ -1,23 +1,7 @@
 ---
 description: "[P4-AUTOMATIZACIÓN] Asistente de importación bancaria. Invocable en lenguaje natural: 'importa este extracto', 'parsea el CSV del BBVA'. Lee transacciones de Supabase, detecta duplicados y puede crear/editar los archivos de importación. Santander, BBVA, CaixaBank, ING, Bankinter, Sabadell."
 name: "Import Assistant"
-tools:
-  [
-    read/readFile,
-    read/problems,
-    read/terminalSelection,
-    read/terminalLastCommand,
-    edit/editFiles,
-    edit/createFile,
-    edit/createDirectory,
-    run/runCommands,
-    search/codebase,
-    search/fileSearch,
-    search/listDirectory,
-    search/textSearch,
-    supabase/execute_sql,
-    supabase/list_tables,
-  ]
+tools: [read, edit, search, supabase/*]
 user-invocable: true
 ---
 

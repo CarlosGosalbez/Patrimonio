@@ -43,14 +43,28 @@ background: true # always run as background task
 maxTurns: 20 # cap agentic turns
 ```
 
+### Tool aliases per role
+
+| Role type      | tools                                                        | disallowedTools    |
+| -------------- | ------------------------------------------------------------ | ------------------ |
+| Builder (full) | `Read, Write, Edit, MultiEdit, Grep, Glob, Bash, supabase/*` | —                  |
+| Reviewer/Audit | `Read, Grep, Glob, Bash, sentry/*`                           | `Write, MultiEdit` |
+| Analyst (data) | `Read, Grep, Bash, WebFetch, supabase/*`                     | `Write, MultiEdit` |
+| DB Architect   | `Read, Write, Edit, MultiEdit, Grep, Glob, Bash, supabase/*` | —                  |
+| Research       | `Read, Grep, Bash, WebFetch, WebSearch, supabase/*`          | `Write, MultiEdit` |
+
 ### ⚠️ Common mistakes
 
-| Wrong                      | Correct                          | Why                                   |
-| -------------------------- | -------------------------------- | ------------------------------------- |
-| `toolsAllowed: Read,...`   | `tools: Read,...`                | `toolsAllowed` is not a valid key     |
-| `tools: [read, search]`    | `tools: Read, Grep, Glob, Bash`  | Use PascalCase Claude Code tool names |
-| Omitting `disallowedTools` | Add `disallowedTools: Write,...` | Read-only agents MUST block writes    |
-| `tools: write` for agents  | `disallowedTools: Write,...`     | Explicit deny is safer than omission  |
+| Wrong                        | Correct                          | Why                                                              |
+| ---------------------------- | -------------------------------- | ---------------------------------------------------------------- |
+| `toolsAllowed: Read,...`     | `tools: Read,...`                | `toolsAllowed` is not a valid key                                |
+| `tools: [read, search]`      | `tools: Read, Grep, Glob, Bash`  | Use PascalCase Claude Code tool names                            |
+| `tools: [read/readFile,...]` | `tools: Read, Grep, Glob, Bash`  | **`.github/agents/` bug**: slash-notation leaves agent sin tools |
+| `mcp__supabase__execute_sql` | `supabase/execute_sql`           | MCP format is `namespace/tool`, never double-underscore          |
+| Omitting `disallowedTools`   | Add `disallowedTools: Write,...` | Read-only agents MUST block writes                               |
+| `tools: write` for agents    | `disallowedTools: Write,...`     | Explicit deny is safer than omission                             |
+
+> **Root cause of "Solo tengo tool_search_tool_regex"**: `.github/agents/` files used `read/readFile`, `edit/editFiles`, `run/runCommands` — invalid tool names. Copilot only recognizes aliases (`read`, `edit`, `execute`, `search`, `web`, `todo`, `agent`) and MCP wildcards (`supabase/*`). Fix: replace with aliases.
 
 ## Path-scoped rules (auto-loaded — zero token cost until file touched)
 

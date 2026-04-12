@@ -1,43 +1,7 @@
 ---
 name: "Feature Builder"
 description: "[P1-BUILD] Constructor full-stack de Patrimio. Implementa features completas desde la migración DB hasta el test E2E. Delega a db-architect (schema), security-reviewer (RLS), code-reviewer (calidad). Accede a Supabase MCP para aplicar migraciones y Sentry para contexto de errores."
-tools:
-  [
-    read/readFile,
-    read/problems,
-    read/viewImage,
-    read/terminalSelection,
-    read/terminalLastCommand,
-    edit/createDirectory,
-    edit/createFile,
-    edit/editFiles,
-    edit/rename,
-    run/runCommands,
-    run/createAndRunTask,
-    search/changes,
-    search/codebase,
-    search/fileSearch,
-    search/listDirectory,
-    search/textSearch,
-    search/usages,
-    supabase/apply_migration,
-    supabase/execute_sql,
-    supabase/generate_typescript_types,
-    supabase/get_advisors,
-    supabase/list_tables,
-    supabase/list_migrations,
-    supabase/get_logs,
-    supabase/deploy_edge_function,
-    supabase/list_edge_functions,
-    sentry/search_issues,
-    sentry/get_doc,
-    sentry/search_events,
-    vercel/deployments_list,
-    vercel/deployments_get,
-    vercel/logs_get,
-    vercel/environment_variables_list,
-    vercel/environment_variables_create,
-  ]
+tools: [read, edit, execute, search, todo, agent, supabase/*, sentry/*, vercel/*]
 user-invocable: false
 ---
 

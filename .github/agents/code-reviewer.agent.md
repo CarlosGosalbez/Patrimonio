@@ -1,29 +1,7 @@
 ---
 name: "Code Reviewer"
 description: "[P4-CALIDAD] Revisor de código TypeScript/React. Invoca tras cualquier cambio significativo. Lee errores de Sentry, aplica fixes directamente. Verifica type safety, accesibilidad WCAG 2.2 AA, convenciones y cobertura de tests."
-tools:
-  [
-    read/readFile,
-    read/problems,
-    read/terminalSelection,
-    read/terminalLastCommand,
-    edit/editFiles,
-    edit/createFile,
-    edit/createDirectory,
-    edit/rename,
-    run/runCommands,
-    run/createAndRunTask,
-    search/codebase,
-    search/fileSearch,
-    search/listDirectory,
-    search/textSearch,
-    search/usages,
-    search/changes,
-    sentry/search_issues,
-    sentry/search_events,
-    sentry/get_doc,
-    sentry/get_replay_details,
-  ]
+tools: [read, edit, search, sentry/*]
 user-invocable: false
 ---
 

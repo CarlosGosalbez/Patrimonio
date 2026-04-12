@@ -6,7 +6,7 @@ description: >
   natural: 'analiza mi portfolio', 'cómo van mis ETFs', 'busca noticias de MSCI'. Lee
   posiciones de Supabase vía MCP, puede actualizar datos y generar informes.
   Disclaimer regulatorio obligatorio en cada análisis.
-tools: Read, Write, Edit, MultiEdit, Grep, Bash,
+tools: Read, Write, Edit, MultiEdit, Grep, Bash, WebFetch, WebSearch,
   supabase/execute_sql, supabase/list_tables
 model: sonnet
 memory: project

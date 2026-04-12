@@ -1,36 +1,7 @@
 ---
 name: "DB Architect"
 description: "[P2-INFRA DB] Arquitecto de base de datos Supabase/PostgreSQL de Patrimio. Diseña esquemas, crea migraciones production-grade con RLS, índices parciales, triggers y FK ON DELETE correcto. Puede aplicar migraciones vía Supabase MCP."
-tools:
-  [
-    read/readFile,
-    read/problems,
-    read/terminalSelection,
-    read/terminalLastCommand,
-    search/codebase,
-    search/fileSearch,
-    search/listDirectory,
-    search/textSearch,
-    edit/createFile,
-    edit/editFiles,
-    edit/createDirectory,
-    edit/rename,
-    run/runCommands,
-    run/createAndRunTask,
-    supabase/apply_migration,
-    supabase/execute_sql,
-    supabase/generate_typescript_types,
-    supabase/get_advisors,
-    supabase/list_tables,
-    supabase/list_migrations,
-    supabase/list_extensions,
-    supabase/get_logs,
-    supabase/deploy_edge_function,
-    supabase/list_edge_functions,
-    supabase/get_storage_config,
-    supabase/update_storage_config,
-    supabase/list_storage_buckets,
-  ]
+tools: [read, edit, execute, search, supabase/*]
 user-invocable: false
 ---
 

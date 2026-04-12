@@ -1,23 +1,7 @@
 ---
 description: "[P4-AUTOMATIZACIÓN] Categorizador automático de transacciones bancarias españolas. Activa automáticamente tras importar CSV/Excel. Confianza >85%=auto-asigna, 60-85%=sugiere, <60%=pregunta. Lee categorías de Supabase, crea reglas y actualiza archivos de categorización."
 name: "Auto Categorizer"
-tools:
-  [
-    read/readFile,
-    read/problems,
-    read/terminalSelection,
-    read/terminalLastCommand,
-    edit/editFiles,
-    edit/createFile,
-    edit/createDirectory,
-    run/runCommands,
-    search/codebase,
-    search/fileSearch,
-    search/listDirectory,
-    search/textSearch,
-    supabase/execute_sql,
-    supabase/list_tables,
-  ]
+tools: [read, edit, search, supabase/*]
 user-invocable: false
 ---
 
