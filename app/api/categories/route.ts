@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { CreateCategorySchema, UpdateCategorySchema } from "@/lib/categories/types";
+import * as Sentry from "@sentry/nextjs";
 
 export async function GET(request: NextRequest) {
   const supabase = await createClient();
@@ -45,6 +46,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ categories });
   } catch (routeError) {
+    Sentry.captureException(routeError);
     return NextResponse.json(
       { error: routeError instanceof Error ? routeError.message : "Internal server error" },
       { status: 500 },
@@ -87,6 +89,7 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (error) {
+    Sentry.captureException(error);
     console.error("Error creating category:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
@@ -135,6 +138,7 @@ export async function PATCH(req: NextRequest) {
     .single();
 
   if (error) {
+    Sentry.captureException(error);
     console.error("Error updating category:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
@@ -172,6 +176,7 @@ export async function DELETE(req: NextRequest) {
     .eq("user_id", user.id);
 
   if (error) {
+    Sentry.captureException(error);
     console.error("Error deleting category:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

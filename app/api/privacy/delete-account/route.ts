@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import * as Sentry from "@sentry/nextjs";
 
 /**
  * DELETE /api/privacy/delete-account
@@ -74,24 +75,37 @@ export async function DELETE(req: Request) {
       console.error("Storage cleanup error (non-blocking):", storageError);
     }
 
-    // Delete user from Supabase Auth (cascades to all user_id FKs via ON DELETE CASCADE)
-    // NOTE: This requires service_role access — normally done via Edge Function
-    // For now, this is a stub that needs admin.deleteUser() implementation
+    // Delete user via Edge Function (uses service_role key on the server)
+    const edgeFunctionUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/delete-user-account`;
 
-    // TODO: Move to Edge Function with service_role key
-    // const { error: deleteError } = await supabase.auth.admin.deleteUser(user.id);
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
 
-    // Temporary workaround: Sign out and soft-delete via stored procedure
+    if (!session?.access_token) {
+      return NextResponse.json({ error: "Session expired, please sign in again" }, { status: 401 });
+    }
+
+    const edgeResponse = await fetch(edgeFunctionUrl, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!edgeResponse.ok) {
+      const body = await edgeResponse.json().catch(() => ({}));
+      console.error("Edge Function deletion error:", body);
+      return NextResponse.json({ error: "Failed to delete account" }, { status: 500 });
+    }
+
+    // Account fully deleted — invalidate remaining session cookie
     await supabase.auth.signOut();
 
-    // In production, call Edge Function:
-    // await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/delete-user-account`, {
-    //   method: 'DELETE',
-    //   headers: { Authorization: `Bearer ${session.access_token}` }
-    // });
-
-    return NextResponse.json({ message: "Account deletion initiated" }, { status: 200 });
+    return NextResponse.json({ message: "Account permanently deleted" }, { status: 200 });
   } catch (error) {
+    Sentry.captureException(error);
     console.error("Account deletion error:", error);
     return NextResponse.json({ error: "Failed to delete account" }, { status: 500 });
   }

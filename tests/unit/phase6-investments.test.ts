@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   buildExchangeRateMap,
   buildPositionLedger,
+  calculateAnnualDividendIncomeCents,
   calculateUnrealizedPlPercent,
   calculateOperationTotalCents,
   convertCents,
@@ -60,6 +61,29 @@ describe("phase 6 investment calculations", () => {
     expect(parseQuantityInput("12,345678")).toBeCloseTo(12.345678);
   });
 
+  it("throws on empty quantity input", () => {
+    expect(() => parseQuantityInput("")).toThrow("Invalid number format");
+  });
+
+  it("throws when quantity has too many decimal digits (>8)", () => {
+    expect(() => parseQuantityInput("1.123456789")).toThrow("Invalid number format");
+  });
+
+  it("throws when quantity is zero or negative", () => {
+    expect(() => parseQuantityInput("0")).toThrow();
+  });
+
+  it("returns feeCents directly for fee operation type", () => {
+    expect(
+      calculateOperationTotalCents({
+        feeCents: 500,
+        operationType: "fee",
+        priceCents: 0,
+        quantity: 0,
+      }),
+    ).toBe(500);
+  });
+
   it("builds correct totals for buy, sell, dividend and split operations", () => {
     expect(
       calculateOperationTotalCents({
@@ -112,6 +136,22 @@ describe("phase 6 investment calculations", () => {
     expect(calculateUnrealizedPlPercent(125_000, 100_000)).toBe(25);
   });
 
+  it("returns null when invested capital is zero (numeric form)", () => {
+    expect(calculateUnrealizedPlPercent(100_000, 0)).toBeNull();
+  });
+
+  it("accepts object form and returns percent when invested > 0", () => {
+    expect(
+      calculateUnrealizedPlPercent({ currentValueCents: 125_000, totalInvestedCents: 100_000 }),
+    ).toBe(25);
+  });
+
+  it("returns null from object form when invested is zero", () => {
+    expect(
+      calculateUnrealizedPlPercent({ currentValueCents: 100_000, totalInvestedCents: 0 }),
+    ).toBeNull();
+  });
+
   it("resolves fx rates using direct or inverse pairs", () => {
     const fxMap = buildExchangeRateMap([
       { base_currency: "USD", quote_currency: "EUR", rate_value: 0.92 },
@@ -133,6 +173,41 @@ describe("phase 6 investment calculations", () => {
         fromCurrency: "EUR",
         rates: fxMap,
         toCurrency: "USD",
+      }),
+    ).toBe(100_000);
+  });
+
+  it("returns amountCents unchanged when currency pair is the same", () => {
+    const rates = buildExchangeRateMap([]);
+    expect(
+      convertCents({ amountCents: 10_000, fromCurrency: "EUR", toCurrency: "EUR", rates }),
+    ).toBe(10_000);
+  });
+
+  it("returns amountCents unchanged when no rate is available", () => {
+    const emptyRates = buildExchangeRateMap([]);
+    expect(
+      convertCents({
+        amountCents: 10_000,
+        fromCurrency: "CHF",
+        toCurrency: "EUR",
+        rates: emptyRates,
+      }),
+    ).toBe(10_000);
+  });
+
+  it("uses inverse rate when no direct rate exists", () => {
+    const ratesOnlyInverse = buildExchangeRateMap([
+      { base_currency: "USD", quote_currency: "EUR", rate_value: 0.92 },
+      // No direct EUR:USD rate
+    ]);
+    // EUR → USD: no direct, inverse USD:EUR = 0.92 → Math.round(92_000 / 0.92) = 100_000
+    expect(
+      convertCents({
+        amountCents: 92_000,
+        fromCurrency: "EUR",
+        toCurrency: "USD",
+        rates: ratesOnlyInverse,
       }),
     ).toBe(100_000);
   });
@@ -299,5 +374,35 @@ describe("buildPositionLedger", () => {
     expect(result.sales).toHaveLength(2);
     expect(result.total_invested_cents).toBe(0);
     expect(result.avg_purchase_price_cents).toBe(0);
+  });
+
+  it("sell on empty position (quantity=0) does not affect ledger", () => {
+    const result = buildPositionLedger([
+      makeOp({ id: "s1", operation_type: "sell", quantity: 5, total_cents: 50_000 }),
+    ]);
+    expect(result.quantity).toBe(0);
+    expect(result.realized_pl_cents).toBe(0);
+    expect(result.sales).toHaveLength(0);
+  });
+
+  it("split on empty position does not change quantity", () => {
+    const result = buildPositionLedger([
+      makeOp({ id: "sp1", operation_type: "split", quantity: 2, total_cents: 0 }),
+    ]);
+    expect(result.quantity).toBe(0);
+  });
+});
+
+describe("calculateAnnualDividendIncomeCents", () => {
+  it("returns 0 when quantity is zero", () => {
+    expect(calculateAnnualDividendIncomeCents(0, 320)).toBe(0);
+  });
+
+  it("returns 0 when annual dividend per share is zero", () => {
+    expect(calculateAnnualDividendIncomeCents(10, 0)).toBe(0);
+  });
+
+  it("returns the correct annual income for positive inputs", () => {
+    expect(calculateAnnualDividendIncomeCents(100, 320)).toBe(32_000);
   });
 });

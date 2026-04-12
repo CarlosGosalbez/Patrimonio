@@ -16,7 +16,7 @@ npx playwright show-report  # Ver último reporte HTML
 
 ## Estructura del proyecto de tests
 
-```
+```test
 tests/
 ├── unit/
 │   ├── alerts/               # Schemas de alertas
@@ -109,23 +109,21 @@ describe("miFunction", () => {
 });
 ```
 
-3. **Si necesitas Supabase:** mock con `vi.stubGlobal("fetch", vi.fn()...)` o:
+1. Si necesitas **Supabase:** mock con `vi.stubGlobal("fetch", vi.fn()...)` o:
 
 ```typescript
 vi.mock("@/lib/supabase/client", () => ({
   createBrowserClient: vi.fn().mockReturnValue({
     auth: { getUser: vi.fn().mockResolvedValue({ data: { user: { id: "uid-1" } }, error: null }) },
-    from: vi
-      .fn()
-      .mockReturnValue({
-        select: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockResolvedValue({ data: [], error: null }),
-      }),
+    from: vi.fn().mockReturnValue({
+      select: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockResolvedValue({ data: [], error: null }),
+    }),
   }),
 }));
 ```
 
-4. **Si necesitas Anthropic AI SDK:**
+1. Si necesitas **Anthropic AI SDK:**
 
 ```typescript
 vi.mock("ai", () => ({
@@ -137,7 +135,7 @@ vi.mock("ai", () => ({
 vi.mock("@ai-sdk/anthropic", () => ({ anthropic: () => "mock-model" }));
 ```
 
-5. Ejecutar `npm run test:coverage` y verificar cobertura ≥ 80%.
+1. Ejecutar `npm run test:coverage` y verificar cobertura ≥ 80%.
 
 ### E2E test (Playwright)
 
@@ -160,8 +158,8 @@ async function login(page: Page) {
 }
 ```
 
-3. Cubrir siempre: auth guard (sin auth → 401), happy path autenticado, validación de formulario.
-4. Plataformas: Desktop Chrome + iPhone 14 (configuradas en `playwright.config.ts`).
+1. Cubrir siempre: auth guard (sin auth → 401), happy path autenticado, validación de formulario.
+2. Plataformas: Desktop Chrome + iPhone 14 (configuradas en `playwright.config.ts`).
 
 ## Tests de seguridad (OWASP Top 10)
 

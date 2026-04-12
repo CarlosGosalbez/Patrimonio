@@ -3,8 +3,11 @@ import {
   centsToDec,
   decToCents,
   formatCents,
+  formatChangeNarrative,
+  formatCompact,
   formatCurrency,
   formatCurrencyCompact,
+  formatDate,
   formatPercent,
   formatPercentChange,
   parseInputToCents,
@@ -89,6 +92,59 @@ describe("financial formatters", () => {
 
     it("throws on invalid input", () => {
       expect(() => parseInputToCents("abc")).toThrow("Invalid number format");
+    });
+
+    it("throws on empty string", () => {
+      expect(() => parseInputToCents("")).toThrow("Invalid number format");
+    });
+
+    it("parses integer-only input without decimal separator", () => {
+      expect(parseInputToCents("100")).toBe(10000);
+    });
+
+    it("throws when decimal part exceeds two digits", () => {
+      expect(() => parseInputToCents("1.2345")).toThrow("Invalid number format");
+    });
+  });
+
+  describe("formatDate", () => {
+    it("long format returns a string containing the year", () => {
+      const result = formatDate("2026-04-01", "long");
+      expect(typeof result).toBe("string");
+      expect(result).toContain("2026");
+    });
+
+    it("full format is longer than short format", () => {
+      const shortResult = formatDate("2026-04-01", "short");
+      const fullResult = formatDate("2026-04-01", "full");
+      expect(fullResult.length).toBeGreaterThan(shortResult.length);
+    });
+  });
+
+  describe("formatChangeNarrative", () => {
+    it('returns "sin cambios" for zero', () => {
+      expect(formatChangeNarrative(0)).toBe("sin cambios");
+    });
+
+    it("reports ha aumentado for positive values", () => {
+      expect(formatChangeNarrative(5.5)).toMatch(/aumentado/);
+    });
+
+    it("reports ha disminuido for negative values", () => {
+      expect(formatChangeNarrative(-3.2)).toMatch(/disminuido/);
+    });
+  });
+
+  describe("formatCompact", () => {
+    it("formats large numbers compactly", () => {
+      const result = formatCompact(1_500_000);
+      expect(typeof result).toBe("string");
+      expect(result.length).toBeLessThan(15);
+    });
+
+    it("formats small numbers without omitting digits", () => {
+      const result = formatCompact(500);
+      expect(result).toContain("5");
     });
   });
 });

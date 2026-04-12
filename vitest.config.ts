@@ -31,8 +31,8 @@ export default defineConfig({
       thresholds: {
         lines: 80,
         functions: 80,
-        // branches: parser.ts (CSV bancario multi-formato) tiene 50% — requiere fixtures reales
-        branches: 65,
+        statements: 80,
+        branches: 75,
       },
     },
   },

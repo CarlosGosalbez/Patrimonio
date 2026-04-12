@@ -67,4 +67,20 @@ describe("calculateCompoundInterest", () => {
     const lastMonth = result.monthlyBreakdown[result.monthlyBreakdown.length - 1];
     expect(lastMonth.endBalanceCents).toBe(result.finalBalanceCents);
   });
+
+  it("calculates fractional year (18 months) with annual capitalization — covers monthly interest branch", () => {
+    // 18 months at 5% annual rate, capitalized annually (n=1)
+    // The monthly interest calculation hits: Math.round(startBalance * (Math.pow(1 + rate/n, n/12) - 1))
+    const result = calculateCompoundInterest(100000, 0.05, 18, "annual");
+
+    expect(result.monthlyBreakdown).toHaveLength(18);
+    expect(result.finalBalanceCents).toBeGreaterThan(100000);
+    // After 18 months at 5% annual ≈ 107.5% of principal
+    expect(result.finalBalanceCents).toBeGreaterThan(107000);
+    expect(result.finalBalanceCents).toBeLessThan(110000);
+    // Each month should have positive interest
+    for (const month of result.monthlyBreakdown) {
+      expect(month.interestCents).toBeGreaterThan(0);
+    }
+  });
 });

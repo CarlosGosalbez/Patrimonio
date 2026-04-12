@@ -199,6 +199,141 @@ describe("detectDuplicateRowsInFile", () => {
   });
 });
 
+describe("detectPossibleDuplicate — reason branches", () => {
+  const baseRow = {
+    amount_cents: 999,
+    external_id: null,
+    is_income: false,
+    merchant_key: null,
+    notes: null,
+    source_row_index: 0,
+    value_date: null,
+  };
+
+  it("returns reason=fuzzy_date when similarity >= 0.75 and dayDistance > 0", () => {
+    // "LIDL COMPRA" vs "LIDL" — substring match => similarity 0.92, dayDistance = 1
+    const candidate = detectPossibleDuplicate(
+      "account-1",
+      { ...baseRow, description: "LIDL COMPRA", transaction_date: "2026-04-01" },
+      [
+        {
+          account_id: "account-1",
+          amount_cents: 999,
+          description: "LIDL",
+          id: "tx-fuzzy-date",
+          transaction_date: "2026-04-02",
+        },
+      ],
+    );
+
+    expect(candidate).not.toBeNull();
+    expect(candidate?.reason).toBe("fuzzy_date");
+    expect(candidate?.existing_id).toBe("tx-fuzzy-date");
+  });
+
+  it("returns reason=fuzzy_description when similarity >= 0.75, < 0.95 and dayDistance === 0", () => {
+    // "NETFLIX SPAIN ES" contains "NETFLIX" → similarity = 0.92 (substring branch), dayDistance = 0
+    // 0.92 >= 0.75 ✓, 0.92 < 0.95 ✓, dayDistance === 0 → reason = "fuzzy_description"
+    const candidate = detectPossibleDuplicate(
+      "account-1",
+      { ...baseRow, description: "NETFLIX SPAIN ES", transaction_date: "2026-04-01" },
+      [
+        {
+          account_id: "account-1",
+          amount_cents: 999,
+          description: "NETFLIX",
+          id: "tx-fuzzy-desc",
+          transaction_date: "2026-04-01",
+        },
+      ],
+    );
+
+    expect(candidate).not.toBeNull();
+    expect(candidate?.reason).toBe("fuzzy_description");
+    expect(candidate?.existing_id).toBe("tx-fuzzy-desc");
+  });
+
+  it("returns null when similarity < 0.75", () => {
+    const candidate = detectPossibleDuplicate(
+      "account-1",
+      { ...baseRow, description: "MERCADONA COMPRA SEMANAL", transaction_date: "2026-04-01" },
+      [
+        {
+          account_id: "account-1",
+          amount_cents: 999,
+          description: "SPOTIFY PREMIUM",
+          id: "tx-no-match",
+          transaction_date: "2026-04-01",
+        },
+      ],
+    );
+
+    expect(candidate).toBeNull();
+  });
+});
+
+describe("detectUnexpectedCharge — date comparison branch", () => {
+  const baseRow = {
+    amount_cents: 1299,
+    external_id: null,
+    is_income: false,
+    merchant_key: null,
+    notes: null,
+    source_row_index: 0,
+    value_date: null,
+  };
+
+  it("returns null when transaction_date is before or equal to cancelled_at (expected charge)", () => {
+    // Transaction is BEFORE cancellation — charge was expected
+    const result = detectUnexpectedCharge(
+      { ...baseRow, description: "NETFLIX ES", transaction_date: "2026-03-10" },
+      [
+        {
+          cancelled_at: "2026-03-15T00:00:00+00:00",
+          id: "commitment-2",
+          name: "Netflix",
+          service_name: "Netflix",
+        },
+      ],
+    );
+
+    expect(result).toBeNull();
+  });
+});
+
+describe("suggestCategory — merchant hint with no matching user category", () => {
+  it("returns category_id null when merchant matches hint but no user category name matches", () => {
+    // Merchant "MERCADONA" matches the grocery hint, but user has no category matching /alimentac/i
+    const suggestion = suggestCategory(
+      {
+        amount_cents: 4990,
+        description: "MERCADONA SUPERMERCADO",
+        external_id: null,
+        is_income: false,
+        merchant_key: "mercadona",
+        notes: null,
+        source_row_index: 0,
+        transaction_date: "2026-04-01",
+        value_date: null,
+      },
+      [], // no user rules
+      [
+        {
+          color: null,
+          icon: null,
+          id: "cat-transport",
+          is_income: false,
+          name: "Transporte",
+          user_id: "user-1",
+        },
+      ], // no category matching "alimentac/i" or "supermercado/i"
+    );
+
+    expect(suggestion.category_id).toBeNull();
+    expect(suggestion.source).toBeNull();
+  });
+});
+
 describe("suggestCategory — additional branches", () => {
   const baseRow = {
     amount_cents: 1299,

@@ -15,14 +15,7 @@ memory: project
 skills:
   - context-optimizer
   - ui-ux-pro-max
-tools:
-  Read, Write, Edit, MultiEdit, Grep, Glob, Bash, WebFetch, WebSearch, TodoRead, TodoWrite, Task,
-  supabase/apply_migration, supabase/execute_sql, supabase/generate_typescript_types,
-  supabase/get_advisors, supabase/list_tables, supabase/list_migrations, supabase/get_logs,
-  supabase/list_extensions, supabase/list_edge_functions, supabase/deploy_edge_function,
-  supabase/get_project_url, supabase/list_storage_buckets, supabase/create_branch,
-  supabase/list_branches, supabase/merge_branch, supabase/delete_branch, supabase/reset_branch,
-  supabase/rebase_branch, supabase/get_storage_config, supabase/update_storage_config
+tools: execute/runNotebookCell, execute/testFailure, execute/getTerminalOutput, execute/killTerminal, execute/sendToTerminal, execute/createAndRunTask, execute/runInTerminal, read/getNotebookSummary, read/readFile, edit/createDirectory, edit/createFile, edit/createJupyterNotebook, edit/editFiles, edit/editNotebook, search/fileSearch, search/textSearch, sentry/analyze_issue_with_seer, sentry/create_dsn, sentry/create_project, sentry/create_team, sentry/find_dsns, sentry/find_organizations, sentry/find_projects, sentry/find_releases, sentry/find_teams, sentry/get_doc, sentry/get_event_attachment, sentry/get_issue_tag_values, sentry/get_profile_details, sentry/get_replay_details, sentry/get_sentry_resource, sentry/search_docs, sentry/search_events, sentry/search_issue_events, sentry/search_issues, sentry/update_issue, sentry/update_project, sentry/whoami
 initialPrompt: >
   Patrimio dev session active. Describe what you want to build or fix —
   in plain Spanish — and I'll handle everything: DB, code, security, tests, deploy.

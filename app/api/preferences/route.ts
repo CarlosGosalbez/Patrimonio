@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { PreferencesSchema, DEFAULT_PREFERENCES } from "@/lib/preferences/types";
 import { NextResponse } from "next/server";
 import type { Database } from "@/types/database";
+import * as Sentry from "@sentry/nextjs";
 
 type UserPreferencesRow = Database["public"]["Tables"]["user_preferences"]["Row"];
 
@@ -54,6 +55,7 @@ export async function GET() {
 
     return NextResponse.json(data);
   } catch (error) {
+    Sentry.captureException(error);
     console.error("Unexpected error in GET /api/preferences:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
@@ -101,6 +103,7 @@ export async function PATCH(req: Request) {
 
     return NextResponse.json(data);
   } catch (error) {
+    Sentry.captureException(error);
     console.error("Unexpected error in PATCH /api/preferences:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }

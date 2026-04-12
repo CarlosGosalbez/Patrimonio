@@ -368,3 +368,72 @@ export function buildAnnualExcel(
 
   return XLSX.write(wb, { type: "buffer", bookType: "xlsx" }) as Buffer;
 }
+
+// ─────────────────────────────────────────────────────────────
+// Account-level Transaction Export
+// ─────────────────────────────────────────────────────────────
+
+export function buildAccountExcel(
+  accountName: string,
+  transactions: Array<{
+    transaction_date: string;
+    description: string;
+    amount_cents: number;
+    is_income: boolean;
+    currency: string;
+    notes: string | null;
+    category?: { name: string } | null;
+  }>,
+): Buffer {
+  const wb = XLSX.utils.book_new();
+
+  const totalIncomeCents = transactions
+    .filter((t) => t.is_income)
+    .reduce((sum, t) => sum + t.amount_cents, 0);
+  const totalExpensesCents = transactions
+    .filter((t) => !t.is_income)
+    .reduce((sum, t) => sum + t.amount_cents, 0);
+
+  // ── SHEET 1: Resumen ─────────────────────────────────────
+  const summaryData = [
+    ["Informe de cuenta — Patrimio", accountName],
+    ["Generado el", formatDate(new Date().toISOString().slice(0, 10))],
+    [],
+    ["Concepto", "Importe (€)"],
+    ["Total ingresos", currencyCell(totalIncomeCents)],
+    ["Total gastos", currencyCell(totalExpensesCents)],
+    ["Balance neto", currencyCell(totalIncomeCents - totalExpensesCents)],
+    [],
+    ["Total transacciones", transactions.length],
+  ];
+
+  const wsSummary = XLSX.utils.aoa_to_sheet(summaryData);
+  wsSummary["!cols"] = [{ wch: 22 }, { wch: 20 }];
+  XLSX.utils.book_append_sheet(wb, wsSummary, "Resumen");
+
+  // ── SHEET 2: Transacciones ────────────────────────────────
+  const txHeader = ["Fecha", "Tipo", "Descripción", "Categoría", "Importe (€)", "Moneda", "Notas"];
+  const txRows = transactions.map((t) => [
+    formatDate(t.transaction_date),
+    t.is_income ? "Ingreso" : "Gasto",
+    t.description,
+    t.category?.name ?? "—",
+    t.is_income ? currencyCell(t.amount_cents) : -currencyCell(t.amount_cents),
+    t.currency,
+    t.notes ?? "",
+  ]);
+
+  const wsTx = XLSX.utils.aoa_to_sheet([txHeader, ...txRows]);
+  wsTx["!cols"] = [
+    { wch: 12 },
+    { wch: 10 },
+    { wch: 36 },
+    { wch: 20 },
+    { wch: 14 },
+    { wch: 8 },
+    { wch: 24 },
+  ];
+  XLSX.utils.book_append_sheet(wb, wsTx, "Transacciones");
+
+  return XLSX.write(wb, { type: "buffer", bookType: "xlsx" }) as Buffer;
+}

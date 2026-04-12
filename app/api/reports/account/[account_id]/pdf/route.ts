@@ -14,12 +14,20 @@ export async function GET(req: Request, { params }: { params: Promise<{ account_
 
   const { account_id } = await params;
 
-  // TODO: Implement with @react-pdf/renderer
-  // For now, return placeholder
-  return new NextResponse("PDF generation not yet implemented. Use Excel export.", {
-    status: 501,
-    headers: {
-      "Content-Type": "text/plain",
+  // PDF generation requires @react-pdf/renderer which is not yet installed.
+  // Use the Excel endpoint as alternative.
+  return new NextResponse(
+    JSON.stringify({
+      error: "PDF export not yet available",
+      alternative: `/api/reports/account/${account_id}/excel`,
+    }),
+    {
+      status: 501,
+      headers: {
+        "Content-Type": "application/json",
+        "X-Alternative-Format": "xlsx",
+        "X-Alternative-Url": `/api/reports/account/${account_id}/excel`,
+      },
     },
-  });
+  );
 }

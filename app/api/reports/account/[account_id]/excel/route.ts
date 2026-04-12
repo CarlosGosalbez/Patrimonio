@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { buildAccountExcel } from "@/lib/reports/excel";
+import * as Sentry from "@sentry/nextjs";
 
 export async function GET(req: Request, { params }: { params: Promise<{ account_id: string }> }) {
   const supabase = await createClient();
@@ -14,15 +16,47 @@ export async function GET(req: Request, { params }: { params: Promise<{ account_
 
   const { account_id } = await params;
 
-  // TODO: Implement with xlsx library
-  // For now, return CSV stub
-  const csv = `Account Report\nAccount ID: ${account_id}\nGenerated: ${new Date().toISOString()}\n\nNote: Excel generation not yet implemented.`;
+  try {
+    // Verify account belongs to user (RLS enforces this, but explicit check for clarity)
+    const { data: account, error: accountError } = await supabase
+      .from("accounts")
+      .select("id,name")
+      .eq("id", account_id)
+      .is("deleted_at", null)
+      .single();
 
-  return new NextResponse(csv, {
-    status: 200,
-    headers: {
-      "Content-Type": "text/csv",
-      "Content-Disposition": `attachment; filename="account-${account_id}-report.csv"`,
-    },
-  });
+    if (accountError || !account) {
+      return NextResponse.json({ error: "Account not found" }, { status: 404 });
+    }
+
+    // Fetch transactions for the account
+    const { data: transactions, error: txError } = await supabase
+      .from("transactions")
+      .select(
+        "transaction_date,description,amount_cents,is_income,currency,notes,category:categories(name)",
+      )
+      .eq("account_id", account_id)
+      .is("deleted_at", null)
+      .order("transaction_date", { ascending: false });
+
+    if (txError) {
+      Sentry.captureException(txError);
+      return NextResponse.json({ error: "Failed to fetch transactions" }, { status: 500 });
+    }
+
+    const buffer = buildAccountExcel(account.name, transactions ?? []);
+    const fileName = `patrimio-cuenta-${account.name.replace(/[^a-zA-Z0-9]/g, "-")}-${Date.now()}.xlsx`;
+
+    return new NextResponse(buffer, {
+      status: 200,
+      headers: {
+        "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "Content-Disposition": `attachment; filename="${fileName}"`,
+        "Cache-Control": "private, no-cache, no-store, must-revalidate",
+      },
+    });
+  } catch (error) {
+    Sentry.captureException(error);
+    return NextResponse.json({ error: "Failed to generate report" }, { status: 500 });
+  }
 }

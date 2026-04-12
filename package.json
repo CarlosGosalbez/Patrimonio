@@ -16,7 +16,9 @@
     "prepare": "husky",
     "db:push": "supabase db push",
     "db:types": "supabase gen types typescript --linked > types/database.ts",
-    "db:diff": "supabase db diff"
+    "db:diff": "supabase db diff",
+    "functions:deploy": "supabase functions deploy --project-ref febokmcgjatrfdfuaeyk --use-api",
+    "functions:deploy:delete-account": "supabase functions deploy delete-user-account --project-ref febokmcgjatrfdfuaeyk --use-api"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.66",

@@ -4,6 +4,7 @@ import {
   buildMonthlyTrendCards,
   buildSeriesBuckets,
   calculateSavingsRate,
+  calculateStdDev,
   detectSpendingAnomalies,
 } from "@/lib/analytics/calculations";
 import {
@@ -124,6 +125,57 @@ describe("phase 5 financial calculations", () => {
       expect(cards).toHaveLength(1);
       expect(cards[0]?.average_3m_cents).toBe(11_000);
       expect(cards[0]?.delta_percent).toBeGreaterThan(60);
+    });
+  });
+
+  describe("calculateStdDev", () => {
+    it("returns 0 for empty array", () => {
+      expect(calculateStdDev([])).toBe(0);
+    });
+
+    it("computes standard deviation for a known dataset", () => {
+      expect(calculateStdDev([9, 10, 11, 10])).toBeCloseTo(0.707, 2);
+    });
+  });
+
+  describe("detectSpendingAnomalies — no-anomaly paths", () => {
+    it("returns empty array when history has fewer than 3 non-zero values", () => {
+      const result = detectSpendingAnomalies([
+        {
+          category_color: "#ef4444",
+          category_id: "restaurants",
+          category_name: "Restaurantes",
+          current_month_cents: 15_000,
+          monthly_totals: [10_000, 0, 0], // only 1 non-zero
+        },
+      ]);
+      expect(result).toHaveLength(0);
+    });
+
+    it("returns empty array when current spending does not exceed the mean", () => {
+      const result = detectSpendingAnomalies([
+        {
+          category_color: "#ef4444",
+          category_id: "groceries",
+          category_name: "Supermercado",
+          current_month_cents: 9_000, // below mean of 10_000
+          monthly_totals: [10_000, 10_000, 10_000, 10_000],
+        },
+      ]);
+      expect(result).toHaveLength(0);
+    });
+
+    it("returns empty array when stdDev is 0 (all identical values)", () => {
+      const result = detectSpendingAnomalies([
+        {
+          category_color: "#ef4444",
+          category_id: "rent",
+          category_name: "Alquiler",
+          current_month_cents: 120_000,
+          monthly_totals: [100_000, 100_000, 100_000],
+        },
+      ]);
+      expect(result).toHaveLength(0);
     });
   });
 
