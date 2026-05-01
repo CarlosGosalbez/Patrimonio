@@ -101,10 +101,11 @@ catch {
 
 # 5. Environment Variables Check
 Write-Host "`n[5/5] Environment variables..." -ForegroundColor Yellow
+# Only check build-time variables (NEXT_PUBLIC_*)
+# SUPABASE_SERVICE_ROLE_KEY is runtime-only (Vercel env vars), not needed for build
 $requiredVars = @(
     "NEXT_PUBLIC_SUPABASE_URL",
-    "NEXT_PUBLIC_SUPABASE_ANON_KEY",
-    "SUPABASE_SERVICE_ROLE_KEY"
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY"
 )
 
 $missingVars = @()

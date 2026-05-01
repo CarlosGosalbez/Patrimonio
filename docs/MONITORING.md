@@ -95,7 +95,15 @@ Verifica:
 - ✅ ESLint validation (0 warnings)
 - ✅ Production build (successful)
 - ✅ Security audit (no HIGH/CRITICAL)
-- ✅ Environment variables (all present)
+- ✅ Environment variables (build-time only: `NEXT_PUBLIC_*`)
+
+**Nota importante sobre variables de entorno:**
+
+El script verifica SOLO las variables necesarias para el **build** (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`). Las variables de **runtime** como `SUPABASE_SERVICE_ROLE_KEY` NO se verifican porque:
+
+- Solo existen en Vercel (no en GitHub Actions ni localmente en todos los casos)
+- Solo se usan en API routes en runtime, no en build-time
+- Referencia: [docs/GITHUB_SECRETS.md](./GITHUB_SECRETS.md#L45-L57)
 
 **Exit codes:**
 
