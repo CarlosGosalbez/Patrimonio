@@ -2,9 +2,9 @@ name: Production Deploy
 
 on:
     workflow_run:
-        workflows: [CI]
-        types: [completed]
-        branches: [main]
+        workflows: [ CI ]
+        types: [ completed ]
+        branches: [ main ]
 
 # Only one production deploy at a time
 concurrency:
@@ -12,9 +12,42 @@ concurrency:
     cancel-in-progress: false
 
 jobs:
+    pre-deploy-verification:
+        name: Pre-Deploy Verification
+        runs-on: ubuntu-latest
+        if: github.event.workflow_run.conclusion == 'success'
+        env:
+            NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+            NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+            NEXT_PUBLIC_APP_URL: ${{ vars.NEXT_PUBLIC_APP_URL }}
+            NEXT_PUBLIC_SENTRY_DSN: ${{ vars.NEXT_PUBLIC_SENTRY_DSN }}
+            SENTRY_ORG: ${{ vars.SENTRY_ORG }}
+            SENTRY_PROJECT: ${{ vars.SENTRY_PROJECT }}
+            SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        steps:
+            - uses: actions/checkout@v6
+            - uses: actions/setup-node@v6
+              with:
+                  node-version: "20"
+                  cache: "npm"
+            - run: npm ci
+            - name: Run pre-deploy verification
+              run: |
+                  echo "🔍 Pre-Deploy Verification"
+                  echo "[1/4] TypeScript compilation..."
+                  npm run type-check
+                  echo "[2/4] ESLint validation..."
+                  npm run lint
+                  echo "[3/4] Production build..."
+                  npm run build
+                  echo "[4/4] Security audit..."
+                  npm audit --audit-level=high || true
+                  echo "✅ Pre-deploy verification PASSED"
+
     deploy:
         name: Deploy to Vercel
         runs-on: ubuntu-latest
+        needs: [ pre-deploy-verification ]
         if: github.event.workflow_run.conclusion == 'success'
         environment: production
         steps:
@@ -33,7 +66,7 @@ jobs:
     smoke-tests:
         name: Smoke Tests
         runs-on: ubuntu-latest
-        needs: [deploy]
+        needs: [ deploy ]
         steps:
             - uses: actions/checkout@v6
             - uses: actions/setup-node@v6
@@ -53,7 +86,7 @@ jobs:
     sentry-release:
         name: Sentry Release
         runs-on: ubuntu-latest
-        needs: [deploy]
+        needs: [ deploy ]
         steps:
             - uses: actions/checkout@v6
               with:
