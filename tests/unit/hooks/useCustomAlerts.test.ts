@@ -13,19 +13,33 @@ const mockAlertsResponse = {
   alerts: [
     {
       id: "alert-1",
-      title: "Renovación Seguro Coche",
+      user_id: "user-1",
+      name: "Renovación Seguro Coche",
+      description: null,
       due_date: "2026-05-15",
-      alert_days_before: 30,
+      advance_notice_days: 30,
+      recurrence: "monthly" as const,
+      expected_amount_cents: null,
+      currency: "EUR",
+      category_id: null,
+      category: null,
       is_active: true,
-      is_predefined: false,
-      snoozed_until: null,
-      category: "insurance",
-      notes: null,
+      auto_deactivate: false,
+      dismissed_until: null,
+      created_at: "2026-04-01T00:00:00Z",
+      updated_at: "2026-04-01T00:00:00Z",
+      deleted_at: null,
+      next_due_date: "2026-05-15",
+      severity: "warning" as const,
+      is_snoozed: false,
+      is_system_default: false,
+      is_paid_for_cycle: false,
     },
   ],
   preferences: {
     weekly_alert_digest_enabled: true,
   },
+  upcoming_deadlines: [],
 };
 
 function makeWrapper() {
@@ -57,7 +71,7 @@ describe("useCustomAlertsOverviewQuery", () => {
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(result.current.data?.alerts).toHaveLength(1);
-    expect(result.current.data?.alerts[0].title).toBe("Renovación Seguro Coche");
+    expect(result.current.data?.alerts[0].name).toBe("Renovación Seguro Coche");
   });
 
   it("returns error state on API failure", async () => {

@@ -13,22 +13,32 @@ const mockBudgetsResponse = {
   budgets: [
     {
       id: "budget-1",
+      user_id: "user-1",
       category_id: "cat-1",
-      category_name: "Alimentación",
-      category_color: "#22c55e",
+      category: {
+        id: "cat-1",
+        name: "Alimentación",
+        color: "#22c55e",
+        icon: null,
+      },
       limit_cents: 50000,
       spent_cents: 30000,
       available_cents: 20000,
       progress_percent: 60,
       progress_ratio: 0.6,
-      status: "ok",
+      status: "ok" as const,
       alert_threshold: 80,
       threshold_reached: false,
-      period: "monthly",
+      period: "monthly" as const,
       currency: "EUR",
       start_date: "2026-04-01",
       end_date: null,
       is_active: true,
+      created_at: "2026-04-01T00:00:00Z",
+      updated_at: "2026-04-01T00:00:00Z",
+      deleted_at: null,
+      comparison_delta_percent: 5,
+      history: [],
     },
   ],
 };
@@ -62,7 +72,7 @@ describe("useBudgetsOverviewQuery", () => {
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(result.current.data?.budgets).toHaveLength(1);
-    expect(result.current.data?.budgets[0].category_name).toBe("Alimentación");
+    expect(result.current.data?.budgets[0].category?.name).toBe("Alimentación");
   });
 
   it("returns error state when API fails", async () => {
@@ -90,7 +100,7 @@ describe("useCreateBudgetMutation", () => {
   it("calls POST /api/budgets with payload", async () => {
     const mockFetch = vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => ({ budget: { id: "new-budget", ...mockBudgetsResponse.budgets[0] } }),
+      json: async () => ({ budget: { ...mockBudgetsResponse.budgets[0], id: "new-budget" } }),
       headers: { get: () => "application/json" },
     });
     vi.stubGlobal("fetch", mockFetch);

@@ -161,14 +161,16 @@ function inferType(value: string) {
   return null;
 }
 
-function normalizeMerchantKey(description: string) {
-  return normalizeHeader(description)
+function normalizeMerchantKey(description: string): string | null {
+  const key = normalizeHeader(description)
     .toLowerCase()
     .replace(/[^\p{L}\p{N}\s]/gu, " ")
     .split(/\s+/)
     .filter((token) => token.length >= 3)
     .slice(0, 3)
     .join(" ");
+
+  return key || null;
 }
 
 function getTextScore(values: string[]) {

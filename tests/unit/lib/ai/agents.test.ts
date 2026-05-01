@@ -68,10 +68,8 @@ describe("detectSpendingAnomalies", () => {
 
     const anomalies = detectSpendingAnomalies(series);
     const anomaly = anomalies.find((a) => a.category_id === "cat-2");
-    // Either no anomaly or anomaly marked as false
-    if (anomaly) {
-      expect(anomaly.is_anomaly).toBe(false);
-    }
+    // Consistent spending should not produce anomalies
+    expect(anomaly).toBeUndefined();
   });
 
   it("handles empty series without throwing", () => {

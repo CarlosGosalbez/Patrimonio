@@ -33,7 +33,7 @@ export interface NormalizedImportRowInput {
   description: string;
   external_id: string | null;
   is_income: boolean;
-  merchant_key: string;
+  merchant_key: string | null;
   notes: string | null;
   source_row_index: number;
   transaction_date: string;

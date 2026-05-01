@@ -47,7 +47,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ account_
     const buffer = buildAccountExcel(account.name, transactions ?? []);
     const fileName = `patrimio-cuenta-${account.name.replace(/[^a-zA-Z0-9]/g, "-")}-${Date.now()}.xlsx`;
 
-    return new NextResponse(buffer, {
+    return new NextResponse(new Uint8Array(buffer), {
       status: 200,
       headers: {
         "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
