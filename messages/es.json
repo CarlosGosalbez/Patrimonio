@@ -295,6 +295,7 @@
       "title": "Archivo del extracto",
       "dropzone": "Arrastra el fichero aquí o selecciónalo desde el dispositivo",
       "formats": "Formatos soportados: XLSX, XLS, CSV, OFX y QIF",
+      "selectFile": "Seleccionar archivo",
       "detectedBank": "Banco detectado: {bank}",
       "rows": "filas detectadas"
     },

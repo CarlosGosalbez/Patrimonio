@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import { Download, LineChart, PiggyBank, Siren, Target } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
@@ -70,7 +70,7 @@ function getBudgetRuleTone(status: "over" | "under" | "within") {
   }
 }
 
-function MetricCard({ detail, label, value }: { detail?: string; label: string; value: string }) {
+const MetricCard = memo(function MetricCard({ detail, label, value }: { detail?: string; label: string; value: string }) {
   return (
     <Card className="border-border/70 bg-card/90 shadow-sm">
       <CardContent className="p-5">
@@ -80,9 +80,9 @@ function MetricCard({ detail, label, value }: { detail?: string; label: string; 
       </CardContent>
     </Card>
   );
-}
+});
 
-function ProgressBar({
+const ProgressBar = memo(function ProgressBar({
   progress,
   status,
 }: {
@@ -99,7 +99,7 @@ function ProgressBar({
       </div>
     </div>
   );
-}
+});
 
 export function AnalyticsPageClient() {
   const t = useTranslations("analytics");

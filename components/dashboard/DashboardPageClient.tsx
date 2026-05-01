@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { memo, useState } from "react";
 import Link from "next/link";
 import {
   AlertTriangle,
@@ -62,7 +62,7 @@ function formatTooltipValue(value: unknown) {
   return String(value ?? "");
 }
 
-function SummaryCard({
+const SummaryCard = memo(function SummaryCard({
   amount,
   icon: Icon,
   label,
@@ -93,7 +93,7 @@ function SummaryCard({
       </CardContent>
     </Card>
   );
-}
+});
 
 export function DashboardPageClient() {
   const t = useTranslations("dashboard");

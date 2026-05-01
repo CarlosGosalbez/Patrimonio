@@ -297,6 +297,7 @@
       "title": "Statement file",
       "dropzone": "Drop the file here or pick it from your device",
       "formats": "Supported formats: XLSX, XLS, CSV, OFX and QIF",
+      "selectFile": "Select file",
       "detectedBank": "Detected bank: {bank}",
       "rows": "detected rows"
     },

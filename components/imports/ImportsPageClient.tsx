@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type DragEvent } from "react";
+import { useMemo, useRef, useState, type DragEvent } from "react";
 import { toast } from "sonner";
 import { useLocale, useTranslations } from "next-intl";
 import { FileSpreadsheet, History, RefreshCcw, UploadCloud } from "lucide-react";
@@ -54,6 +54,7 @@ export function ImportsPageClient() {
   const [reviewRows, setReviewRows] = useState<Array<ConfirmImportRowInput & ImportPreviewRow>>([]);
   const [bulkMerchantKey, setBulkMerchantKey] = useState("");
   const [bulkCategoryId, setBulkCategoryId] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const categories = useMemo(
     () =>
@@ -253,7 +254,8 @@ export function ImportsPageClient() {
               <p className="mt-4 text-sm font-medium">{t("upload.dropzone")}</p>
               <p className="mt-1 text-xs text-muted-foreground">{t("upload.formats")}</p>
               <Input
-                className="mt-4"
+                ref={fileInputRef}
+                className="hidden"
                 type="file"
                 accept=".xlsx,.xls,.csv,.ofx,.qif"
                 onChange={(event) => {
@@ -263,6 +265,15 @@ export function ImportsPageClient() {
                   }
                 }}
               />
+              <Button
+                type="button"
+                variant="outline"
+                className="mt-4"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <FileSpreadsheet className="mr-2 h-4 w-4" />
+                {t("upload.selectFile")}
+              </Button>
             </div>
 
             {parsedFile ? (
