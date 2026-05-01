@@ -7,7 +7,13 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { validateEnv } from "@/lib/env";
 import "./globals.css";
+
+// Validar env al inicio (falla rápido si falta algo crítico)
+if (typeof window === "undefined") {
+  validateEnv();
+}
 
 const firaSans = Fira_Sans({
   subsets: ["latin"],

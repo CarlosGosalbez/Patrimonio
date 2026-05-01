@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import * as Sentry from "@sentry/nextjs";
+import { handleApiError } from "@/lib/errors/api-error-handler";
 
 /**
  * DELETE /api/privacy/delete-account
@@ -105,8 +105,11 @@ export async function DELETE(req: Request) {
 
     return NextResponse.json({ message: "Account permanently deleted" }, { status: 200 });
   } catch (error) {
-    Sentry.captureException(error);
-    console.error("Account deletion error:", error);
-    return NextResponse.json({ error: "Failed to delete account" }, { status: 500 });
+    return handleApiError({
+      error,
+      message: "Error al eliminar la cuenta",
+      statusCode: 500,
+      context: { userId: user.id },
+    });
   }
 }

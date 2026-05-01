@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { buildAccountExcel } from "@/lib/reports/excel";
-import * as Sentry from "@sentry/nextjs";
+import { handleApiError } from "@/lib/errors/api-error-handler";
 
 export async function GET(req: Request, { params }: { params: Promise<{ account_id: string }> }) {
   const supabase = await createClient();
@@ -40,8 +40,12 @@ export async function GET(req: Request, { params }: { params: Promise<{ account_
       .order("transaction_date", { ascending: false });
 
     if (txError) {
-      Sentry.captureException(txError);
-      return NextResponse.json({ error: "Failed to fetch transactions" }, { status: 500 });
+      return handleApiError({
+        error: txError,
+        message: "Error al obtener las transacciones",
+        statusCode: 500,
+        context: { accountId: account_id },
+      });
     }
 
     const buffer = buildAccountExcel(account.name, transactions ?? []);
@@ -56,7 +60,11 @@ export async function GET(req: Request, { params }: { params: Promise<{ account_
       },
     });
   } catch (error) {
-    Sentry.captureException(error);
-    return NextResponse.json({ error: "Failed to generate report" }, { status: 500 });
+    return handleApiError({
+      error,
+      message: "Error al generar el reporte de cuenta",
+      statusCode: 500,
+      context: { accountId: account_id },
+    });
   }
 }

@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import type { Database } from "@/types/database";
-import * as Sentry from "@sentry/nextjs";
+import { handleApiError } from "@/lib/errors/api-error-handler";
 
 const EXPORT_USER_DATA_RPC = "export_user_data" as keyof Database["public"]["Functions"];
 
@@ -56,8 +56,11 @@ export async function GET() {
       },
     });
   } catch (error) {
-    Sentry.captureException(error);
-    console.error("Export error:", error);
-    return NextResponse.json({ error: "Failed to export data" }, { status: 500 });
+    return handleApiError({
+      error,
+      message: "Error al exportar los datos",
+      statusCode: 500,
+      context: { userId: user.id },
+    });
   }
 }
