@@ -1,0 +1,50 @@
+# Cline Rules for Patrimio
+
+Read AI_RULES.md in project root before any task.
+
+## Quick reference
+
+- Stack: Next.js 15 + Supabase + shadcn/ui + Vercel
+- DB: Remote only (no Docker), `npm run db:push`, `npm run db:types`
+- Money: INTEGER cents always (`850.75€ → 85075`)
+- Auth: JWT from `supabase.auth.getUser()`, never from body
+- i18n: `useTranslations()` mandatory, no hardcoded strings
+- Tests: Vitest (unit) + Playwright (E2E, iPhone 14)
+- Security: RLS + Zod `.strict()` + soft delete + signed URLs
+
+## Commands
+
+```bash
+npm run dev          # Dev server
+npm run type-check   # TypeScript validation
+npm run test         # Vitest unit tests
+npm run test:e2e     # Playwright E2E
+npm run db:push      # Apply migrations (remote)
+npm run db:types     # Regenerate types (remote)
+```
+
+## Agent delegation
+
+- Any task → `@project-orchestrator` (analyzes + executes)
+- Full feature → `@feature-builder` (DB+API+UI+tests)
+- DB schema → `@db-architect`
+- Security audit → `@security-reviewer`
+- Code review → `@code-reviewer`
+
+## Critical paths
+
+- Migrations: `supabase/migrations/YYYYMMDDHHMMSS_name.sql`
+- Types: `types/database.ts` (generated, never edit)
+- API: `app/api/**/route.ts`
+- Financial: `lib/financial/formatters.ts`
+- i18n: `messages/es.json`, `messages/en.json`
+
+## Anti-patterns
+
+❌ Edit `types/database.ts` manually
+❌ Use `parseFloat` for money
+❌ Hardcode UI strings
+❌ Physical DELETE on tables
+❌ API routes without Zod validation
+❌ Tables without RLS
+❌ Assume file content (read first)
