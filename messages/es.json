@@ -1399,7 +1399,7 @@
       },
       "s5": {
         "title": "5. Proveedores de servicios (encargados del tratamiento)",
-        "body": "Sus datos se almacenan en Supabase (PostgreSQL en Europa, región eu-central-1). La infraestructura de hosting es Vercel (CDN global). La monitorización de errores utiliza Sentry, configurado para excluir datos financieros y correos electrónicos de los informes. La IA (Anthropic Claude) procesa datos bajo acuerdo de Zero Data Retention."
+        "body": "Sus datos se almacenan en Supabase (PostgreSQL en Europa, región eu-central-1). La infraestructura de hosting es Vercel (CDN global). La monitorización de errores utiliza Sentry, configurado para excluir datos financieros y correos electrónicos de los informes."
       },
       "s6": {
         "title": "6. Transferencias internacionales",

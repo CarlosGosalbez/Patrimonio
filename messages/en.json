@@ -1362,7 +1362,7 @@
       },
       "s5": {
         "title": "5. Service providers (processors)",
-        "body": "Your data is stored on Supabase (PostgreSQL in Europe, eu-central-1 region). Hosting infrastructure is Vercel (global CDN). Error monitoring uses Sentry, configured to exclude financial data and email addresses from reports. AI (Anthropic Claude) processes data under a Zero Data Retention agreement."
+        "body": "Your data is stored on Supabase (PostgreSQL in Europe, eu-central-1 region). Hosting infrastructure is Vercel (global CDN). Error monitoring uses Sentry, configured to exclude financial data and email addresses from reports."
       },
       "s6": {
         "title": "6. International transfers",

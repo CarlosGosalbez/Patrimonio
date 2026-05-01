@@ -49,21 +49,6 @@ export function mockSupabaseClient() {
 }
 
 /**
- * Mock de Anthropic/Claude API para tests
- */
-export function mockAnthropicResponse(content: string) {
-  return {
-    id: "msg_test123",
-    type: "message",
-    role: "assistant",
-    content: [{ type: "text", text: content }],
-    model: "claude-sonnet-4-5",
-    stop_reason: "end_turn",
-    usage: { input_tokens: 10, output_tokens: 20 },
-  };
-}
-
-/**
  * Wait helper para tests asíncronos
  */
 export function waitFor(ms: number): Promise<void> {

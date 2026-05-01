@@ -180,9 +180,10 @@ Identify root cause (not symptom) and technical solution (not patch).
 - **Write**: `Edit` (surgical changes), `Write` (new files), `MultiEdit` (multiple files)
 - **GitHub**: `github/create_pull_request` (open PRs), `github/create_branch` (new branches), `github/issue_write` (create/update issues), `github/search_code` (find patterns), `github/push_files` (commit changes)
 - **DB**: `supabase/execute_sql` (queries), `supabase/apply_migration` (schema changes), `supabase/generate_typescript_types` (regenerate types)
-- **Deploy**: `vercel/deploy_to_vercel` (deploy app), `vercel/get_deployment_build_logs` (check build errors)
-- **Verify**: `Bash(npm run type-check)`, `Bash(npm run test)`
-- **Context**: `sentry/search_issues` (production errors), `vercel/list_deployments` (deployment status), `github/list_pull_requests` (active PRs)
+- **Deploy**: `vercel/deploy_to_vercel` (deploy app), `vercel/get_deployment_build_logs` (check build errors), `vercel/get_runtime_logs` (production runtime errors)
+- **Verify**: `Bash(npm run type-check)`, `Bash(npm run test)`, `Bash(npm run build)`
+- **Context**: `sentry/find_organizations` → `sentry/search_issues` (production errors), `vercel/list_deployments` (deployment status), `github/list_pull_requests` (active PRs)
+- **Audit**: Full autonomous Vercel+Sentry+GitHub Actions audit workflow with reconciliation
 
 **When to delegate** (only if more efficient):
 
@@ -329,6 +330,54 @@ NO delegation — execute directly.
 1. Cookie expiry bug — missing httpOnly flag in middleware
 2. Type check — 0 errors
 ```
+
+### Example 4: "Audita Vercel y Sentry, corrige errores"
+
+**Internal process (FULL AUTONOMOUS AUDIT):**
+
+1. **Vercel audit:**
+   - `vercel/list_deployments` → últimos 20 deploys
+   - Identificar ERROR/FAILED states
+   - `vercel/get_deployment_build_logs` para cada ERROR
+   - Clasificar: TypeScript | Dependency | Timeout | Network
+2. **Sentry audit:**
+   - `sentry/find_organizations` → get correct org slug + regionUrl
+   - `sentry/search_issues` query="is:unresolved lastSeen:-7d" sort="freq"
+   - `sentry/search_issue_events` para stack traces
+   - Clasificar severidad: CRÍTICA (>100 events + >20 users) | ALTA | MEDIA | BAJA
+3. **Reconciliation (critical step):**
+   - Para cada error Sentry con archivo:línea identificado
+   - `Read` archivo actual en codebase
+   - Determinar: PENDIENTE (código buggy) | SOLUCIONADO (ya fixed) | REFACTORIZADO (eliminado)
+4. **Fix execution:**
+   - Errores PENDIENTE obvios (1-3 líneas) → `Edit` directo
+   - Errores complejos → marcar para revisión arquitectural
+   - Verificar: `Bash(npm run type-check && npm run build)`
+5. **GitHub Actions check:**
+   - `Read` .github/workflows/\*.yml
+   - Verificar que env vars existen y CI pasa
+6. **Pre-deploy verification:**
+   - `Bash(npm run type-check)` → 0 errors
+   - `Bash(npm run lint)` → 0 warnings
+   - `Bash(npm run build)` → successful build
+
+**Example output:**
+
+```
+✅ Completed:
+1. Vercel: 20 deployments — últimos 3 READY, 13 ERROR obsoletos (dependabot 27-28 abril)
+2. Sentry: 0 issues críticos — producción limpia
+3. Build local: exitoso — Next.js 15.5.15, 0 errores TypeScript
+4. Pre-deploy check: type-check ✓ lint ✓ build ✓
+```
+
+**Key insight for autonomy:**
+
+- ALWAYS get Sentry org with `sentry/find_organizations` BEFORE search_issues
+- ALWAYS use regionUrl parameter from find_organizations result
+- NEVER announce tools — execute directly and report results only
+- Build logs may not contain "Error" string even on ERROR state (check state field directly)
+- Reconciliation step is CRITICAL — verify if error still exists in current code
 
 ## Anti-patterns to avoid
 
