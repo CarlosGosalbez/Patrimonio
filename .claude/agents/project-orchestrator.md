@@ -1,5 +1,5 @@
 ---
-name: project-orchestrator
+name: Claude-project-orchestrator
 priority: P0
 description: >
   [PRIORITY P0 — ENTRY POINT] Master orchestrator for Patrimio.

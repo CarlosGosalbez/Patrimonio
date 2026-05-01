@@ -1,5 +1,5 @@
 ---
-name: "Project Orchestrator"
+name: "Copilot-Project Orchestrator"
 description: "[P0-ENTRY POINT] Master orchestrator for Patrimio. Activate for ANY natural language request. EXECUTES complex production tasks: analyzes multi-layer impact, applies professional fixes (edits/creates/deletes code), uses all skills, delegates to specialists when needed. Has full access to Sentry, Supabase and Vercel MCPs."
 tools: [read, edit, execute, search, todo, agent, web, supabase/*, sentry/*, vercel/*]
 user-invocable: true
