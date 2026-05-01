@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { CreateCategorySchema, UpdateCategorySchema } from "@/lib/categories/types";
-import * as Sentry from "@sentry/nextjs";
+import { handleApiError } from "@/lib/errors/api-error-handler";
 
 export async function GET(request: NextRequest) {
   const supabase = await createClient();
@@ -46,11 +46,12 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ categories });
   } catch (routeError) {
-    Sentry.captureException(routeError);
-    return NextResponse.json(
-      { error: routeError instanceof Error ? routeError.message : "Internal server error" },
-      { status: 500 },
-    );
+    return handleApiError({
+      error: routeError,
+      message: "Error al obtener las categorías",
+      statusCode: 500,
+      context: { type },
+    });
   }
 }
 
@@ -89,9 +90,12 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (error) {
-    Sentry.captureException(error);
-    console.error("Error creating category:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return handleApiError({
+      error,
+      message: "Error al crear la categoría",
+      statusCode: 500,
+      context: { categoryData: parsed.data },
+    });
   }
 
   return NextResponse.json({ ...data, is_system: false }, { status: 201 });
@@ -138,9 +142,12 @@ export async function PATCH(req: NextRequest) {
     .single();
 
   if (error) {
-    Sentry.captureException(error);
-    console.error("Error updating category:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return handleApiError({
+      error,
+      message: "Error al actualizar la categoría",
+      statusCode: 500,
+      context: { categoryId: id },
+    });
   }
 
   return NextResponse.json({ ...data, is_system: false });
@@ -176,9 +183,12 @@ export async function DELETE(req: NextRequest) {
     .eq("user_id", user.id);
 
   if (error) {
-    Sentry.captureException(error);
-    console.error("Error deleting category:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return handleApiError({
+      error,
+      message: "Error al eliminar la categoría",
+      statusCode: 500,
+      context: { categoryId: id },
+    });
   }
 
   return new Response(null, { status: 204 });
