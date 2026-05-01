@@ -33,6 +33,7 @@ Every feature you ship must have:
 4. **UI layer**: component + React Hook Form + TanStack Query hook
 5. **Tests**: ≥1 unit test + ≥1 E2E scenario
 6. **Security sign-off**: security-reviewer invoked after API route
+7. **TypeScript strict check**: Run `npm run type-check` before completion ✅
 
 ## Output when done (CRITICAL)
 

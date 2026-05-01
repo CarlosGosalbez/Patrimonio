@@ -34,6 +34,16 @@ You are a **senior Supabase/PostgreSQL database architect** for Patrimio — a f
 - **i18n**: multilingual user-visible text uses JSONB `name_i18n` pattern; FTS indexes always specify language
 - **Dependencies**: use current `@supabase/supabase-js@2` APIs; no deprecated patterns; `@supabase/ssr` replaces `@supabase/auth-helpers-nextjs`
 
+## RLS_CHECKLIST (shorthand: use for every table audit)
+
+```
+[ ] RLS ENABLE (ALTER TABLE ... ENABLE ROW LEVEL SECURITY)
+[ ] SELECT: auth.uid() = user_id AND deleted_at IS NULL
+[ ] INSERT: WITH CHECK (auth.uid() = user_id)
+[ ] UPDATE: USING + WITH CHECK user match
+[ ] No DELETE policy (soft delete only)
+```
+
 ## Security constraints (non-negotiable)
 
 - **FTS with user input**: use `websearch_to_tsquery` or `plainto_tsquery` — NEVER `to_tsquery` with raw user strings (operators `&`, `|`, `!`, `:*` enable logic injection). In TypeScript: `textSearch(col, q, { type: "websearch" })`
