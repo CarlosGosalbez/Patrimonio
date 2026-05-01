@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { confirmImport } from "@/lib/imports/server";
 import { confirmImportSchema } from "@/lib/imports/schemas";
 import { parseJsonBody } from "@/lib/http/server";
+import type { z } from "zod";
 
 export async function POST(request: NextRequest) {
   const supabase = await createClient();
@@ -28,12 +29,12 @@ export async function POST(request: NextRequest) {
   try {
     const t = await getTranslations("imports");
     const result = await confirmImport({
-      accountId: parsed.data.account_id,
-      fileChecksum: parsed.data.file_checksum,
-      fileName: parsed.data.file_name,
-      rows: parsed.data.rows,
-      sourceBank: parsed.data.source_bank,
-      sourceFormat: parsed.data.source_format,
+      accountId: parsed.data.account_id as string,
+      fileChecksum: parsed.data.file_checksum as string,
+      fileName: parsed.data.file_name as string,
+      rows: parsed.data.rows as any,
+      sourceBank: parsed.data.source_bank as string,
+      sourceFormat: parsed.data.source_format as any,
       supabase,
       t,
       userId: user.id,

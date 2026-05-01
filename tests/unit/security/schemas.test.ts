@@ -29,7 +29,7 @@ import { safeName, safeString, optionalNullableString } from "@/lib/validation/s
 // Re-crear CreateAccountSchema igual que en app/api/accounts/route.ts
 const CreateAccountSchema = z
   .object({
-    name: safeName(200).min(1),
+    name: z.string().trim().min(1).max(200),
     account_type: z.enum(["checking", "savings", "cash", "credit_card", "investment"]),
     currency: z
       .string()

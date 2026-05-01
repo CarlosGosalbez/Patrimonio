@@ -21,7 +21,7 @@ export function ForgotPasswordForm() {
   const [sent, setSent] = useState(false);
 
   const Schema = useMemo(
-    () => z.object({ email: z.email({ message: tAuth("emailInvalid") }) }).strict(),
+    () => z.object({ email: z.string().email({ message: tAuth("emailInvalid") }) }).strict(),
     [tAuth],
   );
 

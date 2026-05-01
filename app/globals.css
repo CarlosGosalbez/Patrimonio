@@ -43,31 +43,51 @@
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 217.2 32.6% 12%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
+    /* Design System: Minimalism & Swiss Style (Finance Dashboard) */
+    --background: 15 23 42;
+    /* #0F172A - Deep slate */
+    --foreground: 0 0% 100%;
+    /* #FFFFFF - Pure white */
+    --card: 15 23 42;
+    /* #0F172A - Same as background */
+    --card-foreground: 0 0% 100%;
+    /* #FFFFFF */
+    --popover: 16 26 52;
+    /* #101A34 - Slightly lighter */
+    --popover-foreground: 0 0% 100%;
+    --primary: 213 88% 40%;
+    /* #1E40AF - Trust blue */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 216 87% 60%;
+    /* #3B82F6 - Bright blue */
+    --secondary-foreground: 0 0% 100%;
+    --muted: 16 26 52;
+    /* #101A34 - Muted elements */
+    --muted-foreground: 215 20% 65%;
+    /* Light gray text */
+    --accent: 160 98% 40%;
+    /* #059669 - Profit green (CTA) */
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    /* #DC2626 - Error red */
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 100% / 0.08;
+    /* rgba(255,255,255,0.08) - Subtle borders */
+    --input: 0 0% 100% / 0.12;
+    /* Input borders slightly more visible */
+    --ring: 213 88% 40%;
+    /* Focus ring matches primary */
     /* Chart semantic tokens — dark mode variants */
     --chart-income: 160 72% 45%;
+    /* Emerald */
     --chart-expense: 0 72% 55%;
-    --chart-primary: 217 91% 60%;
-    --chart-secondary: 270 60% 65%;
+    /* Red */
+    --chart-primary: 213 88% 40%;
+    /* Primary blue */
+    --chart-secondary: 216 87% 60%;
+    /* Secondary blue */
     --chart-neutral: 215 20% 55%;
+    /* Neutral gray */
   }
 }
 
@@ -128,7 +148,6 @@
 }
 
 @layer utilities {
-
   /* Safe area padding utilities */
   .pt-safe {
     padding-top: env(safe-area-inset-top);
@@ -191,7 +210,6 @@
 
   /* ─── WCAG 2.3.3 / Preference: reduced motion ───────────── */
   @media (prefers-reduced-motion: reduce) {
-
     /* Disable all CSS animations and transitions */
     *,
     *::before,

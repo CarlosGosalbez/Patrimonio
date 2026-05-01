@@ -5,7 +5,7 @@ import { optionalNullableString, safeName, safeString } from "@/lib/validation/s
 
 const UpdateAccountSchema = z
   .object({
-    name: safeName(200).min(1).optional(),
+    name: z.string().trim().min(1).max(200).optional(),
     account_type: z.enum(["checking", "savings", "cash", "credit_card", "investment"]).optional(),
     currency: z
       .string()

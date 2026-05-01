@@ -46,11 +46,13 @@ export function safeName(maxLength: number) {
 }
 
 export function optionalNullableString<T extends z.ZodType<string>>(schema: T) {
-  return z.union([schema, z.literal(""), z.null(), z.undefined()]).transform((value) => {
-    if (value === undefined || value === null || value === "") {
-      return null;
-    }
+  return z
+    .union([schema, z.literal(""), z.null(), z.undefined()])
+    .transform((value): string | null => {
+      if (value === undefined || value === null || value === "") {
+        return null;
+      }
 
-    return value;
-  });
+      return value as string;
+    });
 }

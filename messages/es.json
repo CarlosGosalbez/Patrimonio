@@ -11,7 +11,11 @@
     "success": "Éxito",
     "copySuccess": "Copiado al portapapeles",
     "processing": "Procesando...",
-    "backToApp": "Volver a la app"
+    "backToApp": "Volver a la app",
+    "theme": {
+      "light": "Activar modo claro",
+      "dark": "Activar modo oscuro"
+    }
   },
   "metadata": {
     "brandName": "Patrimonio",
@@ -275,6 +279,9 @@
     "commitments": "Pagos",
     "alerts": "Alertas",
     "settings": "Ajustes"
+  },
+  "nav": {
+    "goToDashboard": "Patrimonio — ir al dashboard"
   },
   "imports": {
     "title": "Importación bancaria",
@@ -942,10 +949,26 @@
       "title": "Seguridad",
       "description": "Gestiona la autenticación en dos pasos y las sesiones activas.",
       "twoFactorSection": "Autenticación en dos pasos (2FA)",
+      "biometricsSection": "Autenticación biométrica",
       "sessionSection": "Sesión activa",
       "sessionDescription": "Cierra la sesión en este dispositivo. Tendrás que volver a iniciar sesión para acceder.",
       "signOut": "Cerrar sesión",
-      "signingOut": "Cerrando sesión…"
+      "signingOut": "Cerrando sesión…",
+      "biometrics": {
+        "title": "Autenticación biométrica",
+        "description": "Usa {type} para acceder de forma segura a Patrimio",
+        "notAvailable": "Autenticación biométrica no disponible",
+        "notAvailableDesc": "Tu dispositivo o navegador no soporta autenticación biométrica con plataforma",
+        "enableLabel": "Habilitar autenticación biométrica",
+        "enableDesc": "Accede de forma segura sin contraseña",
+        "enrollSuccess": "Dispositivo biométrico registrado correctamente",
+        "enrollFailed": "Error al registrar dispositivo biométrico",
+        "disabled": "Autenticación biométrica deshabilitada",
+        "registeredDevices": "Dispositivos registrados",
+        "registeredOn": "Registrado el {date}",
+        "addDevice": "Añadir otro dispositivo",
+        "deviceName": "{type} - {date}"
+      }
     }
   },
   "languageSwitcher": {
@@ -1069,6 +1092,22 @@
     "online": "Conexión restaurada",
     "retry": "Reintentar",
     "cached": "Algunos datos pueden estar desactualizados."
+  },
+  "errors": {
+    "boundary": {
+      "title": "Error inesperado",
+      "description": "Ha ocurrido un error al procesar tu solicitud. Nuestro equipo ha sido notificado automáticamente.",
+      "errorId": "ID de error",
+      "retry": "Reintentar",
+      "goHome": "Ir al inicio"
+    },
+    "api": {
+      "unauthorized": "No autorizado",
+      "notFound": "Recurso no encontrado",
+      "validation": "Datos inválidos",
+      "internal": "Error interno del servidor",
+      "generic": "Ha ocurrido un error. Por favor, inténtalo más tarde."
+    }
   },
   "pushNotifications": {
     "title": "Notificaciones push",

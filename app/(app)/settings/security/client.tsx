@@ -8,6 +8,7 @@ import { signOutAction } from "@/lib/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { TwoFactorSetup } from "@/components/auth/TwoFactorSetup";
+import { BiometricsSettings } from "@/components/settings/BiometricsSettings";
 
 interface SecuritySettingsClientProps {
   tfaEnabled: boolean;
@@ -40,6 +41,13 @@ export function SecuritySettingsClient({ tfaEnabled, factorId }: SecuritySetting
       <section className="space-y-3">
         <h2 className="text-base font-medium">{t("twoFactorSection")}</h2>
         <TwoFactorSetup enabled={tfaEnabled} factorId={factorId} onChange={handleChange} />
+      </section>
+
+      <Separator />
+
+      <section className="space-y-3">
+        <h2 className="text-base font-medium">{t("biometricsSection")}</h2>
+        <BiometricsSettings />
       </section>
 
       <Separator />

@@ -45,7 +45,7 @@ export function useTickerSearchQuery(query: string) {
   });
 }
 
-export function useCreateInvestmentMutation(year: number) {
+export function useCreateInvestmentMutation(year: number, onSuccess?: () => void) {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -55,11 +55,14 @@ export function useCreateInvestmentMutation(year: number) {
         headers: { "Content-Type": "application/json" },
         method: "POST",
       }),
-    onSuccess: () => invalidatePhaseSixQueries({ queryClient, year }),
+    onSuccess: () => {
+      invalidatePhaseSixQueries({ queryClient, year });
+      onSuccess?.();
+    },
   });
 }
 
-export function useUpdateInvestmentMutation(year: number) {
+export function useUpdateInvestmentMutation(year: number, onSuccess?: () => void) {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -69,7 +72,10 @@ export function useUpdateInvestmentMutation(year: number) {
         headers: { "Content-Type": "application/json" },
         method: "PATCH",
       }),
-    onSuccess: () => invalidatePhaseSixQueries({ queryClient, year }),
+    onSuccess: () => {
+      invalidatePhaseSixQueries({ queryClient, year });
+      onSuccess?.();
+    },
   });
 }
 
@@ -85,7 +91,7 @@ export function useDeleteInvestmentMutation(year: number) {
   });
 }
 
-export function useCreateInvestmentOperationMutation(year: number) {
+export function useCreateInvestmentOperationMutation(year: number, onSuccess?: () => void) {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -101,7 +107,10 @@ export function useCreateInvestmentOperationMutation(year: number) {
         headers: { "Content-Type": "application/json" },
         method: "POST",
       }),
-    onSuccess: () => invalidatePhaseSixQueries({ queryClient, year }),
+    onSuccess: () => {
+      invalidatePhaseSixQueries({ queryClient, year });
+      onSuccess?.();
+    },
   });
 }
 

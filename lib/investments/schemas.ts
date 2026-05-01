@@ -55,7 +55,7 @@ function thresholdInputSchema(required = false) {
       },
     );
 
-  return required ? base.refine((value) => value !== null) : base.optional().default(null);
+  return required ? base.refine((value) => value !== null) : base.optional().default("0");
 }
 
 export const investmentPositionInputSchema = z
@@ -67,18 +67,21 @@ export const investmentPositionInputSchema = z
     dividend_frequency: frequencySchema.optional().default("annual"),
     investment_type: investmentTypeSchema,
     market: optionalNullableString(safeString(50)),
-    name: safeName(200).min(1),
+    name: z.string().trim().min(1).max(200),
     next_dividend_date: z
       .union([dateString, z.literal(""), z.null(), z.undefined()])
       .transform((value) => (value ? value : null)),
     notes: optionalNullableString(safeString(2000)),
     opening_date: dateString,
     opening_price_input: moneyInput,
-    opening_quantity_input: safeString(50).min(1),
+    opening_quantity_input: z.string().trim().min(1).max(50),
     sector: optionalNullableString(safeName(120)),
-    ticker: safeString(20)
+    ticker: z
+      .string()
+      .trim()
       .min(1)
-      .transform((value) => value.toUpperCase()),
+      .max(20)
+      .transform((value: string) => value.toUpperCase()),
   })
   .strict();
 
@@ -91,16 +94,19 @@ const _investmentPositionPatchFieldsSchema = z
     dividend_frequency: frequencySchema.optional(),
     investment_type: investmentTypeSchema.optional(),
     market: optionalNullableString(safeString(50)).optional(),
-    name: safeName(200).min(1).optional(),
+    name: z.string().trim().min(1).max(200).optional(),
     next_dividend_date: z
       .union([dateString, z.literal(""), z.null(), z.undefined()])
       .optional()
       .transform((value) => (value ? value : null)),
     notes: optionalNullableString(safeString(2000)).optional(),
     sector: optionalNullableString(safeName(120)).optional(),
-    ticker: safeString(20)
+    ticker: z
+      .string()
+      .trim()
       .min(1)
-      .transform((value) => value.toUpperCase())
+      .max(20)
+      .transform((value: string) => value.toUpperCase())
       .optional(),
   })
   .strict();
@@ -121,7 +127,7 @@ export const investmentOperationInputSchema = z
     operation_date: dateString,
     operation_type: operationTypeSchema,
     price_input: optionalMoneyInput,
-    quantity_input: safeString(50).min(1),
+    quantity_input: z.string().trim().min(1).max(50),
     withholding_input: optionalMoneyInput,
   })
   .strict()
@@ -173,7 +179,7 @@ export const investmentOperationInputSchema = z
 
 export const investmentSearchSchema = z
   .object({
-    q: safeString(60).min(1),
+    q: z.string().trim().min(1).max(60),
     limit: z.coerce.number().int().min(1).max(10).optional().default(6),
   })
   .strict();

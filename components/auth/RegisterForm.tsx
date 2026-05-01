@@ -30,7 +30,7 @@ export function RegisterForm() {
     () =>
       z
         .object({
-          email: z.email({ message: tAuth("emailInvalid") }),
+          email: z.string().email({ message: tAuth("emailInvalid") }),
           password: z
             .string()
             .min(12, t("passwordMin"))

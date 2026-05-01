@@ -86,7 +86,7 @@ export const commitmentInputSchema = z
     maturity_year: z
       .union([z.coerce.number().int().min(2000).max(2200), z.null(), z.undefined()])
       .transform((value) => value ?? null),
-    name: safeName(200).min(1),
+    name: z.string().trim().min(1).max(200),
     next_due_date: dateString,
     service_name: optionalNullableString(safeString(200)),
     start_date: dateString,
@@ -134,7 +134,7 @@ export const commitmentPatchSchema = z
       .union([z.coerce.number().int().min(2000).max(2200), z.null(), z.undefined()])
       .optional()
       .transform((value) => value ?? null),
-    name: safeName(200).min(1).optional(),
+    name: z.string().trim().min(1).max(200).optional(),
     next_due_date: dateString.optional(),
     service_name: optionalNullableString(safeString(200)).optional(),
     start_date: dateString.optional(),

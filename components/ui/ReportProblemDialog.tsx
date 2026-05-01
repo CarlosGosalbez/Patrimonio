@@ -13,8 +13,8 @@ import { z } from "zod";
 
 const FeedbackSchema = z
   .object({
-    title: safeString(200).min(1),
-    description: safeString(2000).min(1),
+    title: z.string().trim().min(1).max(200),
+    description: z.string().trim().min(1).max(2000),
     type: z.enum(["bug", "mejora", "duda"]),
   })
   .strict();

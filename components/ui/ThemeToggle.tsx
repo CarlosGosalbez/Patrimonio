@@ -3,6 +3,7 @@
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
 interface ThemeToggleProps {
@@ -12,6 +13,7 @@ interface ThemeToggleProps {
 export function ThemeToggle({ className }: ThemeToggleProps) {
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const t = useTranslations("common");
 
   // Avoid hydration mismatch
   useEffect(() => setMounted(true), []);
@@ -40,7 +42,7 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
         "[-webkit-tap-highlight-color:transparent]",
         className,
       )}
-      aria-label={isDark ? "Activar modo claro" : "Activar modo oscuro"}
+      aria-label={isDark ? t("theme.light") : t("theme.dark")}
     >
       {isDark ? (
         <Sun className="h-4 w-4 text-foreground" aria-hidden="true" />

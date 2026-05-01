@@ -15,7 +15,7 @@ import { safeString } from "@/lib/validation/safe-zod";
  */
 export const CreateCategorySchema = z
   .object({
-    name: safeString(50).min(1, "El nombre es obligatorio"),
+    name: z.string().trim().min(1, "El nombre es obligatorio").max(50),
     icon: z.string().max(50).optional(),
     color: z
       .string()

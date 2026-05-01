@@ -298,6 +298,53 @@ Deno.serve(async (request) => {
     ((cachedRows ?? []) as ExistingMarketRow[]).map((row) => [row.ticker, row]),
   );
 
+  // Update investment snapshots for active positions
+  const { data: activeInvestments } = await supabase
+    .from("investment_positions")
+    .select("id,ticker,user_id")
+    .is("deleted_at", null);
+
+  const today = new Date().toISOString().split("T")[0];
+  const snapshotsToInsert = [];
+
+  for (const inv of activeInvestments ?? []) {
+    const ticker = tickers.find((t) => t.ticker === inv.ticker);
+    if (!ticker) continue;
+
+    const result = await fetchMarketData({
+      ticker,
+      cached: cachedMap.get(inv.ticker),
+      alphaVantageKey,
+      fmpKey,
+    });
+
+    if (result.data) {
+      const { data: ops } = await supabase
+        .from("investment_operations")
+        .select("quantity")
+        .eq("position_id", inv.id)
+        .is("deleted_at", null);
+
+      const totalQuantity = (ops ?? []).reduce((sum, op) => sum + (op.quantity ?? 0), 0);
+      const currentValue = totalQuantity * (result.data.price_cents / 100);
+
+      snapshotsToInsert.push({
+        position_id: inv.id,
+        price_cents: result.data.price_cents,
+        total_value_cents: Math.round(currentValue * 100),
+        date: today,
+        user_id: inv.user_id,
+      });
+    }
+  }
+
+  if (snapshotsToInsert.length > 0) {
+    await supabase.from("investment_snapshots").upsert(snapshotsToInsert, {
+      onConflict: "position_id,date",
+      ignoreDuplicates: false,
+    });
+  }
+
   if (openExchangeRatesAppId) {
     const exchangeRates = await fetchOpenExchangeRates(openExchangeRatesAppId);
     if (exchangeRates.length) {

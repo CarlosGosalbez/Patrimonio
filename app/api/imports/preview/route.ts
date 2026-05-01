@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { previewImport } from "@/lib/imports/server";
 import { previewImportSchema } from "@/lib/imports/schemas";
 import { parseJsonBody } from "@/lib/http/server";
+import type { z } from "zod";
 
 export async function POST(request: NextRequest) {
   const supabase = await createClient();
@@ -26,8 +27,8 @@ export async function POST(request: NextRequest) {
 
   try {
     const preview = await previewImport({
-      accountId: parsed.data.account_id,
-      rows: parsed.data.rows,
+      accountId: parsed.data.account_id as string,
+      rows: parsed.data.rows as any,
       supabase,
       userId: user.id,
     });

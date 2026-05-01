@@ -14,7 +14,7 @@ const importFileFormatSchema = z.enum(["xlsx", "xls", "csv", "ofx", "qif"]);
 const normalizedImportRowSchema = z
   .object({
     amount_cents: z.number().int().positive().max(999_999_999),
-    description: safeString(500).min(1, "Description is required"),
+    description: z.string().trim().min(1, "Description is required").max(500),
     external_id: optionalNullableString(safeString(200)),
     is_income: z.boolean(),
     merchant_key: safeString(120),
@@ -29,7 +29,7 @@ export const previewImportSchema = z
   .object({
     account_id: z.string().uuid(),
     file_checksum: z.string().regex(/^[a-f0-9]{64}$/i, "Invalid checksum"),
-    file_name: safeString(255).min(1, "File name is required"),
+    file_name: z.string().trim().min(1, "File name is required").max(255),
     rows: z.array(normalizedImportRowSchema).min(1).max(3000),
     source_bank: supportedBankSchema,
     source_format: importFileFormatSchema,
@@ -47,7 +47,7 @@ export const confirmImportSchema = z
   .object({
     account_id: z.string().uuid(),
     file_checksum: z.string().regex(/^[a-f0-9]{64}$/i, "Invalid checksum"),
-    file_name: safeString(255).min(1, "File name is required"),
+    file_name: z.string().trim().min(1, "File name is required").max(255),
     rows: z.array(confirmImportRowSchema).min(1).max(3000),
     source_bank: supportedBankSchema,
     source_format: importFileFormatSchema,

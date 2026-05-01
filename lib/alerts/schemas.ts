@@ -45,7 +45,7 @@ export const customAlertInputSchema = z
       .union([moneyInput, z.literal(""), z.null(), z.undefined()])
       .transform((value) => (value ? value : null)),
     is_active: z.boolean().optional().default(true),
-    name: safeName(200).min(1),
+    name: z.string().trim().min(1).max(200),
     recurrence: alertRecurrenceSchema,
   })
   .strict();
@@ -79,7 +79,7 @@ const _customAlertPatchFieldsSchema = z
         return value;
       }),
     is_active: z.boolean().optional(),
-    name: safeName(200).min(1).optional(),
+    name: z.string().trim().min(1).max(200).optional(),
     recurrence: alertRecurrenceSchema.optional(),
   })
   .strict();

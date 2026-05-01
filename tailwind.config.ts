@@ -9,6 +9,12 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ["Fira Sans", "system-ui", "-apple-system", "sans-serif"],
+        mono: ["Fira Code", "ui-monospace", "monospace"],
+        heading: ["Fira Code", "ui-monospace", "monospace"],
+        body: ["Fira Sans", "system-ui", "sans-serif"],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

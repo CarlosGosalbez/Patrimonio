@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { investmentSearchSchema } from "@/lib/investments/schemas";
 import { searchInvestmentTickers } from "@/lib/investments/server";
 import { createClient } from "@/lib/supabase/server";
+import type { z } from "zod";
 
 export async function GET(request: NextRequest) {
   const supabase = await createClient();
@@ -25,8 +26,8 @@ export async function GET(request: NextRequest) {
 
   try {
     const results = await searchInvestmentTickers({
-      limit: parsed.data.limit,
-      query: parsed.data.q,
+      limit: parsed.data.limit as number,
+      query: parsed.data.q as string,
       supabase,
     });
 
