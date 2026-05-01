@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useMemo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import {
   Area,
   AreaChart,
@@ -55,7 +55,7 @@ const colors = [
 ];
 const toDate = (value: string) => new Date(`${value}T12:00:00`);
 
-function Stat({ label, value, detail }: { label: string; value: string; detail?: string }) {
+const Stat = memo(function Stat({ label, value, detail }: { label: string; value: string; detail?: string }) {
   return (
     <Card className="border-border/70 bg-card/95">
       <CardContent className="p-5">
@@ -65,9 +65,9 @@ function Stat({ label, value, detail }: { label: string; value: string; detail?:
       </CardContent>
     </Card>
   );
-}
+});
 
-function Allocation({
+const Allocation = memo(function Allocation({
   currency,
   data,
   empty,
@@ -136,7 +136,7 @@ function Allocation({
       </CardContent>
     </Card>
   );
-}
+});
 
 export function InvestmentsPageClient() {
   useMarketRealtime();
