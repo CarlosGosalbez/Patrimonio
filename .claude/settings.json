@@ -1,0 +1,157 @@
+{
+    "$schema": "https://claude.ai/settings.schema.json",
+    "version": "1.0",
+    "project": {
+        "name": "Patrimonio",
+        "description": "Sistema profesional de gestión financiera personal con portfolio tracker, budget, analytics y market data",
+        "type": "web-application",
+        "language": "typescript",
+        "framework": "nextjs"
+    },
+    "ai": {
+        "preferredAgent": "patrimonio-orchestrator",
+        "contextStrategy": "smart",
+        "maxTokens": 200000,
+        "temperature": 0.7,
+        "features": {
+            "codeGeneration": true,
+            "codeReview": true,
+            "documentation": true,
+            "testing": true,
+            "debugging": true,
+            "refactoring": true
+        },
+        "tokenEfficiency": {
+            "enabled": true,
+            "enforced": true,
+            "rules": {
+                "noGreetings": true,
+                "noRepetition": true,
+                "noActionAnnouncements": true,
+                "surgicalEdits": true,
+                "useSessionMemory": true,
+                "readBeforeEdit": true,
+                "noOptions": true,
+                "conciseSummaries": true,
+                "noClosingQuestions": true,
+                "directToolInvocation": true
+            },
+            "editingStrategy": {
+                "smallChanges": "replace_string_in_file",
+                "multipleChanges": "multi_replace_string_in_file",
+                "newFiles": "create_file",
+                "maxLinesRewrite": 20,
+                "alwaysReadFirst": true
+            }
+        }
+    },
+    "paths": {
+        "agents": ".claude/agents",
+        "commands": ".claude/commands",
+        "skills": ".claude/skills",
+        "hooks": ".claude/hooks",
+        "rules": ".claude/rules",
+        "outputStyles": ".claude/output-styles",
+        "plugins": ".claude/plugins"
+    },
+    "codeStyle": {
+        "indentSize": 2,
+        "useTabs": false,
+        "lineWidth": 100,
+        "quotes": "single",
+        "trailingComma": "es5",
+        "semicolons": true,
+        "bracketSpacing": true,
+        "arrowParens": "always"
+    },
+    "typescript": {
+        "strictMode": true,
+        "strictNullChecks": true,
+        "noImplicitAny": true,
+        "exactOptionalPropertyTypes": true
+    },
+    "conventions": {
+        "components": "PascalCase",
+        "functions": "camelCase",
+        "constants": "UPPER_SNAKE_CASE",
+        "types": "PascalCase",
+        "files": {
+            "components": "PascalCase.tsx",
+            "hooks": "camelCase.ts",
+            "utils": "camelCase.ts",
+            "types": "PascalCase.types.ts"
+        }
+    },
+    "testing": {
+        "framework": "vitest",
+        "coverage": {
+            "minimum": 80,
+            "enforced": true
+        },
+        "e2e": {
+            "framework": "playwright",
+            "browsers": [
+                "chromium",
+                "firefox",
+                "webkit"
+            ]
+        }
+    },
+    "quality": {
+        "linting": {
+            "enabled": true,
+            "config": ".eslintrc.json"
+        },
+        "formatting": {
+            "enabled": true,
+            "config": ".prettierrc"
+        },
+        "typeChecking": {
+            "enabled": true,
+            "strict": true
+        }
+    },
+    "deployment": {
+        "platform": "vercel",
+        "production": {
+            "branch": "main",
+            "environment": "production"
+        },
+        "preview": {
+            "enabled": true,
+            "branches": [
+                "feature/*",
+                "fix/*"
+            ]
+        }
+    },
+    "monitoring": {
+        "sentry": {
+            "enabled": true,
+            "environment": "production",
+            "tracesSampleRate": 0.1
+        },
+        "vercel": {
+            "analytics": true,
+            "speedInsights": true
+        }
+    },
+    "security": {
+        "rls": {
+            "enforced": true,
+            "tables": "all-user-scoped"
+        },
+        "secrets": {
+            "provider": "vercel-env",
+            "validation": "zod"
+        }
+    },
+    "documentation": {
+        "style": "jsdoc",
+        "required": [
+            "public-api",
+            "complex-logic"
+        ],
+        "language": "es"
+    }
+}

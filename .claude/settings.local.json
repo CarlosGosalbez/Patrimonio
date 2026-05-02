@@ -1,0 +1,26 @@
+{
+  "$schema": "https://claude.ai/settings.schema.json",
+  "version": "1.0",
+  "ai": {
+    "temperature": 0.8,
+    "maxTokens": 150000
+  },
+  "developer": {
+    "name": "Carlos",
+    "preferences": {
+      "verboseLogging": true,
+      "autoSave": true,
+      "darkMode": true
+    }
+  },
+  "localOverrides": {
+    "testing": {
+      "coverage": {
+        "minimum": 70
+      }
+    },
+    "deployment": {
+      "autoPreview": false
+    }
+  }
+}
