@@ -1,54 +1,29 @@
 # 🔌 Skill: API Service Generator
 
-Generación de servicios Supabase con React Query 5+ hooks, mutations y error handling.
+Servicios Supabase + React Query 5+ type-safe.
 
-## Especialización
+## Stack
 
-Servicios type-safe con:
+Supabase JS 2.48+ · React Query 5.56+ · Zod 3.23+ · TypeScript 5.5+ · Sentry 8+
 
-- **React Query 5+** (queries, mutations, optimistic updates)
-- **Supabase JS 2.48+** (client, RLS-aware)
-- **Zod validation** (runtime + compiletime)
-- **Sentry integration** (error tracking + breadcrumbs)
-- **Type safety** (strict TypeScript)
+## Features
 
-## Tecnologías
+- Queries, mutations, optimistic updates
+- RLS-aware
+- Zod validation runtime
+- Sentry integration
 
-- Supabase JS 2.48+
-- @tanstack/react-query 5.56+
-- Zod 3.23+
-- TypeScript 5.5+
-- @sentry/nextjs 8+
-
-## Input Esperado
-
-```typescript
-{
-  entity: string;           // Nombre de la entidad (transactions)
-  operations: ('getAll' | 'getOne' | 'create' | 'update' | 'delete')[];
-  validations: {            // Schemas Zod
-    create?: ZodSchema;
-    update?: ZodSchema;
-  };
-  realtime?: boolean;       // Si usa Realtime subscriptions
-  cache?: {
-    staleTime?: number;     // En milisegundos
-    cacheTime?: number;
-  };
-}
-```
-
-## Output Generado
+## Output
 
 ```
 src/features/[feature]/
 ├── services/
-│   ├── [entity].service.ts         # Supabase client methods
-│   ├── [entity].hooks.ts           # React Query hooks
-│   └── [entity].schemas.ts         # Zod schemas
+│   ├── [entity].service.ts
+│   ├── [entity].hooks.ts
+│   └── [entity].schemas.ts
 └── __tests__/
-    ├── [entity].service.test.ts    # Service tests
-    └── [entity].hooks.test.tsx     # Hooks tests
+    ├── [entity].service.test.ts
+    └── [entity].hooks.test.tsx
 ```
 
 ## 1. Service File (.service.ts)

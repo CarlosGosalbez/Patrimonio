@@ -1,23 +1,18 @@
 # 🔍 Skill: Sentry Monitor
 
-Integración profesional de error tracking y performance monitoring con Sentry.
+Error tracking + performance monitoring.
 
-## Especialización
+## Stack
 
-Monitoreo completo con:
+@sentry/nextjs 8.33+ · @sentry/deno · Sentry Performance API
 
-- **Error tracking** (excepciones + contexto)
-- **Performance monitoring** (transacciones + spans)
-- **Session Replay** (user session recording)
-- **Breadcrumbs** (activity trail)
-- **User feedback** (crash reports)
+## Features
 
-## Tecnologías
-
-- @sentry/nextjs 8.33+
-- @sentry/deno (Edge Functions)
-- Sentry Performance API
-- Source maps upload
+- Error tracking + contexto
+- Performance (transacciones + spans)
+- Session Replay
+- Breadcrumbs
+- User feedback
 
 ## Output Generado
 

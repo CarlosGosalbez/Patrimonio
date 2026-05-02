@@ -1,59 +1,27 @@
 # 🎨 Skill: Component Builder
 
-Generación de componentes React accesibles, profesionales y type-safe.
+Componentes React 18+ type-safe con WCAG AAA.
 
-## Especialización
+## Stack
 
-Componentes React 18+ con TypeScript 5.5+ que cumplen:
+React 18.3+ · TypeScript 5.5+ · Tailwind 4+ · Radix UI 2+ · React Hook Form 7+ · Zod 3.23+
 
-- **WCAG AAA** (contraste 7:1, navegación keyboard, ARIA)
-- **Type-safe** (strict mode, props validation)
-- **Testeable** (unit tests incluidos)
-- **Performance** (React.memo, useMemo cuando aplica)
-- **Responsive** (mobile-first, touch targets 44x44px)
+## Requisitos
 
-## Tecnologías
+- WCAG AAA (contraste 7:1, keyboard nav, ARIA)
+- TypeScript strict
+- Tests incluidos
+- Performance (memo, useMemo)
+- Responsive (touch 44x44px)
 
-- React 18.3+
-- TypeScript 5.5+ (strict mode)
-- Tailwind CSS 4+
-- Radix UI 2+ (primitives accesibles)
-- React Hook Form 7+ (formularios)
-- Zod 3.23+ (validation)
-
-## Input Esperado
-
-```typescript
-{
-  name: string;              // Nombre del componente (PascalCase)
-  type: 'form' | 'list' | 'card' | 'modal' | 'layout' | 'button';
-  props: {                   // Props del componente
-    name: string;
-    type: string;
-    required: boolean;
-    description?: string;
-  }[];
-  behavior: string;          // Descripción del comportamiento
-  accessibility: {           // Requisitos de accesibilidad
-    ariaLabel?: string;
-    role?: string;
-    keyboardNav?: boolean;
-  };
-  styling?: {                // Requisitos de estilo
-    variant?: string[];
-    responsive?: boolean;
-  };
-}
-```
-
-## Output Generado
+## Output
 
 ```
 src/features/[feature]/components/
-├── ComponentName.tsx              # Componente principal
-├── ComponentName.types.ts         # TypeScript interfaces/types
-├── ComponentName.test.tsx         # Unit tests (Vitest + testing-library)
-└── index.ts                       # Barrel export
+├── ComponentName.tsx
+├── ComponentName.types.ts
+├── ComponentName.test.tsx
+└── index.ts
 ```
 
 ## Estructura del Componente

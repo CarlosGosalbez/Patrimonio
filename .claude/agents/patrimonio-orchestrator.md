@@ -165,204 +165,35 @@ Próxima sesión:
 
 ## 📋 Sub-Agentes y Responsabilidades
 
-### DatabaseMaster (database-master.md)
+### DatabaseMaster
 
-**Cuándo:** Crear tabla, migration, RLS policy, índices  
-**Input:** Entidad, campos, relaciones, requisitos de seguridad  
-**Output:** SQL migration + RLS policies + TypeScript types + ejemplos  
-**Tecnologías:** PostgreSQL 16+, Supabase JS 2.48+, Zod
+**Cuándo:** Tablas, migrations, RLS, índices  
+**Stack:** PostgreSQL 16+, Supabase, Zod
 
-**Ejemplo:**
+### APIServiceGenerator
 
-```sql
--- Migration generada por DatabaseMaster
-CREATE TABLE transactions (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  user_id UUID NOT NULL REFERENCES auth.users(id),
-  amount DECIMAL(12,2) NOT NULL,
-  category TEXT NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW(),
-  deleted_at TIMESTAMPTZ
-);
+**Cuándo:** Servicios Supabase, React Query hooks  
+**Stack:** React Query 5+, Zod, Sentry
 
--- RLS Policies
-ALTER TABLE transactions ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Users can view own transactions"
-  ON transactions FOR SELECT
-  USING (auth.uid() = user_id AND deleted_at IS NULL);
-```
-
-### APIServiceGenerator (api-service-gen.md)
-
-**Cuándo:** Servicios Supabase, React Query hooks, mutations  
-**Input:** Entidad, operaciones (CRUD), validaciones  
-**Output:** service.ts + hooks.ts + tests + Sentry integration  
-**Tecnologías:** React Query 5+, Zod, Sentry 8+
-
-**Ejemplo:**
-
-```typescript
-// services/transactions.service.ts
-export const transactionsService = {
-  async getAll(userId: string) {
-    const { data, error } = await supabase
-      .from("transactions")
-      .select("*")
-      .eq("user_id", userId)
-      .is("deleted_at", null);
-
-    if (error) {
-      Sentry.captureException(error);
-      throw error;
-    }
-    return TransactionSchema.array().parse(data);
-  },
-};
-
-// hooks/useTransactions.ts
-export const useTransactions = (userId: string) => {
-  return useQuery({
-    queryKey: ["transactions", userId],
-    queryFn: () => transactionsService.getAll(userId),
-  });
-};
-```
-
-### ComponentBuilder (component-builder.md)
+### ComponentBuilder
 
 **Cuándo:** Componentes React accesibles  
-**Input:** Nombre, props, comportamiento, requisitos de UI  
-**Output:** .tsx + .types.ts + .test.tsx + JSDoc  
-**Tecnologías:** React 18, TypeScript 5.5+, Tailwind 4, Radix UI 2
+**Stack:** React 18, TypeScript 5.5+, Tailwind 4, Radix UI 2
 
-**Ejemplo:**
+### TestGenerator
 
-```typescript
-/**
- * TransactionForm - Formulario accesible para crear transacciones
- * @wcag AAA compliant
- * @keyboard-navigation Full support
- */
-export const TransactionForm: FC<TransactionFormProps> = ({
-  onSubmit,
-  initialValues
-}) => {
-  const form = useForm({
-    resolver: zodResolver(TransactionSchema)
-  });
+**Cuándo:** Tests unit/integration/E2E  
+**Stack:** Vitest 2+, Playwright 1.40+, >80% coverage
 
-  return (
-    <form onSubmit={form.handleSubmit(onSubmit)} aria-label="Transaction form">
-      <Input
-        label="Amount"
-        type="number"
-        aria-required="true"
-        {...form.register('amount')}
-      />
-      {/* ... */}
-    </form>
-  );
-};
-```
+### StockDataIntegrator
 
-### TestGenerator (test-generator.md)
+**Cuándo:** APIs bolsa, Edge Functions  
+**Stack:** Deno, Finnhub, Alpha Vantage, Upstash Redis
 
-**Cuándo:** Tests unitarios, integración, E2E  
-**Input:** Código a testear, casos de uso  
-**Output:** .test.ts (Vitest 2+) + .spec.ts (Playwright 1.40+)  
-**Cobertura:** >80% líneas, >75% branches
+### SentryMonitor
 
-**Ejemplo:**
-
-```typescript
-// __tests__/transactions.service.test.ts
-describe("transactionsService", () => {
-  it("should fetch all user transactions", async () => {
-    const mockData = [{ id: "1", amount: 100 }];
-    vi.mocked(supabase.from).mockReturnValue({
-      select: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockReturnThis(),
-      is: vi.fn().mockResolvedValue({ data: mockData, error: null }),
-    });
-
-    const result = await transactionsService.getAll("user-1");
-    expect(result).toEqual(mockData);
-  });
-});
-```
-
-### StockDataIntegrator (stock-data-integrator.md)
-
-**Cuándo:** Integración de APIs de bolsa, Edge Functions  
-**Input:** Symbol, operación (precio, análisis, caché)  
-**Output:** Edge Function + Caché strategy + Monitoring  
-**APIs:** Finnhub v1, Alpha Vantage, IEX Cloud
-
-**Ejemplo:**
-
-```typescript
-// supabase/functions/stock-price/index.ts
-import { serve } from "std/http/server.ts";
-
-serve(async (req) => {
-  const { symbol } = await req.json();
-
-  // Check cache first (5min TTL)
-  const cached = await redis.get(`stock:${symbol}`);
-  if (cached) return new Response(cached);
-
-  // Fetch from Finnhub
-  const response = await fetch(
-    `https://finnhub.io/api/v1/quote?symbol=${symbol}`,
-    { headers: { "X-Finnhub-Token": Deno.env.get("FINNHUB_API_KEY") } },
-  );
-
-  const data = await response.json();
-  await redis.setex(`stock:${symbol}`, 300, JSON.stringify(data));
-
-  return new Response(JSON.stringify(data));
-});
-```
-
-### SentryMonitor (sentry-monitor.md)
-
-**Cuándo:** Error tracking, performance monitoring  
-**Input:** Componente/función a monitorear  
-**Output:** Sentry integration + error handlers + breadcrumbs  
-**Tecnologías:** Sentry 8+, OpenTelemetry
-
-**Ejemplo:**
-
-```typescript
-// app/error.tsx - Error Boundary
-'use client';
-
-export default function Error({
-  error,
-  reset
-}: {
-  error: Error & { digest?: string };
-  reset: () => void;
-}) {
-  React.useEffect(() => {
-    Sentry.captureException(error, {
-      tags: { page: 'transactions' },
-      contexts: {
-        trace: { trace_id: error.digest }
-      }
-    });
-  }, [error]);
-
-  return (
-    <div role="alert">
-      <h2>Something went wrong!</h2>
-      <button onClick={reset}>Try again</button>
-    </div>
-  );
-}
-```
+**Cuándo:** Error tracking, performance  
+**Stack:** Sentry 8+, OpenTelemetry
 
 ## 🔐 Normas Fundamentales (No Negociables)
 

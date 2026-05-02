@@ -1,24 +1,17 @@
 # 🧪 Skill: Test Generator
 
-Generación de tests profesionales con cobertura >80% usando Vitest y Playwright.
+Tests con >80% coverage usando Vitest y Playwright.
 
-## Especialización
+## Stack
 
-Tests completos con:
+Vitest 2.1+ · Testing Library 16+ · Playwright 1.40+ · MSW 2+
 
-- **Unit Tests** (Vitest 2+ + testing-library)
-- **Integration Tests** (API + DB mocks)
-- **E2E Tests** (Playwright 1.40+)
-- **Coverage >80%** líneas y branches
-- **Mocks profesionales**
+## Coverage
 
-## Tecnologías
-
-- Vitest 2.1+ (unit + integration)
-- @testing-library/react 16+ (component testing)
-- Playwright 1.40+ (E2E)
-- MSW 2+ (API mocking)
-- @testing-library/user-event (user interactions)
+- Unit: >80% líneas/branches
+- Integration: flujos críticos
+- E2E: user journeys
+- Mocks profesionales
 
 ## Output Generado
 

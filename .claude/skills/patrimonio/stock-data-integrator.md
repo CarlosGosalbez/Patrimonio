@@ -1,45 +1,23 @@
 # 📈 Skill: Stock Data Integrator
 
-Integración de APIs de mercado de valores con Edge Functions y estrategias de caché.
+APIs bolsa + Edge Functions + caché.
 
-## Especialización
+## Stack
 
-Integración robusta de market data:
+Deno 1.40+ · Finnhub v1 · Alpha Vantage · Upstash Redis · Supabase Edge
 
-- **APIs bolsa** (Finnhub, Alpha Vantage, IEX Cloud)
-- **Edge Functions** (Deno runtime)
-- **Caché inteligente** (5min precios, 1day histórico)
-- **Rate limiting** (respeto a límites de API)
-- **Error handling** (fallbacks entre APIs)
+## Features
 
-## Tecnologías
+- Edge Functions (Deno)
+- Caché (5min quotes, 1day historical)
+- Rate limiting
+- Fallbacks multi-provider
 
-- Deno 1.40+ (Edge Functions runtime)
-- Finnhub API v1 (primary)
-- Alpha Vantage API (fallback)
-- Upstash Redis (caché)
-- Supabase Edge Functions
+## APIs
 
-## APIs Recomendadas
-
-### Finnhub (Primary)
-
-- **Free Tier:** 60 calls/min
-- **Cobertura:** US stocks, crypto, forex
-- **Latency:** <100ms
-- **Features:** Real-time quotes, company info, news
-
-### Alpha Vantage (Fallback)
-
-- **Free Tier:** 25 calls/day
-- **Cobertura:** Global stocks
-- **Features:** Historical data, indicators, fundamentals
-
-### IEX Cloud (Opcional)
-
-- **Free Tier:** 50k messages/month
-- **Cobertura:** US stocks
-- **Features:** Real-time quotes, historical data
+- **Finnhub** (primary): 60 calls/min free
+- **Alpha Vantage** (fallback): 25 calls/day
+- **IEX Cloud** (opcional): 50k msg/month
 
 ## Output Generado
 

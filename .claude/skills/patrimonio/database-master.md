@@ -1,66 +1,32 @@
 # 🗄️ Skill: Database Master
 
-Diseño de schemas PostgreSQL profesionales con RLS, triggers, índices y migrations.
+Schemas PostgreSQL 16+ con RLS, triggers y optimización.
 
-## Especialización
+## Stack
 
-Bases de datos PostgreSQL 16+ con:
+PostgreSQL 16+ · Supabase · TypeScript 5.5+ · Zod 3.23+
 
-- **Row Level Security (RLS)** obligatorio
-- **Soft deletes** (deleted_at)
-- **Timestamps automáticos** (triggers)
-- **Índices optimizados** (partial, unique, GIN)
-- **Type safety** (TypeScript types generados)
-- **Migrations versionadas**
+## Features
 
-## Tecnologías
+- RLS obligatorio
+- Soft deletes (deleted_at)
+- Timestamps automáticos
+- Índices optimizados
+- Type safety
+- Migrations versionadas
 
-- PostgreSQL 16+
-- Supabase (Auth + Realtime + Storage)
-- Supabase CLI
-- TypeScript 5.5+ (database types)
-- Zod 3.23+ (runtime validation)
-
-## Input Esperado
-
-```typescript
-{
-  entity: string;            // Nombre de la entidad (snake_case)
-  fields: {
-    name: string;
-    type: 'uuid' | 'text' | 'integer' | 'decimal' | 'boolean' | 'timestamptz' | 'jsonb';
-    nullable: boolean;
-    unique?: boolean;
-    default?: string;
-    references?: {
-      table: string;
-      column: string;
-      onDelete: 'CASCADE' | 'SET NULL' | 'RESTRICT';
-    };
-  }[];
-  security: {
-    userScoped: boolean;     // Si requiere RLS por usuario
-    policies: string[];      // Políticas RLS (SELECT, INSERT, UPDATE, DELETE)
-  };
-  indexes?: {
-    columns: string[];
-    type?: 'btree' | 'gin' | 'gist';
-    unique?: boolean;
-    partial?: string;        // WHERE clause para índice parcial
-  }[];
-  softDelete: boolean;       // Si usa deleted_at
-}
-```
-
-## Output Generado
+## Output
 
 ```
-supabase/
-├── migrations/
-│   └── YYYYMMDDHHMMSS_create_entity.sql    # Migration SQL
+supabase/migrations/[timestamp]_[entity].sql
+src/types/[entity].types.ts
+src/schemas/[entity].schema.ts
+```
+
 └── types/
-    └── database.types.ts                    # TypeScript types (generado)
-```
+└── database.types.ts # TypeScript types (generado)
+
+````
 
 ## Estructura de Migration
 
@@ -116,7 +82,7 @@ COMMENT ON COLUMN transactions.amount IS 'Transaction amount (positive or negati
 COMMENT ON COLUMN transactions.type IS 'Transaction type: income or expense';
 COMMENT ON COLUMN transactions.metadata IS 'Additional flexible metadata (JSONB)';
 COMMENT ON COLUMN transactions.deleted_at IS 'Soft delete timestamp (NULL = active)';
-```
+````
 
 ### 2. INDEXES
 

@@ -20,54 +20,14 @@ Ejecuta deployment completo a Vercel con tracking automático en Sentry, smoke t
 
 ## Flujo de Ejecución
 
-```
-┌──────────────────┐
-│ Pre-Deploy       │
-│ Validations      │
-└────────┬─────────┘
-         │
-         ▼
-┌──────────────────┐
-│ Create Sentry    │
-│ Release          │
-└────────┬─────────┘
-         │
-         ▼
-┌──────────────────┐
-│ Upload           │
-│ Sourcemaps       │
-└────────┬─────────┘
-         │
-         ▼
-┌──────────────────┐
-│ Deploy to        │
-│ Vercel           │
-└────────┬─────────┘
-         │
-         ▼
-┌──────────────────┐
-│ Wait for         │
-│ Deployment       │
-└────────┬─────────┘
-         │
-         ▼
-┌──────────────────┐
-│ Smoke Tests      │
-│                  │
-└────────┬─────────┘
-         │
-         ▼
-┌──────────────────┐
-│ Finalize Sentry  │
-│ Release          │
-└────────┬─────────┘
-         │
-         ▼
-┌──────────────────┐
-│ Send             │
-│ Notification     │
-└──────────────────┘
-```
+1. Pre-deploy validations
+2. Create Sentry release
+3. Upload sourcemaps
+4. Deploy to Vercel
+5. Wait for deployment
+6. Smoke tests
+7. Finalize Sentry release
+8. Send notification
 
 ## Paso 1: Pre-Deploy Validations
 

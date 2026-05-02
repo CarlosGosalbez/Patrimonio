@@ -14,54 +14,14 @@ Configura el entorno de desarrollo completo desde cero, ejecutando todas las tar
 
 ## Flujo de Ejecución
 
-```
-┌───────────────────┐
-│ Verify System     │
-│ Requirements      │
-└─────────┬─────────┘
-          │
-          ▼
-┌───────────────────┐
-│ Install           │
-│ Dependencies      │
-└─────────┬─────────┘
-          │
-          ▼
-┌───────────────────┐
-│ Create Folder     │
-│ Structure         │
-└─────────┬─────────┘
-          │
-          ▼
-┌───────────────────┐
-│ Setup Supabase    │
-│ Local             │
-└─────────┬─────────┘
-          │
-          ▼
-┌───────────────────┐
-│ Setup Sentry      │
-│ Project           │
-└─────────┬─────────┘
-          │
-          ▼
-┌───────────────────┐
-│ Configure         │
-│ Environment       │
-└─────────┬─────────┘
-          │
-          ▼
-┌───────────────────┐
-│ Setup Vercel      │
-│ CLI               │
-└─────────┬─────────┘
-          │
-          ▼
-┌───────────────────┐
-│ Run First         │
-│ Dev Server        │
-└───────────────────┘
-```
+1. Verify system requirements
+2. Install dependencies
+3. Create folder structure
+4. Setup Supabase local
+5. Setup Sentry project
+6. Configure environment
+7. Setup Vercel CLI
+8. Run first dev server
 
 ## Paso 1: Verificar System Requirements
 

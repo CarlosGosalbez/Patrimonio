@@ -145,88 +145,16 @@ Deploy a Vercel con Sentry release tracking:
 
 ## ✅ Estándares del Proyecto
 
-### TypeScript
+Ver [patrimonio-rules.md](.claude/rules/patrimonio-rules.md) y [typescript-rules.md](.claude/rules/typescript-rules.md) para reglas completas.
 
-```typescript
-// tsconfig.json - Strict mode obligatorio
-{
-  "compilerOptions": {
-    "strict": true,
-    "strictNullChecks": true,
-    "noImplicitAny": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "paths": {
-      "@/*": ["./src/*"]
-    }
-  }
-}
-```
+### Resumen
 
-### Validación Runtime
-
-```typescript
-// Zod para todas las validaciones
-import { z } from "zod";
-
-export const TransactionSchema = z.object({
-  amount: z.number().positive(),
-  category: z.string().min(1),
-  date: z.date(),
-});
-```
-
-### Base de Datos
-
-- ✅ UUID como PK (`uuid_generate_v4()`)
-- ✅ Timestamps timezone-aware (`created_at`, `updated_at`)
-- ✅ Soft deletes (`deleted_at IS NULL`)
-- ✅ RLS en todas las tablas user-scoped
-- ✅ Índices en columnas de búsqueda frecuente
-- ✅ Triggers para `updated_at` automático
-
-### Testing
-
-- ✅ Cobertura >80% en funcionalidad crítica
-- ✅ Unit tests con Vitest 2+
-- ✅ Integration tests con @testing-library
-- ✅ E2E tests con Playwright 1.40+
-- ✅ Mocks de Supabase client
-
-### Accesibilidad
-
-- ✅ WCAG AAA (contraste 7:1)
-- ✅ ARIA labels en elementos interactivos
-- ✅ Navegación completa por teclado
-- ✅ Touch targets mínimo 44x44px
-- ✅ Screen reader friendly
-
-### Performance
-
-- ✅ Bundle size <500KB gzipped
-- ✅ Lighthouse score >90 en producción
-- ✅ LCP <2.5s
-- ✅ CLS <0.1
-- ✅ FID <100ms
-- ✅ Code splitting por rutas
-
-### Error Handling
-
-```typescript
-// Sentry en todos los componentes críticos
-import * as Sentry from "@sentry/nextjs";
-
-try {
-  await criticalOperation();
-} catch (error) {
-  Sentry.captureException(error, {
-    tags: { feature: "transactions" },
-    context: { user, timestamp },
-  });
-  throw error;
-}
-```
+- TypeScript strict mode
+- Zod validation
+- RLS en tablas user-scoped
+- > 80% test coverage
+- WCAG AAA
+- Sentry en errores
 
 ## 🗂️ Estructura de Archivos
 
