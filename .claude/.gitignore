@@ -1,7 +1,0 @@
-# Archivos temporales de sesión — no commitear
-session-context.md
-*.session.md
-*.tmp.md
-
-# Logs de debugging de agentes
-agent-debug-*.log

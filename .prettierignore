@@ -1,8 +1,0 @@
-node_modules
-.next
-out
-build
-*.lock
-*.log
-.vercel
-types/database.ts
