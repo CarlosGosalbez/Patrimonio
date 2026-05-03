@@ -43,8 +43,8 @@ export function CreateAccountDialog({ userId }: CreateAccountDialogProps) {
                 type,
                 account_number: accountNumber || null,
                 currency,
-                current_balance: 0,
-            }).select().single();
+                balance: 0,
+            } as any).select().single();
 
             if (error) throw error;
             return data;

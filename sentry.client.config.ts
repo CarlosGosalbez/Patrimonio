@@ -18,11 +18,13 @@ const nextConfig = {
 
 export default withSentryConfig(nextConfig, {
   // Sentry options
-  org: process.env.SENTRY_ORG,
-  project: process.env.SENTRY_PROJECT,
+  org: process.env.SENTRY_ORG || "",
+  project: process.env.SENTRY_PROJECT || "",
   silent: !process.env.CI,
   widenClientFileUpload: true,
-  hideSourceMaps: true,
+  sourcemaps: {
+    disable: false,
+  },
   disableLogger: true,
   automaticVercelMonitors: true,
 });

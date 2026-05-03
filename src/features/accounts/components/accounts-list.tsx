@@ -46,8 +46,8 @@ export function AccountsList({ userId }: AccountsListProps) {
         );
     }
 
-    const bankAccounts = accounts?.filter((a) => a.type === "bank") || [];
-    const investmentAccounts = accounts?.filter((a) => a.type === "investment") || [];
+    const bankAccounts = accounts?.filter((acc: any) => acc.type === "bank") || [];
+    const investmentAccounts = accounts?.filter((acc: any) => acc.type === "investment") || [];
 
     return (
         <div className="space-y-6">
@@ -78,7 +78,7 @@ export function AccountsList({ userId }: AccountsListProps) {
                     Cuentas Bancarias ({bankAccounts.length})
                 </h2>
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    {bankAccounts.map((account) => (
+                    {bankAccounts.map((account: any) => (
                         <Card key={account.id} className="transition-smooth hover:shadow-lg">
                             <CardHeader>
                                 <CardTitle className="flex items-center justify-between">
@@ -92,7 +92,7 @@ export function AccountsList({ userId }: AccountsListProps) {
                             <CardContent>
                                 <p className="text-3xl font-bold">
                                     {showBalances
-                                        ? formatCurrency(Number(account.current_balance), account.currency)
+                                        ? formatCurrency(Number(account.balance), account.currency)
                                         : "••••••"}
                                 </p>
                                 {account.account_number && (
@@ -112,7 +112,7 @@ export function AccountsList({ userId }: AccountsListProps) {
                     Cuentas de Inversión ({investmentAccounts.length})
                 </h2>
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    {investmentAccounts.map((account) => (
+                    {investmentAccounts.map((account: any) => (
                         <Card key={account.id} className="transition-smooth hover:shadow-lg">
                             <CardHeader>
                                 <CardTitle className="flex items-center justify-between">
@@ -126,7 +126,7 @@ export function AccountsList({ userId }: AccountsListProps) {
                             <CardContent>
                                 <p className="text-3xl font-bold">
                                     {showBalances
-                                        ? formatCurrency(Number(account.current_balance), account.currency)
+                                        ? formatCurrency(Number(account.balance), account.currency)
                                         : "••••••"}
                                 </p>
                             </CardContent>

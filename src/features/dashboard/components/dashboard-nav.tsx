@@ -9,6 +9,8 @@ import {
     CreditCard,
     TrendingUp,
     FileText,
+    Building,
+    Upload,
     Settings,
     LogOut,
 } from "lucide-react";
@@ -24,6 +26,8 @@ const navItems = [
     { href: "/dashboard/accounts", label: "Cuentas", icon: CreditCard },
     { href: "/dashboard/portfolio", label: "Cartera", icon: TrendingUp },
     { href: "/dashboard/transactions", label: "Transacciones", icon: FileText },
+    { href: "/dashboard/mortgages", label: "Hipotecas", icon: Building },
+    { href: "/dashboard/import", label: "Importar", icon: Upload },
     { href: "/dashboard/settings", label: "Ajustes", icon: Settings },
 ];
 

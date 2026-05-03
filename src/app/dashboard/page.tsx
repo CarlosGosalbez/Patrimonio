@@ -3,6 +3,9 @@ import { DashboardOverview } from "@/features/dashboard/components/dashboard-ove
 import { RecentTransactions } from "@/features/dashboard/components/recent-transactions";
 import { PortfolioSummary } from "@/features/dashboard/components/portfolio-summary";
 import { MortgageSummary } from "@/features/dashboard/components/mortgage-summary";
+import { SpendingChart } from "@/features/dashboard/components/spending-chart";
+import { PortfolioPieChart } from "@/features/dashboard/components/portfolio-pie-chart";
+import { NetWorthChart } from "@/features/dashboard/components/net-worth-chart";
 
 export default async function DashboardPage() {
     const supabase = await createClient();
@@ -20,6 +23,12 @@ export default async function DashboardPage() {
             </div>
 
             <DashboardOverview userId={user!.id} />
+
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                <NetWorthChart userId={user!.id} />
+                <SpendingChart userId={user!.id} />
+                <PortfolioPieChart userId={user!.id} />
+            </div>
 
             <div className="grid gap-6 md:grid-cols-2">
                 <PortfolioSummary userId={user!.id} />

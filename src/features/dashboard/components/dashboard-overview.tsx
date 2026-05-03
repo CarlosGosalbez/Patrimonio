@@ -29,7 +29,7 @@ export function DashboardOverview({ userId }: DashboardOverviewProps) {
         queryKey: ["portfolio-summary", userId],
         queryFn: async () => {
             const { data } = await supabase
-                .rpc("get_portfolio_summary", { p_user_id: userId });
+                .rpc("get_portfolio_summary", { p_user_id: userId } as any);
             return data || [];
         },
     });
@@ -47,12 +47,12 @@ export function DashboardOverview({ userId }: DashboardOverviewProps) {
         },
     });
 
-    const totalCash = accounts?.reduce((sum, acc) => sum + Number(acc.current_balance), 0) || 0;
-    const totalPortfolio = portfolioData?.reduce((sum, holding) => sum + Number(holding.market_value), 0) || 0;
-    const totalMortgages = mortgages?.reduce((sum, m) => sum + Number(m.current_balance), 0) || 0;
+    const totalCash = accounts?.reduce((sum, acc: any) => sum + Number(acc.balance), 0) || 0;
+    const totalPortfolio = portfolioData?.reduce((sum, holding: any) => sum + Number(holding.market_value), 0) || 0;
+    const totalMortgages = mortgages?.reduce((sum, m: any) => sum + (Number(m.principal_amount) - Number(m.amount_paid)), 0) || 0;
     const netWorth = totalCash + totalPortfolio - totalMortgages;
 
-    const totalGain = portfolioData?.reduce((sum, h) => sum + Number(h.unrealized_gain), 0) || 0;
+    const totalGain = portfolioData?.reduce((sum, h: any) => sum + Number(h.unrealized_gain), 0) || 0;
     const gainPercentage = totalPortfolio > 0 ? (totalGain / (totalPortfolio - totalGain)) * 100 : 0;
 
     return (

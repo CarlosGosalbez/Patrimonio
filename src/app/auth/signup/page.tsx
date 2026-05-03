@@ -52,7 +52,7 @@ export default function SignupPage() {
                 id: data.user.id,
                 email: data.user.email!,
                 full_name: fullName,
-            });
+            } as any);
 
             if (profileError) {
                 toast({

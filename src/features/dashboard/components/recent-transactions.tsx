@@ -41,7 +41,7 @@ export function RecentTransactions({ userId }: RecentTransactionsProps) {
             </CardHeader>
             <CardContent>
                 <div className="space-y-4">
-                    {transactions?.map((tx) => (
+                    {(transactions as any[] || []).map((tx: any) => (
                         <div
                             key={tx.id}
                             className="flex items-center justify-between border-b pb-4 last:border-0"

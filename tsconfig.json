@@ -1,52 +1,55 @@
 {
-    "compilerOptions": {
-        "strict": true,
-        "strictNullChecks": true,
-        "strictFunctionTypes": true,
-        "strictBindCallApply": true,
-        "strictPropertyInitialization": true,
-        "noImplicitAny": true,
-        "noImplicitThis": true,
-        "noImplicitReturns": true,
-        "noFallthroughCasesInSwitch": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "noUncheckedIndexedAccess": true,
-        "exactOptionalPropertyTypes": true,
-        "allowUnusedLabels": false,
-        "allowUnreachableCode": false,
-        "target": "ES2022",
-        "lib": [
-            "ES2022",
-            "DOM",
-            "DOM.Iterable"
-        ],
-        "module": "ESNext",
-        "moduleResolution": "bundler",
-        "resolveJsonModule": true,
-        "esModuleInterop": true,
-        "skipLibCheck": true,
-        "forceConsistentCasingInFileNames": true,
-        "jsx": "preserve",
-        "incremental": true,
-        "plugins": [
-            {
-                "name": "next"
-            }
-        ],
-        "paths": {
-            "@/*": [
-                "./src/*"
-            ]
-        }
-    },
-    "include": [
-        "next-env.d.ts",
-        "**/*.ts",
-        "**/*.tsx",
-        ".next/types/**/*.ts"
+  "compilerOptions": {
+    "strict": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+    "target": "ES2022",
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
     ],
-    "exclude": [
-        "node_modules"
-    ]
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    },
+    "allowJs": true,
+    "noEmit": true,
+    "isolatedModules": true
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

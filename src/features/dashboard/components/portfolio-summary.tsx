@@ -23,12 +23,12 @@ export function PortfolioSummary({ userId }: PortfolioSummaryProps) {
         queryKey: ["portfolio-summary", userId],
         queryFn: async () => {
             const { data } = await supabase
-                .rpc("get_portfolio_summary", { p_user_id: userId });
+                .rpc("get_portfolio_summary", { p_user_id: userId } as any);
             return data || [];
         },
     });
 
-    const topHoldings = holdings?.slice(0, 5) || [];
+    const topHoldings = (holdings?.slice(0, 5) || []) as any[];
 
     return (
         <Card>
@@ -41,7 +41,7 @@ export function PortfolioSummary({ userId }: PortfolioSummaryProps) {
             </CardHeader>
             <CardContent>
                 <div className="space-y-4">
-                    {topHoldings.map((holding) => (
+                    {topHoldings.map((holding: any) => (
                         <div
                             key={holding.ticker}
                             className="flex items-center justify-between"
@@ -58,8 +58,8 @@ export function PortfolioSummary({ userId }: PortfolioSummaryProps) {
                                 </p>
                                 <p
                                     className={`text-sm ${Number(holding.unrealized_gain) >= 0
-                                            ? "text-success"
-                                            : "text-destructive"
+                                        ? "text-success"
+                                        : "text-destructive"
                                         }`}
                                 >
                                     {formatPercentage(Number(holding.unrealized_gain_pct))}

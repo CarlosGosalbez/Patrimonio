@@ -43,27 +43,26 @@ export function MortgageSummary({ userId }: MortgageSummaryProps) {
             </CardHeader>
             <CardContent>
                 <div className="space-y-4">
-                    {mortgages?.map((mortgage) => {
+                    {mortgages?.map((mortgage: any) => {
                         const paidPercentage =
-                            ((Number(mortgage.original_amount) - Number(mortgage.current_balance)) /
-                                Number(mortgage.original_amount)) *
-                            100;
+                            (Number(mortgage.amount_paid) / Number(mortgage.principal_amount)) * 100;
+                        const remaining = Number(mortgage.principal_amount) - Number(mortgage.amount_paid);
 
                         return (
                             <div key={mortgage.id} className="space-y-2">
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <p className="font-medium">{mortgage.property_name}</p>
+                                        <p className="font-medium">{mortgage.property_address}</p>
                                         <p className="text-sm text-muted-foreground">
-                                            {mortgage.institution}
+                                            {mortgage.lender}
                                         </p>
                                     </div>
                                     <div className="text-right">
                                         <p className="font-semibold">
-                                            {formatCurrency(Number(mortgage.current_balance))}
+                                            {formatCurrency(remaining)}
                                         </p>
                                         <p className="text-sm text-muted-foreground">
-                                            {formatPercentage(Number(mortgage.interest_rate) * 100)}
+                                            {formatPercentage(Number(mortgage.interest_rate))}%
                                         </p>
                                     </div>
                                 </div>
