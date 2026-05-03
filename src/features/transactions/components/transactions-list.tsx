@@ -12,6 +12,7 @@ import {
 } from "@/shared/components/ui/card";
 import { Button } from "@/shared/components/ui/button";
 import { formatCurrency, formatDate } from "@/shared/lib/utils";
+import { getCategoryLabel } from "@/shared/constants/database-enums";
 import { ArrowUpCircle, ArrowDownCircle, Pencil, Trash2 } from "lucide-react";
 import { EditTransactionDialog } from "./edit-transaction-dialog";
 import { DeleteTransactionDialog } from "./delete-transaction-dialog";
@@ -104,7 +105,7 @@ export function TransactionsList({ userId }: TransactionsListProps) {
                                     <div>
                                         <p className="font-medium text-lg">{transaction.description}</p>
                                         <p className="text-sm text-muted-foreground">
-                                            {transaction.account?.name} • {transaction.category} •{" "}
+                                            {transaction.account?.name} • {getCategoryLabel(transaction.category)} •{" "}
                                             {formatDate(transaction.transaction_date)}
                                         </p>
                                     </div>

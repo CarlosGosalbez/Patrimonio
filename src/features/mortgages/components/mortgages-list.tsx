@@ -12,6 +12,7 @@ import {
 } from "@/shared/components/ui/card";
 import { Button } from "@/shared/components/ui/button";
 import { formatCurrency, formatDate } from "@/shared/lib/utils";
+import { getMortgageStatusLabel } from "@/shared/constants/database-enums";
 import { Home, Pencil, Trash2 } from "lucide-react";
 import { EditMortgageDialog } from "./edit-mortgage-dialog";
 import { DeleteMortgageDialog } from "./delete-mortgage-dialog";
@@ -78,10 +79,6 @@ export function MortgagesList({ userId }: MortgagesListProps) {
         return (paid / total) * 100;
     };
 
-    const calculateRemaining = (total: number, paid: number) => {
-        return total - paid;
-    };
-
     return (
         <>
             <div className="grid gap-6 md:grid-cols-2">
@@ -100,7 +97,9 @@ export function MortgagesList({ userId }: MortgagesListProps) {
                                         <Home className="h-8 w-8 text-primary" />
                                         <div>
                                             <CardTitle>{mortgage.property_name}</CardTitle>
-                                            <CardDescription>{mortgage.institution}</CardDescription>
+                                            <CardDescription>
+                                                {mortgage.institution} • {getMortgageStatusLabel(mortgage.status)}
+                                            </CardDescription>
                                         </div>
                                     </div>
                                     <div className="flex gap-2">

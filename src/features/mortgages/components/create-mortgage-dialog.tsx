@@ -50,7 +50,7 @@ export function CreateMortgageDialog({ userId }: CreateMortgageDialogProps) {
                     start_date: startDate,
                     end_date: endDate,
                     monthly_payment: parseFloat(monthlyPayment),
-                    status: "active",
+                    status: "active" as const,
                 })
                 .select()
                 .single();
@@ -108,8 +108,8 @@ export function CreateMortgageDialog({ userId }: CreateMortgageDialogProps) {
                             <Label htmlFor="property">Dirección de la propiedad *</Label>
                             <Input
                                 id="property"
-                                value={propertyAddress}
-                                onChange={(e) => setPropertyAddress(e.target.value)}
+                                value={propertyName}
+                                onChange={(e) => setPropertyName(e.target.value)}
                                 placeholder="Calle Principal, 123"
                                 required
                             />
@@ -119,8 +119,8 @@ export function CreateMortgageDialog({ userId }: CreateMortgageDialogProps) {
                             <Label htmlFor="lender">Entidad bancaria *</Label>
                             <Input
                                 id="lender"
-                                value={lender}
-                                onChange={(e) => setLender(e.target.value)}
+                                value={institution}
+                                onChange={(e) => setInstitution(e.target.value)}
                                 placeholder="Banco XYZ"
                                 required
                             />
@@ -132,8 +132,8 @@ export function CreateMortgageDialog({ userId }: CreateMortgageDialogProps) {
                                 id="principal"
                                 type="number"
                                 step="0.01"
-                                value={principalAmount}
-                                onChange={(e) => setPrincipalAmount(e.target.value)}
+                                value={originalAmount}
+                                onChange={(e) => setOriginalAmount(e.target.value)}
                                 placeholder="250000"
                                 required
                             />
@@ -188,19 +188,6 @@ export function CreateMortgageDialog({ userId }: CreateMortgageDialogProps) {
                             </div>
                         </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="currency">Moneda</Label>
-                            <select
-                                id="currency"
-                                value={currency}
-                                onChange={(e) => setCurrency(e.target.value)}
-                                className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                            >
-                                <option value="EUR">EUR</option>
-                                <option value="USD">USD</option>
-                                <option value="GBP">GBP</option>
-                            </select>
-                        </div>
                     </div>
                     <DialogFooter>
                         <Button type="button" variant="outline" onClick={() => setOpen(false)}>

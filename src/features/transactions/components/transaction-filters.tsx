@@ -5,31 +5,7 @@ import { Card, CardContent } from "@/shared/components/ui/card";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 import { Button } from "@/shared/components/ui/button";
-
-const CATEGORIES = [
-    "Todos",
-    "Alimentación",
-    "Transporte",
-    "Vivienda",
-    "Salud",
-    "Ocio",
-    "Compras",
-    "Educación",
-    "Seguros",
-    "Impuestos",
-    "Inversiones",
-    "Salario",
-    "Freelance",
-    "Dividendos",
-    "Alquiler",
-    "Ventas",
-    "Regalos",
-    "Transferencias",
-    "Hipoteca",
-    "Servicios",
-    "Suscripciones",
-    "Otros",
-];
+import { TRANSACTION_CATEGORIES } from "@/shared/constants/database-enums";
 
 export function TransactionFilters() {
     const [type, setType] = useState("all");
@@ -82,9 +58,10 @@ export function TransactionFilters() {
                             onChange={(e) => setCategory(e.target.value)}
                             className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                         >
-                            {CATEGORIES.map((cat) => (
-                                <option key={cat} value={cat}>
-                                    {cat}
+                            <option value="Todos">Todas</option>
+                            {TRANSACTION_CATEGORIES.map((cat) => (
+                                <option key={cat.value} value={cat.value}>
+                                    {cat.label}
                                 </option>
                             ))}
                         </select>

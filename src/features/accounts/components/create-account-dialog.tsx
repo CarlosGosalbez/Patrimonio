@@ -17,6 +17,7 @@ import {
 } from "@/shared/components/ui/dialog";
 import { useToast } from "@/shared/hooks/use-toast";
 import { Plus } from "lucide-react";
+import { ACCOUNT_TYPES } from "@/shared/constants/database-enums";
 
 interface CreateAccountDialogProps {
     userId: string;
@@ -122,8 +123,11 @@ export function CreateAccountDialog({ userId }: CreateAccountDialogProps) {
                                 className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                                 required
                             >
-                                <option value="bank">Cuenta Bancaria</option>
-                                <option value="investment">Cuenta de Inversión</option>
+                                {ACCOUNT_TYPES.map((accountType) => (
+                                    <option key={accountType.value} value={accountType.value}>
+                                        {accountType.label}
+                                    </option>
+                                ))}
                             </select>
                         </div>
 

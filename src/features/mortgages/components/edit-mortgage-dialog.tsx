@@ -27,14 +27,14 @@ export function EditMortgageDialog({
     open,
     onOpenChange,
 }: EditMortgageDialogProps) {
-    const [propertyAddress, setPropertyAddress] = useState(mortgage.property_address);
-    const [lender, setLender] = useState(mortgage.lender);
-    const [principalAmount, setPrincipalAmount] = useState(String(mortgage.principal_amount));
+    const [propertyName, setPropertyName] = useState(mortgage.property_name);
+    const [institution, setInstitution] = useState(mortgage.institution);
+    const [originalAmount, setOriginalAmount] = useState(String(mortgage.original_amount));
     const [interestRate, setInterestRate] = useState(String(mortgage.interest_rate));
     const [startDate, setStartDate] = useState(mortgage.start_date);
     const [endDate, setEndDate] = useState(mortgage.end_date);
     const [monthlyPayment, setMonthlyPayment] = useState(String(mortgage.monthly_payment));
-    const [amountPaid, setAmountPaid] = useState(String(mortgage.amount_paid));
+    const [currentBalance, setCurrentBalance] = useState(String(mortgage.current_balance));
     const [status, setStatus] = useState(mortgage.status);
 
     const { toast } = useToast();
@@ -43,14 +43,14 @@ export function EditMortgageDialog({
 
     useEffect(() => {
         if (mortgage) {
-            setPropertyAddress(mortgage.property_address);
-            setLender(mortgage.lender);
-            setPrincipalAmount(String(mortgage.principal_amount));
+            setPropertyName(mortgage.property_name);
+            setInstitution(mortgage.institution);
+            setOriginalAmount(String(mortgage.original_amount));
             setInterestRate(String(mortgage.interest_rate));
             setStartDate(mortgage.start_date);
             setEndDate(mortgage.end_date);
             setMonthlyPayment(String(mortgage.monthly_payment));
-            setAmountPaid(String(mortgage.amount_paid));
+            setCurrentBalance(String(mortgage.current_balance));
             setStatus(mortgage.status);
         }
     }, [mortgage]);
@@ -110,8 +110,8 @@ export function EditMortgageDialog({
                             <Label htmlFor="edit-property">Dirección *</Label>
                             <Input
                                 id="edit-property"
-                                value={propertyAddress}
-                                onChange={(e) => setPropertyAddress(e.target.value)}
+                                value={propertyName}
+                                onChange={(e) => setPropertyName(e.target.value)}
                                 required
                             />
                         </div>
@@ -120,8 +120,8 @@ export function EditMortgageDialog({
                             <Label htmlFor="edit-lender">Entidad bancaria *</Label>
                             <Input
                                 id="edit-lender"
-                                value={lender}
-                                onChange={(e) => setLender(e.target.value)}
+                                value={institution}
+                                onChange={(e) => setInstitution(e.target.value)}
                                 required
                             />
                         </div>
@@ -132,8 +132,8 @@ export function EditMortgageDialog({
                                 id="edit-principal"
                                 type="number"
                                 step="0.01"
-                                value={principalAmount}
-                                onChange={(e) => setPrincipalAmount(e.target.value)}
+                                value={originalAmount}
+                                onChange={(e) => setOriginalAmount(e.target.value)}
                                 required
                             />
                         </div>
@@ -163,13 +163,13 @@ export function EditMortgageDialog({
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="edit-paid">Importe pagado *</Label>
+                            <Label htmlFor="edit-balance">Saldo actual *</Label>
                             <Input
-                                id="edit-paid"
+                                id="edit-balance"
                                 type="number"
                                 step="0.01"
-                                value={amountPaid}
-                                onChange={(e) => setAmountPaid(e.target.value)}
+                                value={currentBalance}
+                                onChange={(e) => setCurrentBalance(e.target.value)}
                                 required
                             />
                         </div>

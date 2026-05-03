@@ -48,7 +48,7 @@ export default async function SettingsPage() {
                 </TabsContent>
 
                 <TabsContent value="preferences">
-                    <AppPreferences userId={user.id} />
+                    <AppPreferences />
                 </TabsContent>
 
                 <TabsContent value="data">

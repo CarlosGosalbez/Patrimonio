@@ -39,7 +39,6 @@ export function PasswordChange() {
         },
         onSuccess: () => {
             toast({ title: "Contraseña actualizada" });
-            setCurrentPassword("");
             setNewPassword("");
             setConfirmPassword("");
         },

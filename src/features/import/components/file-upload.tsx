@@ -16,7 +16,7 @@ import { useToast } from "@/shared/hooks/use-toast";
 import { Upload, FileSpreadsheet, X } from "lucide-react";
 import { ImportPreview } from "./import-preview";
 import { parseINGExcel, parseTradeRepublicExcel } from "../services/excel-parser";
-import { Account, ParsedTransaction, ImportHistory, TransactionInsert, ImportHistoryInsert, ImportHistoryUpdate } from "@/types/supabase-responses";
+import { Account, ParsedTransaction, TransactionInsert, ImportHistoryInsert, ImportHistoryUpdate } from "@/types/supabase-responses";
 
 interface FileUploadProps {
     userId: string;

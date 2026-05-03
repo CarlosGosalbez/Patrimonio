@@ -17,44 +17,22 @@ import {
 } from "@/shared/components/ui/dialog";
 import { useToast } from "@/shared/hooks/use-toast";
 import { Plus } from "lucide-react";
+import type { TransactionInsert } from "@/types/supabase-responses";
+import { INCOME_CATEGORIES, EXPENSE_CATEGORIES } from "@/shared/constants/database-enums";
 
 interface CreateTransactionDialogProps {
     userId: string;
 }
 
-const CATEGORIES = [
-    "Alimentación",
-    "Transporte",
-    "Vivienda",
-    "Salud",
-    "Ocio",
-    "Compras",
-    "Educación",
-    "Seguros",
-    "Impuestos",
-    "Inversiones",
-    "Salario",
-    "Freelance",
-    "Dividendos",
-    "Alquiler",
-    "Ventas",
-    "Regalos",
-    "Transferencias",
-    "Hipoteca",
-    "Servicios",
-    "Suscripciones",
-    "Otros",
-];
-
 export function CreateTransactionDialog({ userId }: CreateTransactionDialogProps) {
     const [open, setOpen] = useState(false);
     const [type, setType] = useState<"income" | "expense">("expense");
-    const [accountId, setAccountId] = useState("");
-    const [amount, setAmount] = useState("");
-    const [description, setDescription] = useState("");
-    const [category, setCategory] = useState("Otros");
-    const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
-    const [notes, setNotes] = useState("");
+    const [accountId, setAccountId] = useState<string>("");
+    const [amount, setAmount] = useState<string>("");
+    const [description, setDescription] = useState<string>("");
+    const [category, setCategory] = useState<string>("other_expense");
+    const [date, setDate] = useState<string>((new Date().toISOString().split("T")[0]) ?? "");
+    const [notes, setNotes] = useState<string>("");
 
     const { toast } = useToast();
     const queryClient = useQueryClient();
@@ -75,18 +53,20 @@ export function CreateTransactionDialog({ userId }: CreateTransactionDialogProps
 
     const createMutation = useMutation({
         mutationFn: async () => {
+            const insertData: TransactionInsert = {
+                user_id: userId,
+                account_id: accountId,
+                type: type as "income" | "expense",
+                amount: type === "expense" ? -Math.abs(parseFloat(amount)) : Math.abs(parseFloat(amount)),
+                description: (description || "") as string,
+                category: category as any,
+                transaction_date: date,
+                notes: notes || null,
+            };
+
             const { data, error } = await supabase
                 .from("transactions")
-                .insert({
-                    user_id: userId,
-                    account_id: accountId,
-                    type,
-                    amount: type === "expense" ? -Math.abs(parseFloat(amount)) : Math.abs(parseFloat(amount)),
-                    description,
-                    category,
-                    transaction_date: date,
-                    notes: notes || null,
-                })
+                .insert(insertData)
                 .select()
                 .single();
 
@@ -118,8 +98,8 @@ export function CreateTransactionDialog({ userId }: CreateTransactionDialogProps
         setAccountId("");
         setAmount("");
         setDescription("");
-        setCategory("Otros");
-        setDate(new Date().toISOString().split("T")[0]);
+        setCategory("other_expense");
+        setDate((new Date().toISOString().split("T")[0]) ?? "");
         setNotes("");
     };
 
@@ -218,9 +198,9 @@ export function CreateTransactionDialog({ userId }: CreateTransactionDialogProps
                                 className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                                 required
                             >
-                                {CATEGORIES.map((cat) => (
-                                    <option key={cat} value={cat}>
-                                        {cat}
+                                {(type === "income" ? INCOME_CATEGORIES : EXPENSE_CATEGORIES).map((cat) => (
+                                    <option key={cat.value} value={cat.value}>
+                                        {cat.label}
                                     </option>
                                 ))}
                             </select>

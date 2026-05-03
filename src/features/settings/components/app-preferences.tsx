@@ -9,10 +9,6 @@ import {
 } from "@/shared/components/ui/card";
 import { Label } from "@/shared/components/ui/label";
 
-interface AppPreferencesProps {
-    userId: string;
-}
-
 export function AppPreferences() {
     return (
         <Card>

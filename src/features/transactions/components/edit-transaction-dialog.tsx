@@ -15,36 +15,13 @@ import {
     DialogTitle,
 } from "@/shared/components/ui/dialog";
 import { useToast } from "@/shared/hooks/use-toast";
+import { INCOME_CATEGORIES, EXPENSE_CATEGORIES } from "@/shared/constants/database-enums";
 
 interface EditTransactionDialogProps {
     transaction: any;
     open: boolean;
     onOpenChange: (open: boolean) => void;
 }
-
-const CATEGORIES = [
-    "Alimentación",
-    "Transporte",
-    "Vivienda",
-    "Salud",
-    "Ocio",
-    "Compras",
-    "Educación",
-    "Seguros",
-    "Impuestos",
-    "Inversiones",
-    "Salario",
-    "Freelance",
-    "Dividendos",
-    "Alquiler",
-    "Ventas",
-    "Regalos",
-    "Transferencias",
-    "Hipoteca",
-    "Servicios",
-    "Suscripciones",
-    "Otros",
-];
 
 export function EditTransactionDialog({
     transaction,
@@ -139,8 +116,42 @@ export function EditTransactionDialog({
                         e.preventDefault();
                         updateMutation.mutate();
                     }}
-                >
-                    <div className="space-y-4 py-4">
+                >                    <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="edit-type">Tipo *</Label>
+                            <select
+                                id="edit-type"
+                                value={type}
+                                onChange={(e) => {
+                                    const newType = e.target.value as "income" | "expense";
+                                    setType(newType);
+                                    // Reset category when type changes
+                                    setCategory(newType === "income" ? "salary" : "other_expense");
+                                }}
+                                className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                required
+                            >
+                                <option value="expense">Gasto</option>
+                                <option value="income">Ingreso</option>
+                            </select>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="edit-category">Categoría *</Label>
+                            <select
+                                id="edit-category"
+                                value={category}
+                                onChange={(e) => setCategory(e.target.value)}
+                                className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                required
+                            >
+                                {(type === "income" ? INCOME_CATEGORIES : EXPENSE_CATEGORIES).map((cat) => (
+                                    <option key={cat.value} value={cat.value}>
+                                        {cat.label}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                         <div className="space-y-2">
                             <Label htmlFor="edit-type">Tipo *</Label>
                             <select
@@ -204,9 +215,9 @@ export function EditTransactionDialog({
                                 className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                                 required
                             >
-                                {CATEGORIES.map((cat) => (
-                                    <option key={cat} value={cat}>
-                                        {cat}
+                                {(type === "income" ? INCOME_CATEGORIES : EXPENSE_CATEGORIES).map((cat) => (
+                                    <option key={cat.value} value={cat.value}>
+                                        {cat.label}
                                     </option>
                                 ))}
                             </select>
