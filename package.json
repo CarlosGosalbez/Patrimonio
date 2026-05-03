@@ -7,6 +7,8 @@
     "node": ">=20.0.0"
   },
   "scripts": {
+    "validate:env": "node scripts/validate-env.mjs",
+    "predev": "npm run validate:env",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -14,7 +16,9 @@
     "type-check": "tsc --noEmit",
     "test": "vitest",
     "test:e2e": "playwright test",
-    "supabase:types": "supabase gen types typescript --local > src/types/database.ts"
+    "supabase:types": "supabase gen types typescript --local > src/types/database.ts",
+    "supabase:start": "npx supabase start",
+    "supabase:stop": "npx supabase stop"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
