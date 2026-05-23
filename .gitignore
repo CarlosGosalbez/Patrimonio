@@ -53,3 +53,4 @@ sentry.properties
 .claude/*.local.*
 .claude/statusline
 .env.example
+.env.example
